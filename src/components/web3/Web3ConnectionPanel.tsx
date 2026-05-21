@@ -1582,7 +1582,7 @@ const Web3ConnectionPanel: React.FC<ConnectionPanelProps> = ({
             onConnect={(rigId) => {
               setInputValue(rigId);
               setTimeout(() => {
-                const currentState = useStoveStore.getState();
+                const currentState = useRigStore.getState();
                 if (currentState.connectionStatus === 'connecting' || isCleaningUp) return;
                 (async () => {
                   try {
@@ -1706,7 +1706,7 @@ const Web3ConnectionPanel: React.FC<ConnectionPanelProps> = ({
                   value={inputValue}
                   onChange={(e) => handleInputChange(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleConnect()}
-                  placeholder="Anderes Gerät verbinden..."
+                  placeholder="Switch to another rig…"
                   className="pl-9 h-9 text-sm bg-card border-border"
                 />
 

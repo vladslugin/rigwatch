@@ -12,6 +12,7 @@ import AirFlowDiagram from './components/AirFlowDiagram';
 import ErrorBlock from './components/ErrorBlock';
 import AlarmIndicator from './components/AlarmIndicator';
 import RigManagementPanel from './components/RigManagementPanel';
+import RigVitalsHero from './components/web3/RigVitalsHero';
 import ParameterSettingsModal from './components/ParameterSettingsModal';
 import ParameterListModal from './components/ParameterListModal';
 import DevDebug from './components/DevDebug';
@@ -1518,6 +1519,7 @@ const App: React.FC = () => {
 
           {deviceId && connectionStatus === 'online' && deviceExistence !== 'not_found' && (
             <div className="space-y-2 sm:space-y-3">
+              {useNewDesign && <RigVitalsHero />}
               {renderSectionInOrder()}
 
               {/* Connection Status Info - Mobile responsive */}
