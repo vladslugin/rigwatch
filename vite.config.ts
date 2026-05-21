@@ -98,8 +98,16 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     // `@/` alias resolves to src/. Required by shadcn/ui copy-paste components
     // and matches the path convention in components.json.
+    // The firebase/* aliases redirect every Firebase SDK entrypoint to the
+    // in-memory mock under src/lib/mock — the app runs without any backend
+    // for portfolio/demo deployment.
     alias: {
       '@': path.resolve(__dirname, './src'),
+      'firebase/app': path.resolve(__dirname, './src/lib/mock/app.ts'),
+      'firebase/database': path.resolve(__dirname, './src/lib/mock/database.ts'),
+      'firebase/firestore': path.resolve(__dirname, './src/lib/mock/firestore.ts'),
+      'firebase/auth': path.resolve(__dirname, './src/lib/mock/auth.ts'),
+      'firebase/ai': path.resolve(__dirname, './src/lib/mock/ai.ts'),
     },
   },
   build: {
