@@ -181,18 +181,42 @@ const MODEL_TO_ARTICLE = new Map<string, string>(
 );
 
 /** Build the konstant_app/{deviceId} blob the legacy UI consumes. */
-export const buildKonstantApp = (rig: RigProfile) => ({
-  rigname: `${rig.name} · ${rig.model}`,
-  rig: rig.model,
-  vers: rig.firmware,
-  shareData: true,
-  f: 0,
-  v: false,
-  comment: `${rig.location} · ${rig.algo}`,
-  active_clients: {},
-  // Article number ties the device to its model record in `rig_models`.
-  a: Number(MODEL_TO_ARTICLE.get(rig.model) ?? 1),
-});
+export const buildKonstantApp = (rig: RigProfile) => {
+  // Synthetic version components — `versu` is the firmware variant/branch,
+  // `verst` is the full version string with build metadata. Mirrors what
+  // real Antminer / Whatsminer controllers emit.
+  const versuByFirmware: Record<string, string> = {
+    'BMOS 1.4.2':   'stable-r2',
+    'BMOS 1.4.1':   'stable-r1',
+    'BMOS 1.4.0':   'stable',
+    'BMOS 1.3.9':   'lts',
+    'BMOS 1.3.7':   'lts',
+    'BMOS 1.3.5':   'lts',
+    'BTMiner 4.3':  'release',
+    'BTMiner 4.2':  'release',
+  };
+  const buildDate = new Date(rig.startedAt - 1000 * 60 * 60 * 24 * 7);
+  const verstShort = `${rig.firmware} · build ${buildDate.toISOString().slice(0, 10)}`;
+
+  // tsfc = unix-seconds when this rig first booted (≈ rig.startedAt).
+  const tsfc = Math.floor(rig.startedAt / 1000);
+
+  return {
+    rigname: `${rig.name} · ${rig.model}`,
+    rig: rig.model,
+    vers: rig.firmware,
+    versu: versuByFirmware[rig.firmware] ?? 'stable',
+    verst: verstShort,
+    shareData: true,
+    f: 0,
+    v: false,
+    tsfc,
+    comment: `${rig.location} · ${rig.algo}`,
+    active_clients: {},
+    // Article number ties the device to its model record in `rig_models`.
+    a: Number(MODEL_TO_ARTICLE.get(rig.model) ?? 1),
+  };
+};
 
 /** Snapshot of the konstant/{deviceId} config. */
 export const buildKonstant = (rig: RigProfile) => ({

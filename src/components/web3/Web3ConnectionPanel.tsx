@@ -1870,8 +1870,15 @@ const Web3ConnectionPanel: React.FC<ConnectionPanelProps> = ({
             </div>
           </div>
 
-          {/* Sub-bar: monitoring chips */}
-          <div className="border-t border-border/60 px-4 py-1.5 flex items-center gap-1.5 max-w-screen-2xl mx-auto overflow-x-auto">
+          {/* Sub-bar: monitoring chips — dev-only telemetry toggles, hidden
+              by default to keep the topbar clean for portfolio viewers.
+              Click the "Dev controls" chevron to expand. */}
+          <details className="border-t border-border/60 max-w-screen-2xl mx-auto group">
+            <summary className="list-none cursor-pointer px-4 py-1 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.14em] text-muted-foreground/60 hover:text-muted-foreground transition-colors">
+              <span>Dev controls</span>
+              <span className="text-[8px] transition-transform group-open:rotate-180">▾</span>
+            </summary>
+          <div className="border-t border-border/40 px-4 py-1.5 flex items-center gap-1.5 overflow-x-auto">
             <span className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground/70 mr-1 whitespace-nowrap">
               Monitoring
             </span>
@@ -1929,6 +1936,7 @@ const Web3ConnectionPanel: React.FC<ConnectionPanelProps> = ({
               {!alleWerteEnabled && kFromStore > 0 && 'App Only-Werte beobachten'}
             </div>
           </div>
+          </details>
         </header>
       )}
 

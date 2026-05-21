@@ -667,19 +667,18 @@ const RigManagementPanel: React.FC<RigManagementPanelProps> = ({
                       </div>
                     )}
                     
-                    {/* Update buttons - permission-gated */}
-                    <div className="grid grid-cols-1 gap-2">
+                    {/* Compact update controls — primary action becomes a
+                        small button; secondary (force / alternative) tuck
+                        into a chevron-expandable section so the panel
+                        stops feeling button-heavy. */}
+                    <div className="space-y-2">
                       {deviceMetadata.v ? (
                         <button
                           onClick={() => hasPermission('rigs.check_updates') && onFirmwareUpdate(false)}
                           disabled={!hasPermission('rigs.check_updates')}
-                          className={
-                            isNeo
-                              ? 'w-full px-3 py-2.5 bg-primary hover:bg-primary/80 text-primary-foreground rounded-lg text-xs font-semibold flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed shadow-theme-sm'
-                              : 'w-full px-3 py-2.5 bg-primary hover:bg-primary/80 text-primary-foreground rounded-lg text-xs font-semibold flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed shadow-theme-sm'
-                          }
+                          className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 text-xs font-medium transition-colors"
                         >
-                          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                           </svg>
                           {t('rig.installUpdate')}
@@ -687,87 +686,70 @@ const RigManagementPanel: React.FC<RigManagementPanelProps> = ({
                       ) : (
                         hasPermission('rigs.check_updates') && (
                           <button
-                            onClick={() => {
-                              if (onCheckForUpdates) {
-                                onCheckForUpdates();
-                              } else {
-                                console.warn('[RigManagement] onCheckForUpdates function not provided');
-                              }
-                            }}
-                            className={
-                              isNeo
-                                ? 'w-full px-3 py-2.5 bg-success hover:bg-success/80 text-success-foreground rounded-lg text-xs font-semibold flex items-center justify-center shadow-theme-sm'
-                                : 'w-full px-3 py-2.5 bg-success hover:bg-success/80 text-success-foreground rounded-lg text-xs font-semibold flex items-center justify-center shadow-theme-sm'
-                            }
+                            onClick={() => onCheckForUpdates?.()}
+                            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md border border-success/30 bg-success/10 text-success hover:bg-success/15 text-xs font-medium transition-colors"
                           >
-                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                             </svg>
                             {t('rig.checkUpdates')}
                           </button>
                         )
                       )}
-               
-                      {hasPermission('rigs.force_update') && (
-                        <button
-                          onClick={() => onFirmwareUpdate(true)}
-                          className={
-                            isNeo
-                              ? 'w-full px-3 py-2 text-destructive hover:bg-destructive/10 rounded-lg text-xs font-medium flex items-center justify-center border border-destructive/40'
-                              : 'w-full px-3 py-2 text-destructive hover:bg-destructive/10 rounded-lg text-xs font-medium flex items-center justify-center border border-destructive/40'
-                          }
-                        >
-                          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                          </svg>
-                          {t('rig.forceUpdate')}
-                        </button>
+
+                      {(hasPermission('rigs.force_update') || hasPermission('rigs.alternative_update')) && (
+                        <details className="rounded-md border border-border/60 bg-card/40 overflow-hidden group">
+                          <summary className="cursor-pointer list-none px-3 py-1.5 flex items-center justify-between text-[11px] text-muted-foreground hover:text-foreground transition-colors">
+                            <span className="inline-flex items-center gap-1.5">
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                              </svg>
+                              <span>Advanced firmware actions</span>
+                            </span>
+                            <span className="text-[8px] transition-transform group-open:rotate-180">▾</span>
+                          </summary>
+
+                          <div className="px-3 pb-3 pt-1 space-y-2 border-t border-border/40">
+                            {hasPermission('rigs.force_update') && (
+                              <button
+                                onClick={() => onFirmwareUpdate(true)}
+                                className="w-full inline-flex items-center justify-center gap-1.5 h-7 px-2.5 rounded-md border border-destructive/30 text-destructive hover:bg-destructive/10 text-[11px] font-medium transition-colors"
+                              >
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                                {t('rig.forceUpdate')}
+                              </button>
+                            )}
+
+                            {hasPermission('rigs.alternative_update') && (
+                              <div className="flex gap-1.5">
+                                <input
+                                  type="text"
+                                  value={alternativeUpdateFile}
+                                  onChange={(e) => setAlternativeUpdateFile(e.target.value)}
+                                  placeholder={t('rig.updateFilenamePlaceholder') as string}
+                                  className="flex-1 px-2 py-1 rounded-md border border-border bg-card text-[11px] text-foreground placeholder-muted-foreground focus:border-ring focus:ring-1 focus:ring-ring/40 transition-colors"
+                                  disabled={isAlternativeUpdating}
+                                />
+                                <button
+                                  onClick={() => handleAlternativeUpdate()}
+                                  disabled={!alternativeUpdateFile.trim() || isAlternativeUpdating}
+                                  className="inline-flex items-center gap-1 h-7 px-2.5 rounded-md border border-info/30 bg-info/10 text-info hover:bg-info/15 disabled:opacity-50 text-[11px] font-medium transition-colors"
+                                >
+                                  {isAlternativeUpdating ? (
+                                    <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
+                                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                    </svg>
+                                  ) : t('rig.update')}
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </details>
                       )}
                     </div>
-                    
-                    {/* Alternative Update Section (permission-gated) */}
-                    {hasPermission('rigs.alternative_update') && (
-                    <div className="space-y-2 pt-2 border-t border-border">
-                      <div className="flex items-center gap-1 mb-1">
-                        <svg className="w-3 h-3 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
-                        </svg>
-                        <span className="text-xs font-medium text-muted-foreground">{t('rig.alternativeUpdate')}</span>
-                      </div>
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={alternativeUpdateFile}
-                          onChange={(e) => setAlternativeUpdateFile(e.target.value)}
-                          placeholder={t('rig.updateFilenamePlaceholder') as string}
-                          className="flex-1 px-2 py-1.5 border border-border rounded-lg text-xs bg-muted text-foreground placeholder-muted-foreground focus:border-ring focus:ring-1 focus:ring-ring transition-colors"
-                          disabled={isAlternativeUpdating}
-                        />
-                        <button
-                          onClick={() => handleAlternativeUpdate()}
-                          disabled={!alternativeUpdateFile.trim() || isAlternativeUpdating}
-                          className="px-3 py-1.5 text-info hover:bg-info/10 disabled:bg-muted rounded-lg text-xs font-medium flex items-center justify-center border border-info/40 disabled:border-border disabled:cursor-not-allowed"
-                        >
-                          {isAlternativeUpdating ? (
-                            <>
-                              <svg className="animate-spin w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                              </svg>
-                              {t('rig.updating')}
-                            </>
-                          ) : (
-                            <>
-                              <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
-                              </svg>
-                              {t('rig.update')}
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                    )}
                   </div>
                 </div>
               </div>

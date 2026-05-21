@@ -16,6 +16,8 @@ import RigVitalsHero from './components/web3/RigVitalsHero';
 import ProfitabilityCard from './components/web3/ProfitabilityCard';
 import MiningAirflowVisualizer from './components/web3/MiningAirflowVisualizer';
 import MiningHealthPanel from './components/web3/MiningHealthPanel';
+import ReplayPanel from './components/web3/ReplayPanel';
+import AIOperatorAssistant from './components/web3/AIOperatorAssistant';
 import ParameterSettingsModal from './components/ParameterSettingsModal';
 import ParameterListModal from './components/ParameterListModal';
 import DevDebug from './components/DevDebug';
@@ -1526,6 +1528,8 @@ const App: React.FC = () => {
             <div className="space-y-2 sm:space-y-3">
               {useNewDesign && <RigVitalsHero />}
               {useNewDesign && <ProfitabilityCard />}
+              {useNewDesign && <AIOperatorAssistant />}
+              {useNewDesign && <ReplayPanel />}
               {renderSectionInOrder()}
 
               {/* Connection Status Info - Mobile responsive */}
