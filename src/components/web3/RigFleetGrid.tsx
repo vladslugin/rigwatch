@@ -37,6 +37,60 @@ const STATE_LABEL: Record<number, { label: string; tone: 'online' | 'warn' | 'of
   7: { label: 'Idle',        tone: 'warn' },
 };
 
+/**
+ * NFT-style rarity tier — applies a glow + border treatment to each card.
+ * Derived from the rig's static behavior profile so the visual is stable
+ * across telemetry ticks (a rig doesn't go from Legendary to Common just
+ * because its temperature rose by 1°C).
+ */
+type Rarity = 'legendary' | 'epic' | 'rare' | 'common' | 'offline';
+
+const rarityOf = (rig: RigProfile): Rarity => {
+  if (rig.behavior === 'offline') return 'offline';
+  if (rig.behavior === 'efficient') return 'legendary';
+  if (rig.behavior === 'stable') return 'epic';
+  if (rig.behavior === 'jittery' || rig.behavior === 'throttling') return 'rare';
+  return 'common'; // degraded
+};
+
+const RARITY_META: Record<Rarity, {
+  label: string;
+  textTone: string;
+  hoverHalo: string;   // background for the absolute halo on hover
+  topGlow: string;     // always-on subtle inner top glow
+}> = {
+  legendary: {
+    label: 'Legendary',
+    textTone: 'text-warning',
+    hoverHalo: 'radial-gradient(ellipse 90% 70% at 50% 0%, rgba(251, 191, 36, 0.22), transparent 60%)',
+    topGlow: 'radial-gradient(ellipse 100% 60% at 50% -10%, rgba(251, 191, 36, 0.10), transparent 70%)',
+  },
+  epic: {
+    label: 'Epic',
+    textTone: 'text-primary',
+    hoverHalo: 'radial-gradient(ellipse 90% 70% at 50% 0%, rgba(168, 85, 247, 0.22), transparent 60%)',
+    topGlow: 'radial-gradient(ellipse 100% 60% at 50% -10%, rgba(168, 85, 247, 0.10), transparent 70%)',
+  },
+  rare: {
+    label: 'Rare',
+    textTone: 'text-info',
+    hoverHalo: 'radial-gradient(ellipse 90% 70% at 50% 0%, rgba(34, 211, 238, 0.18), transparent 60%)',
+    topGlow: 'radial-gradient(ellipse 100% 60% at 50% -10%, rgba(34, 211, 238, 0.07), transparent 70%)',
+  },
+  common: {
+    label: 'Common',
+    textTone: 'text-muted-foreground',
+    hoverHalo: 'radial-gradient(ellipse 90% 70% at 50% 0%, rgba(148, 163, 184, 0.08), transparent 60%)',
+    topGlow: 'none',
+  },
+  offline: {
+    label: 'Inactive',
+    textTone: 'text-muted-foreground',
+    hoverHalo: 'radial-gradient(ellipse 90% 70% at 50% 0%, rgba(148, 163, 184, 0.06), transparent 60%)',
+    topGlow: 'none',
+  },
+};
+
 const formatHashrate = (value: number, algo: RigProfile['algo']): string => {
   if (algo === 'SHA-256') return `${value.toFixed(1)} TH/s`;
   if (algo === 'kHeavyHash') return `${value.toFixed(2)} GH/s`;
@@ -170,29 +224,52 @@ const RigCard: React.FC<{ card: RigCardData; onConnect: () => void }> = ({ card,
   const isThrottling = card.behavior === 'throttling' || card.rigState === 4;
   const isHot = card.temp >= 75;
 
+  const rarity = rarityOf(card);
+  const rarityMeta = RARITY_META[rarity];
+
+  // Legendary cards get an animated conic-gradient border; others get the
+  // static gradient hairline. The wrapper class chains determine which.
+  const borderClass = rarity === 'legendary'
+    ? 'gradient-border-rotating'
+    : rarity === 'epic' || rarity === 'rare'
+    ? 'gradient-border'
+    : '';
+
   return (
     <button
       type="button"
       onClick={onConnect}
-      className="group relative text-left rounded-2xl bg-card border border-border p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 overflow-hidden"
+      className={`group relative text-left rounded-2xl bg-card border border-border p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 overflow-hidden ${borderClass}`}
       style={{
         boxShadow: isOffline ? 'none' : '0 1px 0 rgba(255,255,255,0.04) inset',
       }}
     >
+      {/* Always-on top glow — picks up the rarity tone without animation. */}
+      {rarityMeta.topGlow !== 'none' && (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0 rounded-2xl"
+          style={{ background: rarityMeta.topGlow, zIndex: 0 }}
+        />
+      )}
+
       {/* Hover halo — sits behind everything via z-index, picks up the
-          violet glow on hover. */}
+          rarity-colored glow on hover. */}
       <span
         aria-hidden
         className="pointer-events-none absolute -inset-px rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-        style={{
-          background:
-            'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(168, 85, 247, 0.18), transparent 60%)',
-          zIndex: 0,
-        }}
+        style={{ background: rarityMeta.hoverHalo, zIndex: 0 }}
       />
 
+      {/* Rarity stamp — top-right corner, very small */}
+      <span
+        className={`pointer-events-none absolute top-2 right-2 z-20 text-[8px] uppercase tracking-[0.18em] font-medium ${rarityMeta.textTone}`}
+      >
+        {rarityMeta.label}
+      </span>
+
       {/* Header row — name + status pill */}
-      <div className="relative z-10 flex items-start justify-between gap-3">
+      <div className="relative z-10 flex items-start justify-between gap-3 pr-16">
         <div className="min-w-0">
           <div className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
             {card.algo}
@@ -203,7 +280,7 @@ const RigCard: React.FC<{ card: RigCardData; onConnect: () => void }> = ({ card,
             <span className="truncate">{card.model}</span>
           </div>
         </div>
-        <span className={`pill pill-${state.tone} shrink-0`}>{state.label}</span>
+        <span className={`pill pill-${state.tone} shrink-0 self-start mt-4`}>{state.label}</span>
       </div>
 
       {/* Headline metric */}

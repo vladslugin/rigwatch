@@ -46,6 +46,8 @@ import { Input } from '@/components/ui/input';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
 import { extractSeriennr } from '../../utils/seriennrResolver';
 import RigFleetGrid from './RigFleetGrid';
+import WalletButton from './WalletButton';
+import EarningsSheet from './EarningsSheet';
 
 interface FavoriteDevice {
   id: string;
@@ -101,6 +103,7 @@ const Web3ConnectionPanel: React.FC<ConnectionPanelProps> = ({
   const [showFirebaseConsole, setShowFirebaseConsole] = useState(false);
   const [showNotificationHistory, setShowNotificationHistory] = useState(false);
   const [showDocs, setShowDocs] = useState(false);
+  const [showEarnings, setShowEarnings] = useState(false);
 
   // Listen for shell-sidebar requests to open the Docs / User-Settings modals.
   // Sidebar lives in ShellLayout (no direct ref to this panel), so we use a
@@ -108,11 +111,14 @@ const Web3ConnectionPanel: React.FC<ConnectionPanelProps> = ({
   useEffect(() => {
     const openDocs = () => setShowDocs(true);
     const openSettings = () => setShowUserSettings(true);
+    const openEarnings = () => setShowEarnings(true);
     window.addEventListener('shell-open-docs', openDocs);
     window.addEventListener('shell-open-settings', openSettings);
+    window.addEventListener('shell-open-earnings', openEarnings);
     return () => {
       window.removeEventListener('shell-open-docs', openDocs);
       window.removeEventListener('shell-open-settings', openSettings);
+      window.removeEventListener('shell-open-earnings', openEarnings);
     };
   }, []);
 
@@ -1508,6 +1514,15 @@ const Web3ConnectionPanel: React.FC<ConnectionPanelProps> = ({
               </p>
             )}
 
+            {/* Wallet sign-in CTA — optional but surfaces the web3 affordance
+                immediately on the hero so operators see they can bind an
+                identity before connecting to any rig. */}
+            <div className="mt-5 flex items-center justify-center gap-2 text-xs text-muted-foreground">
+              <span>or</span>
+              <WalletButton variant="topbar" />
+              <span className="hidden sm:inline">to surface owned rigs</span>
+            </div>
+
             {/* Cleanup progress bar */}
             {isCleaningUp && (
               <div className="mt-4">
@@ -1816,6 +1831,8 @@ const Web3ConnectionPanel: React.FC<ConnectionPanelProps> = ({
                 )}
               </div>
 
+              <WalletButton variant="topbar" />
+
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
@@ -1827,7 +1844,7 @@ const Web3ConnectionPanel: React.FC<ConnectionPanelProps> = ({
                     <Power className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Trennen</TooltipContent>
+                <TooltipContent>Disconnect</TooltipContent>
               </Tooltip>
             </div>
           </div>
@@ -1923,6 +1940,7 @@ const Web3ConnectionPanel: React.FC<ConnectionPanelProps> = ({
       <TicketSystem isOpen={showTickets} onClose={() => setShowTickets(false)} />
       <KundenTicketsInbox isOpen={showKundenTickets} onClose={() => setShowKundenTickets(false)} />
       <DocsModal isOpen={showDocs} onClose={() => setShowDocs(false)} />
+      <EarningsSheet open={showEarnings} onClose={() => setShowEarnings(false)} />
       <NotificationHistory
         isOpen={showNotificationHistory}
         onClose={() => setShowNotificationHistory(false)}

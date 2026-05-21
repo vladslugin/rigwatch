@@ -1,6 +1,7 @@
 import {
   BarChart3,
   BookOpen,
+  Coins,
   Cpu,
   Flame,
   Layers,
@@ -103,6 +104,17 @@ export function ShellSidebar({ onOpenDocs, onOpenSettings }: ShellSidebarProps) 
           <SidebarGroupLabel>Tools</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  tooltip="Earnings"
+                  onClick={() => {
+                    window.dispatchEvent(new CustomEvent('shell-open-earnings'));
+                  }}
+                >
+                  <Coins />
+                  <span>Earnings</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
                   tooltip="Documentation"
