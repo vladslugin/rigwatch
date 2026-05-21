@@ -1,0 +1,213 @@
+/* Responsive enhancements (additive, CSS-only). Import LAST. */
+
+/* Note: Main spacing and radius variables are now in src/styles/themes.css
+   These legacy variables are kept for backward compatibility */
+:root {
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 24px;
+}
+
+@media (max-width: 1024px) {
+  html, body { line-height: 1.5; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  h1 { font-size: clamp(20px, 2.5vw, 28px); }
+  h2 { font-size: clamp(18px, 2vw, 24px); }
+  h3 { font-size: clamp(16px, 1.8vw, 20px); }
+}
+
+img, svg, canvas, video { max-width: 100%; height: auto; }
+
+* { -webkit-tap-highlight-color: transparent; }
+
+/* Improve tap targets on touch - min-height removed to avoid breaking compact ConnectionPanel UI buttons */
+
+/* Cards and panels (legacy) */
+@media (max-width: 1024px) {
+  .metric-card,
+  .stove-section,
+  .realtime-chart-component,
+  .bg-white.rounded-lg,
+  .bg-white.rounded-md {
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+/* Connection header sticky on mobile/tablet without touching desktop */
+@media (max-width: 1024px) {
+  .min-h-screen .max-w-full > .bg-gradient-to-br {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    box-shadow: var(--shadow-md);
+    backdrop-filter: saturate(120%) blur(2px);
+  }
+}
+
+/* Off-canvas sidebar pattern (only if such element exists) */
+@media (max-width: 1024px) {
+  .sidebar { position: fixed; inset: 0 auto 0 0; width: 280px; transform: translateX(-100%); transition: transform .25s ease; background: var(--tw-bg-opacity,1) !important; z-index: 70; }
+  .sidebar.is-open { transform: translateX(0); }
+}
+
+/* Content paddings */
+@media (max-width: 1024px) {
+  .content { padding: var(--space-5) var(--space-4); }
+}
+
+/* Parameter grid: enforce single column on mobile & tablet (<=1024px) */
+@media (max-width: 1024px) {
+  /* strongest override: target inline style too */
+  .parameter-grid .gap-3 { display: grid !important; grid-template-columns: 1fr !important; gap: var(--space-4) !important; }
+  .parameter-grid [style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+}
+
+/* CategoriesModal parameter list items: ensure wrapping and full width on small screens */
+@media (max-width: 1024px) {
+  .fixed.inset-0 .flex.items-center.min-w-0 { flex-wrap: nowrap; }
+  .fixed.inset-0 .flex.items-center.min-w-0 .min-w-0 { min-width: 0; }
+  .fixed.inset-0 .flex.items-center.min-w-0 .truncate { max-width: 70vw; }
+}
+
+/* ParameterCard editing input: full width on mobile */
+@media (max-width: 1024px) {
+  .parameter-grid .metric-card input[type="text"] { width: 100% !important; }
+}
+
+/* Ensure parameter tiles wrap long content nicely */
+.metric-card { overflow-wrap: anywhere; }
+
+/* Tables: horizontal scroll on small screens */
+.overflow-x-auto { -webkit-overflow-scrolling: touch; }
+.overflow-x-auto table { min-width: 640px; }
+
+/* Secondary categories rows: 1 col on phones, 2 cols on tablets */
+@media (max-width: 576px) {
+  [data-section="secondary-categories"] .grid { grid-template-columns: 1fr !important; }
+  [data-section="secondary-categories"] .grid.grid-cols-3 { grid-template-columns: 1fr !important; }
+}
+@media (min-width: 577px) and (max-width: 1024px) {
+  [data-section="secondary-categories"] .grid { grid-template-columns: 1fr 1fr !important; }
+  [data-section="secondary-categories"] .grid.grid-cols-3 { grid-template-columns: 1fr 1fr !important; }
+}
+
+/* Chart container sizing per breakpoint (override inline height safely).
+   Phone (≤576px): keep the chart compact so the parameter cards above it
+   stay visible without an extra scroll. Tablet (577–1024): mid-height.
+   Desktop (≥1025): no override, let the inline style decide. */
+@media (max-width: 576px) {
+  .realtime-chart-component .relative { height: 240px !important; min-height: 240px; }
+}
+@media (min-width: 577px) and (max-width: 1024px) {
+  .realtime-chart-component .relative { height: 300px !important; min-height: 300px; }
+}
+
+/* Tooltip/readouts: avoid overflow */
+.info-panel, .tooltip, [class*="tooltip"] {
+  max-width: min(92vw, 560px);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* Make ControlsBar visible on mobile/tablet without JSX changes */
+@media (max-width: 1024px) {
+  .realtime-chart-component .hidden.lg\:flex { display: flex !important; flex-direction: column; gap: 8px; }
+}
+
+/* Modals: full-screen/bottom-sheet experience on mobile */
+@media (max-width: 576px) {
+  .fixed.inset-0 > div {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    max-height: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+  }
+  .fixed.inset-0 .p-6 { padding: var(--space-5) !important; }
+}
+
+/* Safe area for bottom actions */
+.bottom-actions { padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
+
+/* StoveInfoModal responsive improvements */
+@media (max-width: 1024px) {
+  /* Header improvements for mobile */
+  .stove-info-modal .sticky { padding: var(--space-4) var(--space-3); }
+  .stove-info-modal h2 { font-size: clamp(18px, 4vw, 24px); }
+  
+  /* Card layout - force single column on mobile/tablet */
+  .stove-info-modal .grid.lg\:grid-cols-2 { grid-template-columns: 1fr !important; }
+  
+  /* Improve model image display */
+  .stove-info-modal .sm\:flex-row { flex-direction: column !important; }
+  .stove-info-modal .sm\:w-36 { width: 100% !important; max-width: 200px; margin: 0 auto; }
+  
+  /* Enhance button groups */
+  .stove-info-modal .flex-wrap { gap: var(--space-2); }
+  .stove-info-modal button { min-height: 44px; }
+  
+  /* Improve input field touch targets */
+  .stove-info-modal input, .stove-info-modal textarea { 
+    min-height: 44px; 
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+  
+  /* Better spacing for action buttons */
+  .stove-info-modal .gap-2 { gap: var(--space-3); }
+  .stove-info-modal .gap-3 { gap: var(--space-4); }
+}
+
+@media (max-width: 576px) {
+  /* Mobile-first enhancements */
+  .stove-info-modal .p-6 { padding: var(--space-4) !important; }
+  .stove-info-modal .space-y-6 > * + * { margin-top: var(--space-4) !important; }
+  
+  /* Simplify metadata chips for very small screens */
+  .stove-info-modal .flex-wrap .inline-flex { 
+    font-size: 11px; 
+    padding: 4px 8px; 
+  }
+  
+  /* Stack action buttons vertically on phones */
+  .stove-info-modal .flex.flex-wrap { 
+    flex-direction: column; 
+    align-items: stretch; 
+  }
+  .stove-info-modal .flex.flex-wrap button { 
+    width: 100%; 
+    justify-content: center; 
+  }
+  
+  /* Improve ping history on mobile */
+  .stove-info-modal .space-y-2 .flex { 
+    font-size: 12px; 
+    padding: 8px 12px; 
+  }
+}
+
+/* Accessibility: respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .stove-info-modal {
+    --shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  .stove-info-modal .border { border-width: 2px; }
+  .stove-info-modal .text-gray-500 { color: #666 !important; }
+  .stove-info-modal .text-gray-400 { color: #777 !important; }
+}
+
+/* Focus management for modal */
+.stove-info-modal [role="dialog"] {
+  focus-trap: true;
+}
+.stove-info-modal button:focus-visible,
+.stove-info-modal input:focus-visible,
+.stove-info-modal textarea:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+

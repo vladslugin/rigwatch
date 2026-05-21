@@ -1,0 +1,233 @@
+/* 
+ * HASE IQ - Main Stylesheet
+ * All @import statements must come first!
+ */
+
+@import './styles/themes.css';
+@import './styles/dealerTints.css';
+@import './responsive.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ═══════════════════════════════════════════════════════════════════════
+   BASE STYLES
+   ═══════════════════════════════════════════════════════════════════════ */
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PARAMETER CARDS
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.metric-card {
+  opacity: var(--user-opacity, 1);
+  transition: all var(--transition-normal);
+  background-color: var(--card);
+  color: var(--card-foreground);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.non-favorite-card:hover {
+  opacity: 1 !important;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Alarm opacity override */
+.alarm-opacity-override {
+  opacity: 1 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PARAMETER SEARCH HIGHLIGHT
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.parameter-highlight {
+  position: relative;
+  z-index: 10;
+}
+
+@keyframes parameterPulse {
+  0% {
+    box-shadow: 0 0 0 3px oklch(var(--primary) / 0.3), 0 0 15px oklch(var(--primary) / 0.2);
+    transform: scale(1.02);
+  }
+  50% {
+    box-shadow: 0 0 0 3px oklch(var(--primary) / 0.8), 0 0 30px oklch(var(--primary) / 0.6);
+    transform: scale(1.03);
+  }
+  100% {
+    box-shadow: 0 0 0 3px oklch(var(--primary) / 0.3), 0 0 15px oklch(var(--primary) / 0.2);
+    transform: scale(1.02);
+  }
+}
+
+.parameter-highlight-pulse {
+  animation: parameterPulse 0.5s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MODALS
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@keyframes modalSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-enter {
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ALARMS
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.alarm-highlight-high {
+  animation: alarm-pulse-high 1s ease-in-out infinite alternate;
+}
+
+.alarm-highlight-low {
+  animation: alarm-pulse-low 1s ease-in-out infinite alternate;
+}
+
+@keyframes alarm-pulse-high {
+  0% {
+    box-shadow: 0 0 0 2px var(--alarm-pulse), 0 0 15px var(--alarm-pulse);
+    transform: scale(1.01);
+  }
+  100% {
+    box-shadow: 0 0 0 3px var(--alarm-high), 0 0 25px var(--alarm-pulse);
+    transform: scale(1.03);
+  }
+}
+
+@keyframes alarm-pulse-low {
+  0% {
+    box-shadow: 0 0 0 2px var(--alarm-pulse), 0 0 15px var(--alarm-pulse);
+    transform: scale(1.01);
+  }
+  100% {
+    box-shadow: 0 0 0 3px var(--alarm-low), 0 0 25px var(--alarm-pulse);
+    transform: scale(1.03);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SCROLLBARS
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--muted);
+  border-radius: var(--radius-sm);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--muted-foreground);
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--muted);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--foreground);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--muted-foreground) var(--muted);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   UTILITY CLASSES
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Class to disable transitions during theme change (prevents "flashes") */
+.no-transitions * {
+  transition: none !important;
+}
+
+/* Focus ring */
+.focus-ring:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+/* 
+ ---break---
+ */
+@layer base {
+  :root {
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+  .dark {
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}

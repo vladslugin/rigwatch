@@ -1,0 +1,9 @@
+# Ignore all CSV data files
+*.csv
+
+# Allow example files
+!example-*.csv
+!README.md
+
+# But keep this directory structure
+!.gitignore

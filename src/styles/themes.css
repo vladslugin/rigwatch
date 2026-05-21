@@ -1,0 +1,724 @@
+/*
+ * HASE IQ Theme System
+ * =====================
+ * Centralized theme system with CSS variables.
+ * To add a new theme, create a new block [data-theme="theme-name"]
+ * 
+ * Color format: oklch(lightness chroma hue)
+ * - lightness: 0-1 (0 = black, 1 = white)
+ * - chroma: 0-0.4 (saturation, 0 = gray)
+ * - hue: 0-360 (hue on color wheel)
+ */
+
+:root {
+  /* ═══════════════════════════════════════════════════════════════════
+     LIGHT THEME (default) - Classic HASE blue-gray style
+     ═══════════════════════════════════════════════════════════════════ */
+
+  /* --- Main backgrounds ---
+     The page now has a very soft radial-gradient overlay on top of the
+     solid background. The gradient is intentionally subtle: dealers do
+     not consciously perceive it, but the brain reads "depth" instead of
+     a flat colour wash. Feel mirrors the dashboards from Linear/Vercel
+     without crossing into "designed-looking". */
+  --background: #f8fafc;
+  --background-image:
+    radial-gradient(ellipse 1100px 520px at 50% -180px, rgba(99, 102, 241, 0.06), transparent 60%),
+    radial-gradient(ellipse 800px 400px at 100% 100%, rgba(168, 85, 247, 0.035), transparent 55%);
+  --foreground: #0f172a;
+  
+  /* --- Cards and panels --- */
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  
+  /* --- Popovers and dropdowns --- */
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  
+  /* --- Primary accent color --- */
+  --primary: #1d4ed8;
+  --primary-foreground: #ffffff;
+  
+  /* --- Secondary color --- */
+  --secondary: #f1f5f9;
+  --secondary-foreground: #475569;
+  
+  /* --- Muted elements --- */
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  
+  /* --- Accent (for hover and highlights) --- */
+  --accent: #f1f5f9;
+  --accent-foreground: #0f172a;
+  
+  /* --- Destructive actions (delete, errors) --- */
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  
+  /* --- Success --- */
+  --success: #16a34a;
+  --success-foreground: #ffffff;
+  
+  /* --- Warning --- */
+  --warning: #d97706;
+  --warning-foreground: #ffffff;
+  
+  /* --- Info --- */
+  --info: #2563eb;
+  --info-foreground: #ffffff;
+  
+  /* --- Borders and inputs ---
+     Borders are intentionally a tick lighter than the previous slate-200
+     so cards feel like they sit on top of the page rather than being
+     hard-fenced. Opacity modifiers (`border-border/40` etc.) keep
+     working because the colour stays a solid hex. */
+  --border: #e8edf3;
+  --input: #e2e8f0;
+  --ring: #1d4ed8;
+
+  /* --- Chart colors --- */
+  --chart-1: #2563eb;
+  --chart-2: #16a34a;
+  --chart-3: #eab308;
+  --chart-4: #dc2626;
+  --chart-5: #8b5cf6;
+  
+  /* --- Sidebar / navigation --- */
+  --sidebar: #f8fafc;
+  --sidebar-foreground: #0f172a;
+  --sidebar-primary: #1d4ed8;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f1f5f9;
+  --sidebar-accent-foreground: #0f172a;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #0f172a;
+  
+  /* --- Section headers (dark header style) --- */
+  --section-header: #1e293b;
+  --section-header-foreground: #f8fafc;
+  
+  /* --- Terminal --- */
+  --terminal: #111827;
+  --terminal-foreground: #f3f4f6;
+  --terminal-header: #1f2937;
+  --terminal-border: #374151;
+  --terminal-prompt: #22c55e;
+  --terminal-command: #60a5fa;
+  --terminal-error: #f87171;
+  --terminal-success: #22c55e;
+  --terminal-warning: #fbbf24;
+  
+  /* --- Connection status --- */
+  --status-online: #22c55e;
+  --status-offline: #ef4444;
+  --status-connecting: #eab308;
+  
+  /* --- Alarms --- */
+  --alarm-high: #dc2626;
+  --alarm-low: #f87171;
+  --alarm-pulse: rgba(220, 38, 38, 0.3);
+  
+  /* ═══════════════════════════════════════════════════════════════════
+     TYPOGRAPHY
+     ═══════════════════════════════════════════════════════════════════ */
+  
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, monospace;
+  --font-serif: Georgia, Cambria, 'Times New Roman', Times, serif;
+  
+  /* ═══════════════════════════════════════════════════════════════════
+     BORDER RADIUS (classic rounded corners)
+     ═══════════════════════════════════════════════════════════════════ */
+  
+  --radius: 0.5rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-full: 9999px;
+  
+  /* ═══════════════════════════════════════════════════════════════════
+     SHADOWS
+     ═══════════════════════════════════════════════════════════════════ */
+  
+  /* Multi-layered shadows: a tight close-shadow + a softer, wider one.
+     Reads as "the card is floating above the page" instead of "the card
+     has a drop shadow". Numbers chosen empirically against the gradient
+     background — too dark looks heavy, too pale disappears. */
+  --shadow-color: rgba(15, 23, 42, 0.05);
+  --shadow-2xs: 0 1px 1px rgba(15, 23, 42, 0.04);
+  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.03);
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 10px rgba(15, 23, 42, 0.04);
+  --shadow: 0 2px 4px rgba(15, 23, 42, 0.04), 0 8px 18px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 4px 8px rgba(15, 23, 42, 0.05), 0 12px 24px rgba(15, 23, 42, 0.06);
+  --shadow-lg: 0 6px 12px rgba(15, 23, 42, 0.06), 0 20px 40px rgba(15, 23, 42, 0.07);
+  --shadow-xl: 0 10px 20px rgba(15, 23, 42, 0.07), 0 30px 60px rgba(15, 23, 42, 0.09);
+  --shadow-2xl: 0 16px 32px rgba(15, 23, 42, 0.08), 0 48px 80px rgba(15, 23, 42, 0.12);
+  
+  /* ═══════════════════════════════════════════════════════════════════
+     SPACING
+     ═══════════════════════════════════════════════════════════════════ */
+  
+  --spacing-unit: 0.25rem;
+  --spacing-xs: calc(var(--spacing-unit) * 1);
+  --spacing-sm: calc(var(--spacing-unit) * 2);
+  --spacing-md: calc(var(--spacing-unit) * 3);
+  --spacing-lg: calc(var(--spacing-unit) * 4);
+  --spacing-xl: calc(var(--spacing-unit) * 6);
+  --spacing-2xl: calc(var(--spacing-unit) * 8);
+  
+  /* ═══════════════════════════════════════════════════════════════════
+     ANIMATIONS
+     ═══════════════════════════════════════════════════════════════════ */
+  
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 350ms ease;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   DARK THEME
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.dark {
+  /* --- Main backgrounds ---
+     Same idea as light theme: a barely-visible radial glow on top of the
+     deep slate base. In dark mode the gradient is a touch stronger
+     because the eye picks up less subtle differences in dark scenes. */
+  --background: #0f172a;
+  --background-image:
+    radial-gradient(ellipse 1100px 520px at 50% -180px, rgba(59, 130, 246, 0.08), transparent 60%),
+    radial-gradient(ellipse 800px 400px at 100% 100%, rgba(168, 85, 247, 0.05), transparent 55%);
+  --foreground: #f1f5f9;
+  
+  /* --- Cards and panels --- */
+  --card: #1e293b;
+  --card-foreground: #f1f5f9;
+  
+  /* --- Popovers and dropdowns --- */
+  --popover: #1e293b;
+  --popover-foreground: #f1f5f9;
+  
+  /* --- Primary accent color (light for dark theme) --- */
+  --primary: #3b82f6;
+  --primary-foreground: #ffffff;
+  
+  /* --- Secondary color --- */
+  --secondary: #1e293b;
+  --secondary-foreground: #cbd5e1;
+  
+  /* --- Muted elements --- */
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  
+  /* --- Accent (for hover and highlights) --- */
+  --accent: #334155;
+  --accent-foreground: #f1f5f9;
+  
+  /* --- Destructive actions --- */
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  
+  /* --- Success --- */
+  --success: #22c55e;
+  --success-foreground: #0f172a;
+  
+  /* --- Warning --- */
+  --warning: #f59e0b;
+  --warning-foreground: #0f172a;
+  
+  /* --- Info --- */
+  --info: #3b82f6;
+  --info-foreground: #ffffff;
+  
+  /* --- Borders and inputs ---
+     Slightly darker than slate-700 so the border blends with the card
+     instead of fencing it. Still solid hex so opacity modifiers work. */
+  --border: #2a3447;
+  --input: #334155;
+  --ring: #3b82f6;
+
+  /* --- Chart colors (brighter for dark theme) --- */
+  --chart-1: #3b82f6;
+  --chart-2: #22c55e;
+  --chart-3: #eab308;
+  --chart-4: #ef4444;
+  --chart-5: #a78bfa;
+  
+  /* --- Sidebar / navigation --- */
+  --sidebar: #0f172a;
+  --sidebar-foreground: #f1f5f9;
+  --sidebar-primary: #3b82f6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #334155;
+  --sidebar-accent-foreground: #f1f5f9;
+  --sidebar-border: #334155;
+  --sidebar-ring: #94a3b8;
+  
+  /* --- Section headers --- */
+  --section-header: #1e293b;
+  --section-header-foreground: #f1f5f9;
+  
+  /* --- Terminal --- */
+  --terminal: #0f172a;
+  --terminal-foreground: #e5e7eb;
+  --terminal-header: #1e293b;
+  --terminal-border: #334155;
+  --terminal-prompt: #4ade80;
+  --terminal-command: #60a5fa;
+  --terminal-error: #f87171;
+  --terminal-success: #4ade80;
+  --terminal-warning: #fbbf24;
+  
+  /* --- Connection status --- */
+  --status-online: #4ade80;
+  --status-offline: #f87171;
+  --status-connecting: #fbbf24;
+  
+  /* --- Alarms --- */
+  --alarm-high: #ef4444;
+  --alarm-low: #f87171;
+  --alarm-pulse: rgba(239, 68, 68, 0.4);
+  
+  /* --- Shadows (multi-layered, slightly softer than v1) ---
+     Dark theme keeps a touch of light "halo" on top of the standard drop
+     to suggest the card surface catches the gradient glow. Both layers
+     stay subtle so the cards still read as solid panels, not glass. */
+  --shadow-color: rgba(0, 0, 0, 0.35);
+  --shadow-2xs: 0 1px 1px rgba(0, 0, 0, 0.25);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25), 0 4px 10px rgba(0, 0, 0, 0.25);
+  --shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 8px 18px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.3), 0 14px 28px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 6px 12px rgba(0, 0, 0, 0.35), 0 22px 44px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 10px 20px rgba(0, 0, 0, 0.4), 0 32px 64px rgba(0, 0, 0, 0.45);
+  --shadow-2xl: 0 16px 32px rgba(0, 0, 0, 0.45), 0 48px 80px rgba(0, 0, 0, 0.55);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   NEO BRUTALISM THEME
+   ═══════════════════════════════════════════════════════════════════════
+   Features:
+   - Hard offset shadows
+   - Zero border radius
+   - Bright contrasting colors
+   - Sharp black borders
+*/
+
+[data-theme="neo-brutalism"] {
+  /* --- Main backgrounds ---
+     Neo-brutalism deliberately rejects the depth/gradient look — we
+     blank the gradient explicitly so the global rule does not bleed
+     glow into the brutalist canvas. */
+  --background: #ffffff;
+  --background-image: none;
+  --foreground: #000000;
+  
+  /* --- Cards and panels --- */
+  --card: #ffffff;
+  --card-foreground: #000000;
+  
+  /* --- Popovers --- */
+  --popover: #ffffff;
+  --popover-foreground: #000000;
+  
+  /* --- Primary accent (bright red) --- */
+  --primary: #ff3333;
+  --primary-foreground: #ffffff;
+  --primary-foreground-strong: #000000;
+  
+  /* --- Secondary (yellow) --- */
+  --secondary: #ffff00;
+  --secondary-foreground: #000000;
+  
+  /* --- Muted --- */
+  --muted: #f0f0f0;
+  --muted-foreground: #333333;
+  
+  /* --- Accent (blue) --- */
+  --accent: #0066ff;
+  --accent-foreground: #ffffff;
+  
+  /* --- Destructive --- */
+  --destructive: #ff3333;
+  --destructive-foreground: #ffffff;
+  /* --- Destructive --- */
+  --destructive: #ff3333;
+  --destructive-foreground: #000000;
+  
+  /* --- Success --- */
+  --success: #00cc00;
+  --success-foreground: #ffffff;
+  
+  /* --- Warning --- */
+  --warning: #ffcc00;
+  --warning-foreground: #000000;
+  
+  /* --- Info --- */
+  --info: #0066ff;
+  --info-foreground: #ffffff;
+  
+  /* --- Borders (hard black) --- */
+  --border: #000000;
+  --input: #000000;
+  --ring: #ff3333;
+  
+  /* --- Chart colors (bright) --- */
+  --chart-1: #ff3333;
+  --chart-2: #ffff00;
+  --chart-3: #0066ff;
+  --chart-4: #00cc00;
+  --chart-5: #cc00cc;
+  
+  /* --- Sidebar --- */
+  --sidebar: #f0f0f0;
+  --sidebar-foreground: #000000;
+  --sidebar-primary: #ff3333;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #0066ff;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #000000;
+  --sidebar-ring: #ff3333;
+  
+  /* --- Section headers (contrasting black) --- */
+  --section-header: #000000;
+  --section-header-foreground: #ffffff;
+  
+  /* --- Terminal (contrasting) --- */
+  --terminal: #000000;
+  --terminal-foreground: #ffffff;
+  --terminal-header: #333333;
+  --terminal-border: #ffffff;
+  --terminal-prompt: #00ff00;
+  --terminal-command: #00ffff;
+  --terminal-error: #ff3333;
+  --terminal-success: #00ff00;
+  --terminal-warning: #ffff00;
+  
+  /* --- Status --- */
+  --status-online: #00cc00;
+  --status-offline: #ff3333;
+  --status-connecting: #ffff00;
+  
+  /* --- Alarms --- */
+  --alarm-high: #ff3333;
+  --alarm-low: #ff6666;
+  --alarm-pulse: rgba(255, 51, 51, 0.3);
+  
+  /* --- Typography (DM Sans + Space Mono) --- */
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'Space Mono', 'Courier New', monospace;
+  --font-serif: ui-serif, Georgia, Cambria, 'Times New Roman', serif;
+  
+  /* --- ZERO radius (key feature) --- */
+  --radius: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-full: 0px;
+  
+  /* --- HARD SHADOWS with offset (key feature) --- */
+  --shadow-color: #000000;
+  --shadow-2xs: 4px 4px 0px 0px rgba(0, 0, 0, 0.5);
+  --shadow-xs: 4px 4px 0px 0px rgba(0, 0, 0, 0.5);
+  --shadow-sm: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+  --shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+  --shadow-md: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+  --shadow-lg: 6px 6px 0px 0px rgba(0, 0, 0, 1);
+  --shadow-xl: 8px 8px 0px 0px rgba(0, 0, 0, 1);
+  --shadow-2xl: 10px 10px 0px 0px rgba(0, 0, 0, 1);
+}
+
+[data-theme="neo-brutalism"].dark {
+  /* --- Main backgrounds --- */
+  --background: #000000;
+  --background-image: none;
+  --foreground: #ffffff;
+  
+  /* --- Cards --- */
+  --card: #333333;
+  --card-foreground: #ffffff;
+  
+  /* --- Popovers --- */
+  --popover: #333333;
+  --popover-foreground: #ffffff;
+  
+  /* --- Primary accent (brighter for dark) --- */
+  --primary: #ff6666;
+  --primary-foreground: #000000;
+  
+  /* --- Secondary --- */
+  --secondary: #ffff33;
+  --secondary-foreground: #000000;
+  
+  /* --- Muted --- */
+  --muted: #1a1a1a;
+  --muted-foreground: #cccccc;
+  
+  /* --- Accent --- */
+  --accent: #3399ff;
+  --accent-foreground: #000000;
+  
+  /* --- Destructive --- */
+  --destructive: #ffffff;
+  --destructive-foreground: #000000;
+  
+  /* --- Success --- */
+  --success: #33cc33;
+  --success-foreground: #000000;
+  
+  /* --- Warning --- */
+  --warning: #ffff33;
+  --warning-foreground: #000000;
+  
+  /* --- Info --- */
+  --info: #3399ff;
+  --info-foreground: #000000;
+  
+  /* --- Borders (white for dark theme) --- */
+  --border: #ffffff;
+  --input: #ffffff;
+  --ring: #ff6666;
+  
+  /* --- Chart colors --- */
+  --chart-1: #ff6666;
+  --chart-2: #ffff33;
+  --chart-3: #3399ff;
+  --chart-4: #33cc33;
+  --chart-5: #cc33cc;
+  
+  /* --- Sidebar --- */
+  --sidebar: #000000;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #ff6666;
+  --sidebar-primary-foreground: #000000;
+  --sidebar-accent: #3399ff;
+  --sidebar-accent-foreground: #000000;
+  --sidebar-border: #ffffff;
+  --sidebar-ring: #ff6666;
+  
+  /* --- Section headers --- */
+  --section-header: #333333;
+  --section-header-foreground: #ffffff;
+  
+  /* --- Terminal --- */
+  --terminal: #000000;
+  --terminal-foreground: #ffffff;
+  --terminal-header: #1a1a1a;
+  --terminal-border: #ffffff;
+  --terminal-prompt: #33ff33;
+  --terminal-command: #33ffff;
+  --terminal-error: #ff6666;
+  --terminal-success: #33ff33;
+  --terminal-warning: #ffff33;
+  
+  /* --- Status --- */
+  --status-online: #33cc33;
+  --status-offline: #ff6666;
+  --status-connecting: #ffff33;
+  
+  /* --- Alarms --- */
+  --alarm-high: #ff6666;
+  --alarm-low: #ff9999;
+  --alarm-pulse: rgba(255, 102, 102, 0.4);
+  
+  /* --- Shadows (white for contrast) --- */
+  --shadow-2xs: 4px 4px 0px 0px rgba(255, 255, 255, 0.3);
+  --shadow-xs: 4px 4px 0px 0px rgba(255, 255, 255, 0.3);
+  --shadow-sm: 4px 4px 0px 0px rgba(255, 255, 255, 0.5);
+  --shadow: 4px 4px 0px 0px rgba(255, 255, 255, 0.5);
+  --shadow-md: 4px 4px 0px 0px rgba(255, 255, 255, 0.5);
+  --shadow-lg: 6px 6px 0px 0px rgba(255, 255, 255, 0.5);
+  --shadow-xl: 8px 8px 0px 0px rgba(255, 255, 255, 0.5);
+  --shadow-2xl: 10px 10px 0px 0px rgba(255, 255, 255, 0.5);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   WEB3 MODERN THEME (dark-only)
+   ═══════════════════════════════════════════════════════════════════════
+   Features:
+   - Deep near-black backgrounds with electric blue / cyan accents
+   - Soft aurora gradient behind cards
+   - Geist typography
+   - Slightly softer radii than the classic default
+   - Includes HSL-channel sidebar overrides for the shadcn sidebar
+     component (variables defined in src/index.css @layer base)
+*/
+
+[data-theme="web3-modern"] {
+  /* --- Main backgrounds (deepest → elevated) ---
+     Flat dark — no aurora gradient. The earlier radial-gradient aurora
+     gave the main content area a blue cast that did not match the pure-dark
+     sidebar; removing it makes the whole shell read as one uniform surface. */
+  --background: #08090C;
+  --background-image: none;
+  --foreground: #ECEDEE;
+  --foreground-secondary: #9BA1AD;
+
+  /* --- Cards and panels --- */
+  --card: #0E1014;
+  --card-foreground: #ECEDEE;
+
+  /* --- Popovers and dropdowns --- */
+  --popover: #14171D;
+  --popover-foreground: #ECEDEE;
+
+  /* --- Primary accent — sky-cyan blend, less generic than pure blue --- */
+  --primary: #0EA5E9;
+  --primary-foreground: #001827;
+
+  /* --- Secondary (deeper cyan, supporting role) --- */
+  --secondary: #06B6D4;
+  --secondary-foreground: #03161B;
+
+  /* --- Muted elements --- */
+  --muted: #14171D;
+  --muted-foreground: #9BA1AD;
+
+  /* --- Accent (hover / highlights) --- */
+  --accent: #1B1F27;
+  --accent-foreground: #ECEDEE;
+
+  /* --- Destructive (rose, not pure red) --- */
+  --destructive: #F43F5E;
+  --destructive-foreground: #FFFFFF;
+
+  /* --- Success --- */
+  --success: #22C55E;
+  --success-foreground: #03150A;
+
+  /* --- Warning --- */
+  --warning: #F59E0B;
+  --warning-foreground: #1A1304;
+
+  /* --- Info --- */
+  --info: #38BDF8;
+  --info-foreground: #03161B;
+
+  /* --- Borders and inputs --- */
+  --border: #1F232C;
+  --input: #1F232C;
+  --ring: #3B82F6;
+
+  /* --- Chart series (legible on #08090C) --- */
+  --chart-1: #3B82F6;
+  --chart-2: #06B6D4;
+  --chart-3: #22C55E;
+  --chart-4: #F59E0B;
+  --chart-5: #EC4899;
+
+  /* --- Section headers --- */
+  --section-header: #0E1014;
+  --section-header-foreground: #ECEDEE;
+
+  /* --- Terminal (cool palette) --- */
+  --terminal: #06080C;
+  --terminal-foreground: #E5E7EB;
+  --terminal-header: #0E1014;
+  --terminal-border: #1F232C;
+  --terminal-prompt: #38BDF8;
+  --terminal-command: #ECEDEE;
+  --terminal-error: #F87171;
+  --terminal-success: #4ADE80;
+  --terminal-warning: #FBBF24;
+
+  /* --- Connection status --- */
+  --status-online: #22C55E;
+  --status-offline: #F43F5E;
+  --status-connecting: #F59E0B;
+
+  /* --- Alarms --- */
+  --alarm-high: #F43F5E;
+  --alarm-low: #F59E0B;
+  --alarm-pulse: rgba(244, 63, 94, 0.4);
+
+  /* --- Typography (Geist primary) --- */
+  --font-sans: "Geist", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
+  --font-serif: "Geist", serif;
+
+  /* --- Border radius (slightly softer) --- */
+  --radius: 0.75rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1.25rem;
+  --radius-full: 9999px;
+
+  /* --- Sidebar (shadcn HSL-channel format) ---
+     The shadcn sidebar component reads these via hsl(var(--sidebar-*)),
+     so the values must be space-separated H S% L% channels, not hex.
+     Defined here so the web3-modern theme overrides the base values
+     declared in src/index.css @layer base. */
+  --sidebar-background: 220 18% 5%;
+  --sidebar-foreground: 220 9% 70%;
+  --sidebar-primary: 217 91% 60%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 217 33% 12%;
+  --sidebar-accent-foreground: 0 0% 93%;
+  --sidebar-border: 218 11% 14%;
+  --sidebar-ring: 217 91% 60%;
+}
+
+/* Web3 modern is dark-only — when the `.dark` class is also present we
+   keep the same values so the theme stays consistent regardless of mode. */
+.dark[data-theme="web3-modern"] {
+  --sidebar-background: 220 18% 5%;
+  --sidebar-foreground: 220 9% 70%;
+  --sidebar-primary: 217 91% 60%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 217 33% 12%;
+  --sidebar-accent-foreground: 0 0% 93%;
+  --sidebar-border: 218 11% 14%;
+  --sidebar-ring: 217 91% 60%;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   UTILITY CLASSES FOR CSS VARIABLES
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Base styles applied to :root.
+   `background-image` is paired with `background-attachment: fixed` so the
+   gradient stays anchored to the viewport — scrolling the page does not
+   drag the glow with it, preventing a "moving wallpaper" feeling. */
+:root {
+  background-color: var(--background);
+  background-image: var(--background-image, none);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Smooth transitions on theme change */
+*,
+*::before,
+*::after {
+  transition: background-color var(--transition-fast), 
+              border-color var(--transition-fast),
+              color var(--transition-fast);
+}
+
+/* Disable transition for elements where it interferes */
+.no-theme-transition,
+.no-theme-transition *,
+.no-theme-transition *::before,
+.no-theme-transition *::after {
+  transition: none !important;
+}
+
+/* Utility to disable transitions during theme switch */
+.no-transitions,
+.no-transitions *,
+.no-transitions *::before,
+.no-transitions *::after {
+  transition: none !important;
+}
