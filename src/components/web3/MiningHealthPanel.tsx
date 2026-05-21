@@ -38,16 +38,22 @@ const hashString = (s: string): number => {
   return h;
 };
 
+// 4-stop colour ramp — matches the airflow visualizer so the heatmap
+// and the cooling diagram speak the same colour language. Stops chosen
+// so hardware-operator-relevant bands (cool / warm / hot / critical) are
+// visually distinct rather than smooth gradients of one tone.
 const tempToColor = (c: number): string => {
-  const t = Math.max(0, Math.min(1, (c - 45) / 40));
-  const hue = t < 0.5 ? 152 + (38 - 152) * (t / 0.5) : 38 + (348 - 38) * ((t - 0.5) / 0.5);
-  return `hsl(${hue.toFixed(0)}, 75%, ${(50 + (1 - t) * 8).toFixed(0)}%)`;
+  if (c < 50)  return 'hsl(152, 70%, 50%)';
+  if (c < 65)  return `hsl(${(152 - (c - 50) * 4).toFixed(0)}, 72%, 50%)`;
+  if (c < 75)  return `hsl(${(92 - (c - 65) * 3.2).toFixed(0)}, 80%, 52%)`;
+  if (c < 82)  return `hsl(${(60 - (c - 75) * 5).toFixed(0)}, 84%, 54%)`;
+  if (c < 88)  return `hsl(${(25 - (c - 82) * 3).toFixed(0)}, 88%, 52%)`;
+  return `hsl(${Math.max(348, 7 - (c - 88) * 1).toFixed(0)}, 88%, 50%)`;
 };
 
 const tempToBg = (c: number): string => {
-  const t = Math.max(0, Math.min(1, (c - 45) / 40));
-  // Light/dark alpha drift so cool cells fade into the canvas.
-  return `${tempToColor(c).replace('hsl(', 'hsla(').replace(')', `, ${(0.35 + t * 0.45).toFixed(2)})`)}`;
+  const alpha = c < 55 ? 0.32 : c < 70 ? 0.45 : c < 80 ? 0.6 : c < 88 ? 0.75 : 0.85;
+  return tempToColor(c).replace('hsl(', 'hsla(').replace(')', `, ${alpha.toFixed(2)})`);
 };
 
 export const MiningHealthPanel: React.FC = () => {
@@ -62,22 +68,37 @@ export const MiningHealthPanel: React.FC = () => {
     if (!profile) return null;
     const rand = mulberry32(hashString(profile.id + ':health'));
 
-    // Generate 3×24 hashboard temp grid
+    // Generate 3×24 hashboard temp grid. Each board carries a base
+    // temperature (middle board hotter — typical airflow access pattern),
+    // a behaviour bias, a strong daily cycle (DC ambient drifts up
+    // during the day), and per-rig spike events.
     const heatmap: number[][] = [];
-    const baseTemps = [62, 68, 64]; // middle board hotter
+    const baseTemps = [64, 71, 66]; // middle board hotter
+    const behaviorBias =
+      profile.behavior === 'throttling' ? 14 :
+      profile.behavior === 'degraded'   ? 7 :
+      profile.behavior === 'efficient'  ? -9 :
+      profile.behavior === 'jittery'    ? 3 :
+      0;
+    // Pre-pick which 2-3 hourly buckets get a thermal spike — shared
+    // across all boards so spikes look like a real "the room got hot
+    // around 13:00" event rather than independent randoms.
+    const spikeHours = new Set<number>();
+    const numSpikes = profile.behavior === 'throttling' ? 4 : profile.behavior === 'jittery' ? 3 : 1;
+    for (let i = 0; i < numSpikes; i++) {
+      spikeHours.add(Math.floor(rand() * HOURS));
+    }
     for (let b = 0; b < BOARDS; b++) {
       const row: number[] = [];
       const baseline = baseTemps[b];
-      const behaviorBias =
-        profile.behavior === 'throttling' ? 12 :
-        profile.behavior === 'degraded' ? 6 :
-        profile.behavior === 'efficient' ? -8 :
-        profile.behavior === 'jittery' ? 3 : 0;
       for (let h = 0; h < HOURS; h++) {
-        // Daily cycle: warmer mid-day, cooler late night
-        const dayPhase = Math.cos(((h - 14) / 24) * Math.PI * 2) * -3;
-        const noise = (rand() - 0.5) * 4;
-        const spike = rand() < 0.05 ? rand() * 8 : 0;
+        // Daily cycle: ±6°C swing. Hottest around hour 14-16 (afternoon
+        // load + warm DC ambient), coolest around hour 4-6 (night).
+        const dayPhase = -Math.cos(((h - 15) / 24) * Math.PI * 2) * 6;
+        // Per-board, per-hour stochastic noise.
+        const noise = (rand() - 0.5) * 3;
+        // Thermal spike — sharper on the middle board.
+        const spike = spikeHours.has(h) ? 6 + rand() * (b === 1 ? 6 : 3) : 0;
         row.push(baseline + behaviorBias + dayPhase + noise + spike);
       }
       heatmap.push(row);

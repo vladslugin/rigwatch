@@ -40,6 +40,23 @@ const ICELAND = 'Reykjavík-DC1';
 const TEXAS = 'Austin-DC2';
 const KZ = 'Pavlodar-DC3';
 
+/**
+ * Datacenter ambient air temp by location. Real DCs target 22-27°C inlet
+ * but vary with climate + cooling strategy:
+ *   - Iceland: hydro-cooled / free cooling → coolest air on the floor
+ *   - Texas: warm climate, CRAC compressors → mid-warm
+ *   - Pavlodar: dry continental, older HVAC → slightly higher target
+ *
+ * Used by the airflow visualizer so intake air reads as ambient (~24°C)
+ * instead of leaking from the hashboard-temp telemetry field.
+ */
+export const ambientForLocation = (loc: string): number => {
+  if (loc === ICELAND) return 18 + Math.sin(Date.now() / 600_000) * 1.5; // 16.5-19.5
+  if (loc === TEXAS)   return 27 + Math.sin(Date.now() / 600_000) * 2;   // 25-29
+  if (loc === KZ)      return 24 + Math.sin(Date.now() / 600_000) * 2;   // 22-26
+  return 24;
+};
+
 // 40-hex-char Ethereum-style address. Splatters bytes from the seed so each
 // owner gets a visually distinctive prefix (avoids "0x0000…0011" for every
 // rig of the same owner) while staying deterministic.
