@@ -22,7 +22,7 @@ import { formatDateWithUserTimezone } from '../utils/timezone';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import zoomPlugin from 'chartjs-plugin-zoom';
 import { exportChartToCSV, exportChartToPDFEnhanced, copyCSVToClipboard, exportCSVFile } from '../utils/chartExportUtils';
-import type { ParameterInfo, StoveData, ChartMarker } from '../types';
+import type { ParameterInfo, RigData, ChartMarker } from '../types';
 import { applyFixedRange, recordCurrentRange } from '../utils/chartViewUtils';
 import { ChartRefContext } from '../context/ChartRefContext';
 import type { ChartDivElement } from '../context/ChartRefContext';
@@ -55,11 +55,11 @@ ChartJS.register(
 
 interface RealtimeChartProps {
   parameters: ParameterInfo[];
-  currentData: StoveData;
+  currentData: RigData;
   isHistoricalMode?: boolean;
   deviceId?: string;
-  stoveModel?: string;
-  stoveModelInfo?: string;
+  rigModel?: string;
+  rigModelInfo?: string;
   parameterSet?: string;
   onParameterColorChange?: (paramId: string, color: string) => Promise<void>;
   onParameterVisibilityChange?: (paramId: string, visible: boolean) => Promise<void>;
@@ -131,8 +131,8 @@ const RealtimeChart: React.FC<RealtimeChartProps> = ({
   currentData,
   isHistoricalMode = false,
   deviceId = 'N/A',
-  stoveModel = 'N/A',
-  stoveModelInfo = '',
+  rigModel = 'N/A',
+  rigModelInfo = '',
   parameterSet = 'N/A',
   onParameterColorChange,
   onParameterVisibilityChange,
@@ -164,7 +164,7 @@ const RealtimeChart: React.FC<RealtimeChartProps> = ({
   const [historicalDate, setHistoricalDate] = useState<string | null>(null);
   const [zoomToHistoricalPending, setZoomToHistoricalPending] = useState(false);
   const historicalParamConfigsRef = useRef<Record<string, ParameterInfo>>({});
-  /** Sofort nach Speichern im Modal: Werte bis zum Firestore/React-Update mergen */
+  /** Sofort nach Save im Modal: Werte bis zum Firestore/React-Update mergen */
   const paramChartOverlayRef = useRef<Record<string, Partial<ParameterInfo>>>({});
   /** Settings only for this chart instance (clone-specific) */
   const chartScopedParamOverridesRef = useRef<Record<string, Partial<ParameterInfo>>>({});
@@ -2337,8 +2337,8 @@ const RealtimeChart: React.FC<RealtimeChartProps> = ({
       parameters,
       {
         deviceId,
-        stoveModel,
-        stoveModelInfo,
+        rigModel,
+        rigModelInfo,
         parameterSet,
         historicalDate,
         chartMarkers: markers,
@@ -2347,7 +2347,7 @@ const RealtimeChart: React.FC<RealtimeChartProps> = ({
       }
     );
     setShowPDFOptions(false); // Close dropdown after export
-  }, [parameters, deviceId, stoveModel, stoveModelInfo, parameterSet, historicalDate, markers]);
+  }, [parameters, deviceId, rigModel, rigModelInfo, parameterSet, historicalDate, markers]);
 
   const handleQuickPDFExport = useCallback(() => {
     handleExportPDF({ includeStatistics: false, includeDataTable: false });
@@ -3344,14 +3344,14 @@ const RealtimeChart: React.FC<RealtimeChartProps> = ({
                 onClick={() => setSeriesSettingsParamId(null)}
                 className="px-3 py-1.5 text-sm border border-border rounded hover:bg-muted"
               >
-                Abbrechen
+                Cancel
               </button>
               <button
                 type="button"
                 onClick={() => { void applySeriesSettings(); }}
                 className="px-3 py-1.5 text-sm bg-primary text-primary-foreground rounded hover:bg-primary/90"
               >
-                Speichern
+                Save
               </button>
             </div>
           </div>

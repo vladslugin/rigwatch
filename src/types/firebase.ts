@@ -1,7 +1,7 @@
 // Core data types based on Firebase structure
 
-// Main stove data (temporaer/{deviceId})
-export interface StoveData {
+// Main rig data (temporaer/{deviceId})
+export interface RigData {
   T: number;                    // Temperature
   PL: number;                   // Screen Air
   SL: number;                   // Rear Air  
@@ -43,8 +43,8 @@ export interface DeviceConfig {
 
 // Device metadata from konstant_app/{deviceId}
 export interface DeviceMetadata {
-  ofenname?: string;             // Stove model name
-  ofen?: string;                 // Stove model number
+  rigname?: string;             // Rig model name
+  rig?: string;                 // Rig model number
   vers?: string;                 // Current firmware version
   shareData?: boolean;           // Data sharing permission
   f?: number;                    // Firmware update progress (0-100)
@@ -104,7 +104,7 @@ export interface ParameterInfo {
 
 // Historical data structure from historien/{deviceId}/{timestamp}
 export interface HistoricalLog {
-  [relativeTime: string]: StoveData; // Relative time in seconds as key
+  [relativeTime: string]: RigData; // Relative time in seconds as key
 }
 
 // Chart marker data for analysis
@@ -137,13 +137,13 @@ export interface Notification {
 }
 
 // Store interfaces for Zustand
-export interface StoveStore {
+export interface RigStore {
   // Connection state
   deviceId: string | null;
   connectionStatus: ConnectionStatus;
   
   // Current data
-  currentData: StoveData;
+  currentData: RigData;
   deviceConfig: DeviceConfig;
   deviceMetadata: DeviceMetadata;
   
@@ -162,7 +162,7 @@ export interface StoveStore {
   // Actions
   setDeviceId: (id: string | null) => void;
   setConnectionStatus: (status: ConnectionStatus) => void;
-  updateCurrentData: (data: StoveData) => void;
+  updateCurrentData: (data: RigData) => void;
   updateDeviceConfig: (config: DeviceConfig) => void;
   updateDeviceMetadata: (metadata: DeviceMetadata) => void;
   addDiscoveredParameter: (param: ParameterInfo) => void;
@@ -197,7 +197,7 @@ export interface ParameterCardProps {
 
 export interface ParameterGridProps {
   parameters: ParameterInfo[];
-  currentData: StoveData;
+  currentData: RigData;
   isEditMode: boolean;
   onParameterUpdate: (paramId: string, changes: Partial<ParameterMetadata>) => Promise<void>;
   onReorderParameters: (orderedParamIds: string[]) => Promise<void>;
@@ -273,7 +273,7 @@ export const BASE_PARAMETERS: Record<string, Partial<ParameterInfo>> = {
     isInitiallyVisibleOnChart: true,
     color: '#ff7f0e',
     divisor: 1,
-    description: 'Calculated stove performance.',
+    description: 'Calculated rig performance.',
     zugriff: 'r'  // Read-only according to table
   },
   N: {

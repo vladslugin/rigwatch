@@ -117,9 +117,9 @@ const DisplayConfigurationModal: React.FC<DisplayConfigurationModalProps> = ({
               </svg>
             </div>
             <div>
-              <h3 className="text-lg font-semibold">Anzeigekonfigurationen</h3>
+              <h3 className="text-lg font-semibold">Display Configurations</h3>
               <p className="text-xs text-muted-foreground">
-                Konfigurationen verwalten
+                Manage Configurations
               </p>
             </div>
           </div>
@@ -140,7 +140,7 @@ const DisplayConfigurationModal: React.FC<DisplayConfigurationModalProps> = ({
                 type="text"
                 value={newConfigName}
                 onChange={(e) => setNewConfigName(e.target.value)}
-                placeholder="Neue Konfiguration"
+                placeholder="Neue Configuration"
                 className={
                   'px-2 py-1 bg-card border border-border rounded text-xs text-foreground focus:ring-1 focus:ring-primary focus:border-primary'
                 }
@@ -150,7 +150,7 @@ const DisplayConfigurationModal: React.FC<DisplayConfigurationModalProps> = ({
                 className={
                   'px-2 py-1 bg-primary hover:bg-primary/90 text-primary-foreground rounded text-xs'
                 }
-                title="Neue Konfiguration erstellen"
+                title="Neue Configuration erstellen"
               >
                 +
               </button>
@@ -165,7 +165,7 @@ const DisplayConfigurationModal: React.FC<DisplayConfigurationModalProps> = ({
                 }
               >
                 <option value="" disabled>
-                  Konfiguration auswählen
+                  Configuration auswählen
                 </option>
                 {configurations.map((cfg) => (
                   <option key={cfg.id} value={cfg.id}>
@@ -205,7 +205,7 @@ const DisplayConfigurationModal: React.FC<DisplayConfigurationModalProps> = ({
                         : 'px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs'
                     }
                   >
-                    Speichern
+                    Save
                   </button>
                   <button
                     onClick={() => {
@@ -218,7 +218,7 @@ const DisplayConfigurationModal: React.FC<DisplayConfigurationModalProps> = ({
                         : 'px-2 py-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded text-xs'
                     }
                   >
-                    Abbrechen
+                    Cancel
                   </button>
                 </>
               )}
@@ -229,7 +229,7 @@ const DisplayConfigurationModal: React.FC<DisplayConfigurationModalProps> = ({
                   'px-2 py-1 bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded text-xs disabled:opacity-50'
                 }
               >
-                Löschen
+                Delete
               </button>
             </div>
           </div>
@@ -261,7 +261,7 @@ const DisplayConfigurationModal: React.FC<DisplayConfigurationModalProps> = ({
 
           {!selectedConfig && (
             <div className={'text-xs text-muted-foreground'}>
-              Bitte zuerst eine Konfiguration auswählen.
+              Bitte zuerst eine Configuration auswählen.
             </div>
           )}
 

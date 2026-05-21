@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { collection, query, orderBy, onSnapshot, limit, type Unsubscribe } from 'firebase/firestore';
 import { firestoreDB } from '../lib/firebase';
 import { useAuth } from './useAuth';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 
 interface ChatMessage {
   id: string;
@@ -70,7 +70,7 @@ const generateBeep = (frequency: number, duration: number, volume: number = 0.3)
 
 export const useChatNotifications = (isChatOpen: boolean = false) => {
   const { user, isAuthenticated } = useAuth();
-  const addNotification = useStoveStore(state => state.addNotification);
+  const addNotification = useRigStore(state => state.addNotification);
   
   const [unreadCount, setUnreadCount] = useState<UnreadCount>({
     general: 0,

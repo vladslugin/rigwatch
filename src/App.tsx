@@ -11,11 +11,11 @@ import MultiChartContainer from './components/MultiChartContainer';
 import AirFlowDiagram from './components/AirFlowDiagram';
 import ErrorBlock from './components/ErrorBlock';
 import AlarmIndicator from './components/AlarmIndicator';
-import StoveManagementPanel from './components/StoveManagementPanel';
+import RigManagementPanel from './components/RigManagementPanel';
 import ParameterSettingsModal from './components/ParameterSettingsModal';
 import ParameterListModal from './components/ParameterListModal';
 import DevDebug from './components/DevDebug';
-import StoveInfoModal from './components/StoveInfoModal';
+import RigInfoModal from './components/RigInfoModal';
 import DisplayConfigurationModal, { type DisplayConfiguration } from './components/DisplayConfigurationModal';
 import AppUpdateNotifier from './components/AppUpdateNotifier';
 import CategoryBlock from './components/CategoryBlock';
@@ -24,7 +24,7 @@ import SimpleModeLayout from './components/SimpleModeLayout';
 import DealerModeLayout from './components/DealerModeLayout';
 import ShellLayout from './components/ShellLayout';
 
-import { useStoveStore } from './store/useStoveStore';
+import { useRigStore } from './store/useRigStore';
 import { useFirebaseConnection, useParameterUpdates } from './hooks/useFirebase';
 import { useParameterMetadata } from './hooks/useFirebase';
 import { useParameterDiscovery } from './hooks/useParameterDiscovery';
@@ -42,7 +42,6 @@ import { isTimeParameter } from './utils/timeFormatting';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from './hooks/useTheme';
 import GlobalParameterSearch from './components/GlobalParameterSearch';
-import FireplaceWidget from './components/FireplaceWidget';
 import { useGlobalSearch } from './hooks/useGlobalSearch';
 import { useParameterNavigation } from './hooks/useParameterNavigation';
 import { useAlarmNavigation } from './hooks/useAlarmNavigation';
@@ -54,28 +53,28 @@ import { addDoc, collection, deleteDoc, doc, onSnapshot, query, serverTimestamp,
 
 const App: React.FC = () => {
   const displayConfigStorageKey = 'rigwatch-display-configuration-selected';
-  const deviceId = useStoveStore(state => state.deviceId);
-  const connectionStatus = useStoveStore(state => state.connectionStatus);
-  const deviceExistence = useStoveStore(state => state.deviceExistence);
-  const setConnectionStatus = useStoveStore(state => state.setConnectionStatus);
-  const currentData = useStoveStore(state => state.currentData);
-  const deviceMetadata = useStoveStore(state => state.deviceMetadata);
-  const deviceConfig = useStoveStore(state => state.deviceConfig);
-  const discoveredParameters = useStoveStore(state => state.discoveredParameters);
-  const isEditMode = useStoveStore(state => state.isEditMode);
-  const isHistoricalMode = useStoveStore(state => state.isHistoricalMode);
-  const setEditMode = useStoveStore(state => state.setEditMode);
-  const setDiscoveredParameters = useStoveStore(state => state.setDiscoveredParameters);
-  const showDebugInfo = useStoveStore(state => state.showDebugInfo);
-  const toggleDebugInfo = useStoveStore(state => state.toggleDebugInfo);
-  const primaryCategory = useStoveStore(state => state.primaryCategory);
-  const setPrimaryCategory = useStoveStore(state => state.setPrimaryCategory);
-  const markParameterAsRecentlyChanged = useStoveStore(state => state.markParameterAsRecentlyChanged);
+  const deviceId = useRigStore(state => state.deviceId);
+  const connectionStatus = useRigStore(state => state.connectionStatus);
+  const deviceExistence = useRigStore(state => state.deviceExistence);
+  const setConnectionStatus = useRigStore(state => state.setConnectionStatus);
+  const currentData = useRigStore(state => state.currentData);
+  const deviceMetadata = useRigStore(state => state.deviceMetadata);
+  const deviceConfig = useRigStore(state => state.deviceConfig);
+  const discoveredParameters = useRigStore(state => state.discoveredParameters);
+  const isEditMode = useRigStore(state => state.isEditMode);
+  const isHistoricalMode = useRigStore(state => state.isHistoricalMode);
+  const setEditMode = useRigStore(state => state.setEditMode);
+  const setDiscoveredParameters = useRigStore(state => state.setDiscoveredParameters);
+  const showDebugInfo = useRigStore(state => state.showDebugInfo);
+  const toggleDebugInfo = useRigStore(state => state.toggleDebugInfo);
+  const primaryCategory = useRigStore(state => state.primaryCategory);
+  const setPrimaryCategory = useRigStore(state => state.setPrimaryCategory);
+  const markParameterAsRecentlyChanged = useRigStore(state => state.markParameterAsRecentlyChanged);
   
   // Section ordering
-  const sectionOrder = useStoveStore(state => state.sectionOrder);
-  const moveSectionUp = useStoveStore(state => state.moveSectionUp);
-  const moveSectionDown = useStoveStore(state => state.moveSectionDown);
+  const sectionOrder = useRigStore(state => state.sectionOrder);
+  const moveSectionUp = useRigStore(state => state.moveSectionUp);
+  const moveSectionDown = useRigStore(state => state.moveSectionDown);
   
   const [searchTerm, setSearchTerm] = useState('');
   const [isDraggedOverMain, setIsDraggedOverMain] = useState(false);
@@ -189,8 +188,8 @@ const App: React.FC = () => {
   // Parameter list modal state
   const [isParameterListOpen, setIsParameterListOpen] = useState(false);
 
-  // Stove info modal state
-  const [isStoveInfoModalOpen, setIsStoveInfoModalOpen] = useState(false);
+  // Rig info modal state
+  const [isRigInfoModalOpen, setIsRigInfoModalOpen] = useState(false);
 
 
 
@@ -582,7 +581,7 @@ const App: React.FC = () => {
     if (deviceId) {
       const savedOrder = getSectionOrder();
       console.log(`[App] Loading saved section order for ${deviceId}:`, savedOrder);
-      useStoveStore.getState().setSectionOrder(savedOrder);
+      useRigStore.getState().setSectionOrder(savedOrder);
     }
   }, [deviceId, getSectionOrder]);
 
@@ -698,7 +697,7 @@ const App: React.FC = () => {
     // Apply all valid overrides
     if (Object.keys(overridesToApply).length > 0) {
       console.log(`[App] Applying ${Object.keys(overridesToApply).length} parameter overrides:`, overridesToApply);
-      useStoveStore.getState().updateCurrentData(overridesToApply);
+      useRigStore.getState().updateCurrentData(overridesToApply);
     }
   }, [deviceId]);
 
@@ -768,9 +767,9 @@ const App: React.FC = () => {
     }
   }, []);
 
-  const handleShowStoveInfo = useCallback(() => {
-    console.log('[App] Opening stove info modal');
-    setIsStoveInfoModalOpen(true);
+  const handleShowRigInfo = useCallback(() => {
+    console.log('[App] Opening rig info modal');
+    setIsRigInfoModalOpen(true);
   }, []);
 
   // UPDATED: Toggle favorite with localStorage
@@ -1051,7 +1050,7 @@ const App: React.FC = () => {
       const dataType = getParameterDataType(paramMeta as any);
       const divisor = (paramMeta && typeof paramMeta.divisor === 'number' && !isNaN(paramMeta.divisor)) ? (paramMeta.divisor || 1) : 1;
 
-      const previousRawValue = useStoveStore.getState().currentData?.[paramId];
+      const previousRawValue = useRigStore.getState().currentData?.[paramId];
 
       // Only apply optimistic update for numeric/bool types
       if (dataType === 'bool' || dataType === 'int' || dataType === 'float' || dataType === 'uint64_t') {
@@ -1078,20 +1077,20 @@ const App: React.FC = () => {
         // Mark as recently changed to avoid flicker from live updates
         markParameterAsRecentlyChanged(paramId);
         // Apply optimistically
-        useStoveStore.getState().updateCurrentData({ [paramId]: optimisticRaw } as any, undefined, true);
+        useRigStore.getState().updateCurrentData({ [paramId]: optimisticRaw } as any, undefined, true);
 
         try {
           // Send to backend
           const success = await updateParameter(paramId, normalizedInput);
           if (!success) {
             // Rollback to previous value
-            useStoveStore.getState().updateCurrentData({ [paramId]: previousRawValue } as any, undefined, true);
+            useRigStore.getState().updateCurrentData({ [paramId]: previousRawValue } as any, undefined, true);
           }
           return success;
         } catch (err) {
           console.error(`[App] Error updating parameter ${paramId} value:`, err);
           // Rollback to previous value
-          useStoveStore.getState().updateCurrentData({ [paramId]: previousRawValue } as any, undefined, true);
+          useRigStore.getState().updateCurrentData({ [paramId]: previousRawValue } as any, undefined, true);
           return false;
         }
       }
@@ -1174,7 +1173,7 @@ const App: React.FC = () => {
     console.log(`[App] Moving section up: ${sectionId}`);
     moveSectionUp(sectionId);
     // Save updated order to localStorage
-    const currentOrder = useStoveStore.getState().sectionOrder;
+    const currentOrder = useRigStore.getState().sectionOrder;
     saveSectionOrder(currentOrder);
   }, [moveSectionUp, saveSectionOrder]);
 
@@ -1182,7 +1181,7 @@ const App: React.FC = () => {
     console.log(`[App] Moving section down: ${sectionId}`);
     moveSectionDown(sectionId);
     // Save updated order to localStorage
-    const currentOrder = useStoveStore.getState().sectionOrder;
+    const currentOrder = useRigStore.getState().sectionOrder;
     saveSectionOrder(currentOrder);
   }, [moveSectionDown, saveSectionOrder]);
 
@@ -1201,23 +1200,23 @@ const App: React.FC = () => {
 
   // Render sections in order
   const renderSectionInOrder = useCallback(() => {
-    const defaultOrder = ['stove-management', 'secondary-categories', 'main-and-airflow', 'charts'];
+    const defaultOrder = ['rig-management', 'secondary-categories', 'main-and-airflow', 'charts'];
     const currentOrder = sectionOrder.length > 0 ? sectionOrder : defaultOrder;
     
     const sectionComponents: Record<string, React.ReactElement | false> = {
-      'stove-management': (
+      'rig-management': (
         <SectionWrapper
-          key="stove-management"
-          sectionId="stove-management"
-          title={t('sections.stoveManagement')}
+          key="rig-management"
+          sectionId="rig-management"
+          title={t('sections.rigManagement')}
           onMoveSectionUp={handleMoveSectionUp}
           onMoveSectionDown={handleMoveSectionDown}
         >
-          <StoveManagementPanel 
+          <RigManagementPanel 
             onFirmwareUpdate={handleFirmwareUpdate}
             onCheckForUpdates={handleCheckForUpdates}
             onLoadHistoricalDataToChart={handleLoadHistoricalDataToChart}
-            onShowStoveInfo={handleShowStoveInfo}
+            onShowRigInfo={handleShowRigInfo}
           />
         </SectionWrapper>
       ),
@@ -1369,7 +1368,7 @@ const App: React.FC = () => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                       </svg>
                     </span>
-                    Anzeigekonfiguration
+                    Display Configuration
                   </h2>
                 </div>
                 <div className="border-t border-border bg-card p-3">
@@ -1391,13 +1390,13 @@ const App: React.FC = () => {
                         }
                       }}
                       className="w-full bg-card text-foreground border border-border text-xs px-2 py-1.5 rounded-none shadow-[4px_4px_0_0_var(--border)] focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring"
-                      aria-label="Anzeigekonfiguration"
+                      aria-label="Display Configuration"
                     >
-                      <option value="__create__">Konfigurationen verwalten</option>
+                      <option value="__create__">Manage Configurations</option>
                       <option value="__divider__" disabled>----</option>
                       {selectedDisplayConfigId === '' && (
                         <option value="" disabled>
-                          {displayConfigurations.length === 0 ? 'Keine Anzeigekonfigurationen' : 'Bitte wählen'}
+                          {displayConfigurations.length === 0 ? 'No Display Configurations' : 'Please select'}
                         </option>
                       )}
                       {displayConfigurations.map((config) => (
@@ -1439,8 +1438,8 @@ const App: React.FC = () => {
             parameters={discoveredParameters}
             isHistoricalMode={isHistoricalMode}
             deviceId={deviceId || ''}
-            stoveModel={deviceMetadata.ofenname || 'N/A'}
-            stoveModelInfo={deviceMetadata.ofen ? `Model #${deviceMetadata.ofen}` : ''}
+            rigModel={deviceMetadata.rigname || 'N/A'}
+            rigModelInfo={deviceMetadata.rig ? `Model #${deviceMetadata.rig}` : ''}
             parameterSet={deviceConfig.verz === '~' || !deviceConfig.verz ? 'Default' : deviceConfig.verz}
           />
         </SectionWrapper>
@@ -1457,7 +1456,7 @@ const App: React.FC = () => {
     handleMainDragOver, handleMainDragLeave, handleMainDrop, setEditMode,
     handleMoveSectionUp, handleMoveSectionDown, handleTemporaryCategoriesChange,
     handleParameterValueChange, handleFirmwareUpdate, handleCheckForUpdates, handleLoadHistoricalDataToChart,
-    handleShowStoveInfo, t
+    handleShowRigInfo, t
   ]);
 
   // Clear drag state when edit mode is disabled
@@ -1662,10 +1661,10 @@ const App: React.FC = () => {
           onSetSection={handleSetSectionDisplayConfigParams}
         />
 
-        {/* Stove Info Modal */}
-        <StoveInfoModal
-          isOpen={isStoveInfoModalOpen}
-          onClose={() => setIsStoveInfoModalOpen(false)}
+        {/* Rig Info Modal */}
+        <RigInfoModal
+          isOpen={isRigInfoModalOpen}
+          onClose={() => setIsRigInfoModalOpen(false)}
         />
 
 
@@ -1711,9 +1710,6 @@ const App: React.FC = () => {
           parameters={discoveredParameters}
           onParameterSelect={handleParameterSelect}
         />
-
-        {/* Fireplace Widget */}
-        <FireplaceWidget />
 
         {/* App Update Notifier */}
         <AppUpdateNotifier />

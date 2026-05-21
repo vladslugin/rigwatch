@@ -25,7 +25,7 @@ const hashKey = (s: string) => {
   return String(h);
 };
 
-export const analyzeStove = async (input: AnalyzeInput, options?: { regenerate?: boolean; sendPII?: boolean }): Promise<AIResult> => {
+export const analyzeRig = async (input: AnalyzeInput, options?: { regenerate?: boolean; sendPII?: boolean }): Promise<AIResult> => {
   const normalized = normalize({ app: input.app || {}, core: input.core || {}, ui: input.ui });
   const rules = runRules(normalized.features as any, normalized.signals);
 

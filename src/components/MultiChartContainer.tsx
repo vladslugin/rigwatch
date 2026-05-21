@@ -2,7 +2,7 @@ import React, { useState, useCallback, useMemo, useRef } from 'react';
 import RealtimeChart from './RealtimeChart';
 import type { ParameterInfo } from '../types';
 import { useTranslation } from 'react-i18next';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 
 interface ChartInstance {
   id: string;
@@ -16,8 +16,8 @@ interface MultiChartContainerProps {
   parameters: ParameterInfo[];
   isHistoricalMode?: boolean;
   deviceId?: string;
-  stoveModel?: string;
-  stoveModelInfo?: string;
+  rigModel?: string;
+  rigModelInfo?: string;
   parameterSet?: string;
 }
 
@@ -35,11 +35,11 @@ const MultiChartContainer: React.FC<MultiChartContainerProps> = ({
   parameters,
   isHistoricalMode = false,
   deviceId = 'N/A',
-  stoveModel = 'N/A',
-  stoveModelInfo = '',
+  rigModel = 'N/A',
+  rigModelInfo = '',
   parameterSet = 'N/A',
 }) => {
-  const currentData = useStoveStore(state => state.currentData);
+  const currentData = useRigStore(state => state.currentData);
   const { t } = useTranslation();
   
   // State to manage multiple chart instances
@@ -102,8 +102,8 @@ const MultiChartContainer: React.FC<MultiChartContainerProps> = ({
             currentData={currentData}
             isHistoricalMode={isHistoricalMode}
             deviceId={deviceId}
-            stoveModel={stoveModel}
-            stoveModelInfo={stoveModelInfo}
+            rigModel={rigModel}
+            rigModelInfo={rigModelInfo}
             parameterSet={parameterSet}
             onCloneChart={canClone ? handleCloneChart : undefined}
             onDeleteChart={instance.isMain ? undefined : handleDeleteChart}

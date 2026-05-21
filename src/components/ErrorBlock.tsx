@@ -3,7 +3,7 @@ import { onValue, ref } from 'firebase/database';
 import { useErrors } from '../hooks/useErrors';
 import { useTranslation } from 'react-i18next';
 import { realtimeDB } from '../lib/firebase';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 
 interface ErrorBlockProps {
   simpleMode?: boolean;
@@ -29,7 +29,7 @@ const ERROR_DEFINITIONS = {
 const ErrorBlock: React.FC<ErrorBlockProps> = ({ simpleMode = false }) => {
   const { errors: activeErrors, hasErrors, errorData } = useErrors();
   const { t } = useTranslation();
-  const deviceId = useStoveStore(state => state.deviceId);
+  const deviceId = useRigStore(state => state.deviceId);
   const [fehlerPL, setFehlerPL] = useState<Record<string, unknown> | null>(null);
   const [fehlerSL, setFehlerSL] = useState<Record<string, unknown> | null>(null);
   const [fehlerAll, setFehlerAll] = useState<Record<string, unknown> | null>(null);
@@ -204,7 +204,7 @@ const ErrorBlock: React.FC<ErrorBlockProps> = ({ simpleMode = false }) => {
         </div>
         {!hasData ? (
           <div className={'text-xs text-muted-foreground'}>
-            Keine Heatmap-Daten
+            No heatmap data
           </div>
         ) : (
           <div className="space-y-1">
@@ -296,11 +296,11 @@ const ErrorBlock: React.FC<ErrorBlockProps> = ({ simpleMode = false }) => {
     return (
       <div className="space-y-2">
         <div className={'text-xs font-semibold text-foreground'}>
-          Balkendiagramm {label}
+          Bar Chart {label}
         </div>
         {!hasData ? (
           <div className={'text-xs text-muted-foreground'}>
-            Keine Balken-Daten
+            No bar data
           </div>
         ) : (
           <div className="space-y-2">
@@ -363,7 +363,7 @@ const ErrorBlock: React.FC<ErrorBlockProps> = ({ simpleMode = false }) => {
         </div>
         {data.length === 0 ? (
           <div className={'text-xs text-muted-foreground'}>
-            Keine Einträge
+            No entries
           </div>
         ) : (
           <div className={'max-h-56 overflow-auto rounded border border-border/60 bg-card/40'}>
@@ -448,7 +448,7 @@ const ErrorBlock: React.FC<ErrorBlockProps> = ({ simpleMode = false }) => {
         </div>
         {data.length === 0 ? (
           <div className={'text-xs text-muted-foreground'}>
-            Keine Einträge
+            No entries
           </div>
         ) : (
           <div className={'max-h-64 overflow-auto rounded border border-border/60 bg-card/40'}>
@@ -545,7 +545,7 @@ const ErrorBlock: React.FC<ErrorBlockProps> = ({ simpleMode = false }) => {
             >
               <span>Heatmap</span>
               <span className={'text-muted-foreground'}>
-                {showHeatmaps ? 'Einklappen' : 'Ausklappen'}
+                {showHeatmaps ? 'Collapse' : 'Expand'}
               </span>
             </button>
             {showHeatmaps && (
@@ -578,9 +578,9 @@ const ErrorBlock: React.FC<ErrorBlockProps> = ({ simpleMode = false }) => {
                   'w-full flex items-center justify-between px-2 py-1 rounded-md border border-border/60 bg-card text-foreground text-xs font-semibold'
                 }
               >
-                <span>Balkendiagramm</span>
+                <span>Bar Chart</span>
                 <span className={'text-muted-foreground'}>
-                  {showBars ? 'Einklappen' : 'Ausklappen'}
+                  {showBars ? 'Collapse' : 'Expand'}
                 </span>
               </button>
               {showBars && (
@@ -602,9 +602,9 @@ const ErrorBlock: React.FC<ErrorBlockProps> = ({ simpleMode = false }) => {
                   'w-full flex items-center justify-between px-2 py-1 rounded-md border border-border/60 bg-card text-foreground text-xs font-semibold'
                 }
               >
-                <span>Fehlerlisten</span>
+                <span>Error Lists</span>
                 <span className={'text-muted-foreground'}>
-                  {showLists ? 'Einklappen' : 'Ausklappen'}
+                  {showLists ? 'Collapse' : 'Expand'}
                 </span>
               </button>
               {showLists && (

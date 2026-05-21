@@ -1,12 +1,12 @@
 import { useCallback, useMemo } from 'react';
-import { useStoveStore, useNotificationHelpers } from '../store/useStoveStore';
+import { useRigStore, useNotificationHelpers } from '../store/useRigStore';
 import { doc, setDoc, writeBatch } from 'firebase/firestore';
 import { firestoreDB } from '../lib/firebase';
 
 export const useCategoryManager = (temporaryCategories: string[] = []) => {
   const { showSuccess, showError } = useNotificationHelpers();
-  const parameters = useStoveStore(state => state.discoveredParameters);
-  const updateParameterMetadata = useStoveStore(state => state.updateParameterMetadata);
+  const parameters = useRigStore(state => state.discoveredParameters);
+  const updateParameterMetadata = useRigStore(state => state.updateParameterMetadata);
 
   // Get all existing categories from parameters + temporary categories
   const availableCategories = useMemo(() => {

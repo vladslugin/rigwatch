@@ -13,7 +13,7 @@ import {
 } from 'firebase/firestore';
 import { firestoreDB } from '../lib/firebase';
 import { useAuth } from './useAuth';
-import { useNotificationHelpers } from '../store/useStoveStore';
+import { useNotificationHelpers } from '../store/useRigStore';
 import type {
   CreateKundenTicketInput,
   KundenTicket,

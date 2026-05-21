@@ -1,4 +1,4 @@
-import type { StoveData } from '../types';
+import type { RigData } from '../types';
 
 export interface DealerDiagnosis {
   problem: string;
@@ -20,7 +20,7 @@ export interface DealerStatusResult {
  * Placeholder diagnosis generator for dealer UI.
  * Real rule-based and AI logic can be plugged in later.
  */
-export const deriveDealerDiagnosis = (_currentData: StoveData): DealerDiagnosis => {
+export const deriveDealerDiagnosis = (_currentData: RigData): DealerDiagnosis => {
   return {
     problem:
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.',
@@ -31,7 +31,7 @@ export const deriveDealerDiagnosis = (_currentData: StoveData): DealerDiagnosis 
   };
 };
 
-export const deriveDealerStatus = (currentData: StoveData): DealerStatusResult => {
+export const deriveDealerStatus = (currentData: RigData): DealerStatusResult => {
   const ecode = typeof currentData.ecode === 'number' ? currentData.ecode : 0;
   const ecode2 = typeof currentData.ecode2 === 'number' ? currentData.ecode2 : 0;
   const controllerTempRaw = typeof currentData.TC === 'number' ? currentData.TC : null;
@@ -45,7 +45,7 @@ export const deriveDealerStatus = (currentData: StoveData): DealerStatusResult =
   if (health === 'bad') {
     return {
       health,
-      headline: 'Der Ofen zeigt Auffaelligkeiten',
+      headline: 'Der Rig zeigt Auffaelligkeiten',
       details:
         'Es wurden klare Hinweise erkannt, dass ein Problem vorliegt. Die finalen Firebase-Regeln folgen in der naechsten Iteration.',
       safeHints: [
@@ -62,11 +62,11 @@ export const deriveDealerStatus = (currentData: StoveData): DealerStatusResult =
 
   return {
     health,
-    headline: 'Der Ofen brennt einwandfrei',
+    headline: 'Der Rig brennt einwandfrei',
     details:
       'Aktuell sind keine sicheren Stoerungsmuster erkennbar. Es koennen dennoch Optimierungen fuer Stabilitaet und Verbrauch empfohlen werden.',
     safeHints: [
-      'Keine aktiven E-/E2-Fehlercodes erkannt.',
+      'No active E/E2 error codes detected.',
       controllerTemp !== null ? `Controller-Temperatur wirkt normal (${controllerTemp.toFixed(1)}°C).` : 'Controller-Temperatur derzeit nicht vorhanden.',
       'Grundlegender Betriebszustand ist stabil.',
     ],

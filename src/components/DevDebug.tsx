@@ -78,10 +78,10 @@ const DevDebug: React.FC = () => {
             </span>
           </div>
           <div>
-            • <span className="text-muted-foreground">manage_stoves:</span>{' '}
-            <StatusDot ok={hasPermission('manage_stoves')} />
-            <span className={hasPermission('manage_stoves') ? 'text-success' : 'text-destructive'}>
-              {hasPermission('manage_stoves') ? '✓' : '✗'}
+            • <span className="text-muted-foreground">manage_rigs:</span>{' '}
+            <StatusDot ok={hasPermission('manage_rigs')} />
+            <span className={hasPermission('manage_rigs') ? 'text-success' : 'text-destructive'}>
+              {hasPermission('manage_rigs') ? '✓' : '✗'}
             </span>
           </div>
           <div>

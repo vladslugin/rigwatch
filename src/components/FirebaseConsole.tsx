@@ -2,7 +2,7 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { ref, set, get, remove } from 'firebase/database';
 import { collection, getDocs } from 'firebase/firestore';
 import { realtimeDB, firestoreDB } from '../lib/firebase';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 import { useAuth } from '../hooks/useAuth';
 import { useTranslation } from 'react-i18next';
 import { useEscapeKey } from '../hooks/useEscapeKey';
@@ -60,7 +60,7 @@ const canMakeRequest = (): boolean => {
 
 const FirebaseConsole: React.FC<FirebaseConsoleProps> = ({ isOpen, onClose }) => {
   const { user, hasPermission } = useAuth();
-  const deviceId = useStoveStore(state => state.deviceId);
+  const deviceId = useRigStore(state => state.deviceId);
   const { t } = useTranslation();
   
   const [activeTab, setActiveTab] = useState<'realtime' | 'firestore'>('realtime');
@@ -463,7 +463,7 @@ const FirebaseConsole: React.FC<FirebaseConsoleProps> = ({ isOpen, onClose }) =>
     try {
       const knownCollections = [
         'admins', 'chat_messages', 'facts', 'images', 'masse_und_gewichte',
-        'notifications', 'parameter_values', 'settings', 'stove_models',
+        'notifications', 'parameter_values', 'settings', 'rig_models',
         'tickets', 'updates_news', 'users'
       ];
       

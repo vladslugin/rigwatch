@@ -2,7 +2,7 @@ import { ref, get } from 'firebase/database';
 import { realtimeDB } from '../lib/firebase';
 
 /**
- * Length of the Ofen-Seriennummer prefix that dealers type. Anything longer is
+ * Length of the Rig-Seriennummer prefix that dealers type. Anything longer is
  * assumed to be a full device ID and returned as-is.
  */
 export const SERIENNR_LENGTH = 7;
@@ -10,7 +10,7 @@ export const SERIENNR_LENGTH = 7;
 const isPureDigits = (value: string) => /^\d+$/.test(value);
 
 /**
- * Pull the dealer-visible 7-digit Ofen-Seriennummer out of a full device ID.
+ * Pull the dealer-visible 7-digit Rig-Seriennummer out of a full device ID.
  * Per Claus-Peter Hamisch (2026-04-28): dealers must NEVER see the rest of the
  * ID — only the first seven digits.
  */
@@ -44,7 +44,7 @@ export const resolveBySeriennr = async (
   if (candidates.length === 0) return null;
   if (candidates.length === 1) return candidates[0];
 
-  // Multiple stoves under the same Seriennr → pick the most recently active.
+  // Multiple rigs under the same Seriennr → pick the most recently active.
   const tsfcValues = await Promise.all(
     candidates.map(async (id) => {
       try {

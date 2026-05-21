@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 import { useGlobalAlarms } from '../hooks/useGlobalAlarms';
 import type { ParameterInfo } from '../types';
 import { soundManager } from '../utils/soundManager';
@@ -26,9 +26,9 @@ const AlarmIndicator: React.FC<AlarmIndicatorProps> = ({ onExpandCategory }) => 
   const [testExpiryByParam, setTestExpiryByParam] = useState<Record<string, number>>({}); // param -> expiry ts
   const [nowTs, setNowTs] = useState<number>(Date.now());
   
-  const deviceId = useStoveStore(state => state.deviceId);
-  const currentData = useStoveStore(state => state.currentData);
-  const discoveredParameters = useStoveStore(state => state.discoveredParameters);
+  const deviceId = useRigStore(state => state.deviceId);
+  const currentData = useRigStore(state => state.currentData);
+  const discoveredParameters = useRigStore(state => state.discoveredParameters);
   
   // Get global alarms (including test alarms from Firestore)
   const { globalAlarms } = useGlobalAlarms();

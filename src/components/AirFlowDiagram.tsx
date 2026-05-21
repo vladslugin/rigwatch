@@ -3,7 +3,7 @@ import type { ParameterInfo } from '../types';
 import { getPLValues, getSLValues, getRLValues } from '../utils/parameterTypes';
 import { useAuth } from '../hooks/useAuth';
 import { useTranslation } from 'react-i18next';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 
 interface AirFlowDiagramProps {
   parameters: ParameterInfo[];
@@ -12,7 +12,7 @@ interface AirFlowDiagramProps {
 const AirFlowDiagram: React.FC<AirFlowDiagramProps> = ({
   parameters,
 }) => {
-  const currentData = useStoveStore(state => state.currentData);
+  const currentData = useRigStore(state => state.currentData);
   const { user } = useAuth();
   const { t } = useTranslation();
 

@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 import { useParameterFormatting } from '../hooks/useParameterDiscovery';
 import { useTiling } from '../context/TilingContext';
 import type { ParameterInfo } from '../types';
@@ -26,10 +26,10 @@ interface CategoryGroup {
  */
 const ParameterCardsModal: React.FC<ParameterCardsModalProps> = ({ isOpen, onClose, onActivate }) => {
   // Get data from store (no additional Firebase requests)
-  const deviceId = useStoveStore(state => state.deviceId);
-  const currentData = useStoveStore(state => state.currentData);
-  const discoveredParameters = useStoveStore(state => state.discoveredParameters);
-  const connectionStatus = useStoveStore(state => state.connectionStatus);
+  const deviceId = useRigStore(state => state.deviceId);
+  const currentData = useRigStore(state => state.currentData);
+  const discoveredParameters = useRigStore(state => state.discoveredParameters);
+  const connectionStatus = useRigStore(state => state.connectionStatus);
   
   const { formatParameterValue } = useParameterFormatting();
   const [themeName, setThemeName] = useState<ThemeName>('default');

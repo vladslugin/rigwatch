@@ -12,7 +12,7 @@ import React from 'react';
  *  - Each root carries `style={{ breakInside: 'avoid' }}` so the print engine
  *    keeps a single demo on one page.
  *  - All copy in German, matching the production components these demos
- *    illustrate (DealerHeaderCard, StoveActionsBlock, ProblemInfoToggle).
+ *    illustrate (DealerHeaderCard, RigActionsBlock, ProblemInfoToggle).
  */
 
 const SectionLabel: React.FC<{ children: React.ReactNode }> = ({ children }) => (

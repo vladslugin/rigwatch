@@ -1,165 +1,148 @@
 import type { BrennbewertungKnowledgeBase } from '../types/brennbewertung';
 
 /**
- * Default Brennbewertung knowledge base (German), straight from the
- * 2026-04-28 specification by Claus-Peter Hamisch (HASE Kaminofenbau).
+ * Default Rig Health Score knowledge base. Seven scoring variables
+ * (C0..C6) cover the most common reasons a mining rig deviates from
+ * its nominal operating envelope. The legacy variable name
+ * "Brennbewertung" is retained on disk for storage/schema continuity
+ * — semantically it now means "Mining Health Score".
  *
- * Used as a) the initial seed when the Firestore document does not exist yet
- * and b) the fallback when Firestore is unreachable. Claus can override these
- * texts via the in-app editor; the editor writes back to Firestore and every
- * client picks up the change in real time.
+ * Each entry has:
+ *   title       — short headline shown next to the star rating
+ *   grund       — likely root causes
+ *   auswirkungen — symptoms an operator notices on the dashboard
+ *   massnahmen  — concrete operator-level remediations
  *
- * Audience: dealers (often older, non-technical). Wording stays plain and
- * action-oriented; do not add jargon when editing.
+ * Audience: rig operators / NOC engineers. Wording stays plain and
+ * action-oriented.
  */
 export const DEFAULT_BRENNBEWERTUNG_KNOWLEDGE: BrennbewertungKnowledgeBase = {
   C0: {
-    title: 'Der Ofen erwärmt sich nur langsam',
+    title: 'Rig is slow to ramp up',
     grund: [
-      'Holz zu feucht',
-      'niedriger Kaminzug',
-      'falscher Brennstoff',
+      'Cold ambient intake — thermal headroom collapsing before nominal hashrate is reached',
+      'PSU cannot deliver rated wattage (undervolt at the wall)',
+      'Firmware boot loop or hashboard handshake retries',
     ],
     auswirkungen: [
-      'Ofen kommt nicht auf Touren',
-      'Ofen erwärmt sich langsam',
-      'Ofen wird nicht warm',
-      'Das Feuer kommt nicht in Gang',
-      'Ofen brennt nicht richtig an',
-      'Anzünden oder Aufheizen dauert zu lange',
-      'Die schädlichen Emissionen sind zu hoch',
-      'Die Effizienz ist niedrig',
-      'Ofen brennt nicht schön, wenig Flamme',
-      'Ofen qualmt, rußt, raucht',
-      'Scheibenluft ist geöffnet',
-      'Rückwandluft ist geschlossen',
+      'Time-to-nominal-hashrate is significantly longer than the model baseline',
+      'Power draw climbs in steps instead of smoothly',
+      'Pool reports stale shares during the first minutes after a restart',
+      'Fans audibly cycle while the rig is still under target temperature',
     ],
     massnahmen: [
-      'Feuchtigkeit des Holzes messen (Restfeuchte 14 – 20 %)',
-      'Evtl. Drosselklappe im Schornstein oder der Zuluft öffnen',
-      'Holzart und Aufgabemenge nach Bedienungsanleitung wählen',
+      'Verify intake air temperature is within model spec (≤30 °C for air-cooled)',
+      'Check PSU AC input voltage at the rig — drop >5% under load means a feeder issue',
+      'Look at the controller log for hashboard handshake retries; reseat ribbon cables if present',
     ],
   },
   C1: {
-    title: 'Der Ofen brennt sehr stark',
+    title: 'Thermal throttling',
     grund: [
-      'Holz zu trocken',
-      'Scheite zu dünn',
-      'hoher Kaminzug',
+      'Ambient intake too hot or recirculating exhaust',
+      'Dust buildup on hashboard heatsinks',
+      'Fan PWM curve too conservative for the workload',
     ],
     auswirkungen: [
-      'Ofen brennt zu schnell',
-      'Ofen brennt zu heiß',
-      'Effizienz ist niedrig',
-      'Die schädlichen Emissionen sind zu hoch',
-      'Ofen brennt nicht schön, Schmiedefeuer, Feuer zu stark',
-      'Rückwandluft ist geöffnet',
+      'Hashrate is clipped 8–15% below model nominal',
+      'Both intake and exhaust fans pinned at 100% PWM',
+      'Hashboard temperature reading sits in the 78–90 °C band',
+      'Rejected-share rate ticks up under sustained load',
     ],
     massnahmen: [
-      'Feuchtigkeit des Holzes messen (Restfeuchte 14 – 20 %)',
-      'Evtl. Drosselklappe im Schornstein oder der Zuluft schließen',
-      'Holzart und Aufgabemenge nach Bedienungsanleitung wählen',
+      'Lower intake temperature: improve duct routing or add an inline cooler',
+      'Schedule a cleaning cycle; expect 4–7 °C improvement on dusty units',
+      'Apply a more aggressive fan curve via the controller config (or derate clock by 5–8%)',
     ],
   },
   C2: {
-    title: 'Der Ofen brennt träge',
+    title: 'Share rejection spike',
     grund: [
-      'Scheite zu dick',
+      'Pool latency degradation or stratum endpoint instability',
+      'Worker name collision (two rigs publishing the same worker id)',
+      'Local network jitter / packet loss to the pool',
     ],
     auswirkungen: [
-      'Ofen kommt nicht auf Touren',
-      'Ofen erwärmt sich langsam',
-      'Ofen wird nicht warm',
-      'Das Feuer kommt nicht in Gang',
-      'Ofen brennt nicht richtig an',
-      'Anzünden oder Aufheizen dauert zu lange',
-      'Ofen brennt zu lange',
-      'Die schädlichen Emissionen sind zu hoch',
-      'Ofen brennt nicht schön, wenig Flamme',
-      'Ofen qualmt, rußt, raucht',
-      'Scheibenluft ist geöffnet',
-      'Rückwandluft ist geschlossen',
+      'Accepted-share rate dips, rejected and stale counters climb',
+      'Effective hashrate at the pool drifts below the local controller readout',
+      'Daily payout estimate diverges from on-device hashrate',
     ],
     massnahmen: [
-      'Kleinere Scheite wählen',
-      'Nicht nur ein Scheit auflegen',
+      'Failover to a secondary stratum endpoint and compare reject rate over 30 min',
+      'Confirm every rig has a unique worker name; rename and reconnect if not',
+      'Ping the pool from the rig subnet — >40 ms p95 is the threshold for migration',
     ],
   },
   C3: {
-    title: 'Zu früh nachgelegt',
+    title: 'Poor energy efficiency',
     grund: [
-      'Zu früh nachgelegt',
+      'Hashboard ASICs operating off-curve (overclocked beyond efficient band)',
+      'Firmware running an outdated power profile',
+      'PSU operating outside its high-efficiency load band',
     ],
     auswirkungen: [
-      'Ofen raucht in den Aufstellraum',
-      'Ofen raucht aus der Tür',
-      'raucht, rußt, qualmt',
-      'Die schädlichen Emissionen sind zu hoch',
-      'Die Effizienz ist niedrig',
+      'Joules-per-terahash (J/TH) above the model spec by >5%',
+      'Power draw is roughly nominal but hashrate is below nominal',
+      'Wallet revenue per kWh is below the fleet baseline',
     ],
     massnahmen: [
-      'Erst nachlegen, wenn keine Flammen mehr sichtbar sind',
+      'Switch to a published efficiency-tuned firmware (BMOS / BTMiner stable channel)',
+      'Drop hashboard frequency by one step and re-measure — most chips are most efficient ~5% under stock',
+      'For PSUs running <40% load, consolidate workloads or swap to a smaller unit',
     ],
   },
   C4: {
-    title: 'Zu spät nachgelegt',
+    title: 'Hashrate instability',
     grund: [
-      'Zu spät nachgelegt',
+      'Marginal hashboard chip (degraded with age)',
+      'Memory clock running above stability margin',
+      'Insufficient cooling causing intermittent thermal trips',
     ],
     auswirkungen: [
-      'Ofen kommt nicht auf Touren',
-      'Ofen erwärmt sich langsam',
-      'Ofen wird nicht warm',
-      'Das Feuer kommt nicht in Gang',
-      'Ofen brennt nicht richtig an',
-      'Aufheizen dauert zu lange',
-      'Die schädlichen Emissionen sind zu hoch',
-      'Die Effizienz ist niedrig',
+      'Hashrate jitter exceeds ±4% across one-minute windows',
+      'Status flips between mining and throttling several times per hour',
+      'Pool view shows alternating fast/slow accepted-share windows',
     ],
     massnahmen: [
-      'Nachlegen, wenn keine Flammen mehr sichtbar sind',
-      'Das Nachlegesignal wird mit zunehmender Dringlichkeit intensiver, die LED blinkt mit zunehmender Dringlichkeit öfter, wenn es ganz dringend ist, dann leuchtet die LED durchgehend',
-      'Wenn das Nachlegesignal erloschen ist, dann mit kleinscheitigem Holz und evtl. Anzündern neu anzünden',
+      'Pull controller log for `hashboard X dropped` errors and isolate the chain',
+      'Lower memory clock by one step; expect 1–2% hashrate loss for stability',
+      'Improve airflow on the affected unit; check that the rig is not in an exhaust shadow',
     ],
   },
   C5: {
-    title: 'Der Ofen brennt verhalten an',
+    title: 'ASIC degradation / memory errors',
     grund: [
-      'Holz zu feucht',
-      'niedriger Kaminzug',
-      'falscher Brennstoff',
+      'Aging hashboard with rising bit-error rate',
+      'Memory subsystem running on the edge of its voltage envelope',
+      'Solder fatigue on one of the hashboards',
     ],
     auswirkungen: [
-      'Ofen kommt nicht auf Touren',
-      'Ofen erwärmt sich langsam',
-      'Ofen wird nicht warm',
-      'Das Feuer kommt nicht in Gang',
-      'Ofen brennt nicht richtig an',
-      'Anzünden dauert zu lange',
-      'Die schädlichen Emissionen sind zu hoch',
-      'Die Effizienz ist niedrig',
-      'Ofen brennt nicht schön, wenig Flamme',
-      'Scheibenluft ist geöffnet',
-      'Rückwandluft ist geschlossen',
+      'Recoverable memory errors logged each hour',
+      'One hashboard contributes <80% of its expected hashrate',
+      'Effective hashrate trends down 0.5–1% per week',
     ],
     massnahmen: [
-      'Mehr Kleinholz verwenden',
-      'Mehr Anzünder (2-3) verwenden',
-      'Richtigen Brennstoff verwenden, Bedienungsanleitung beachten',
+      'Run the vendor diagnostic and capture per-chip error counts',
+      'Increase board voltage by one step if temperature allows; otherwise plan an RMA',
+      'Move the rig to a cooler position in the rack — degradation accelerates above 70 °C average',
     ],
   },
   C6: {
-    title: 'Zu wenig Brennstoff',
+    title: 'Cooling saturation',
     grund: [
-      'Zu wenig Holz',
+      'Fans pinned at 100% with no thermal margin left',
+      'Room HVAC over capacity or partially failed',
+      'Hot aisle recirculation due to gap in containment',
     ],
     auswirkungen: [
-      'Ofen brennt zu kurz',
-      'Die schädlichen Emissionen sind zu hoch',
-      'Die Effizienz ist niedrig',
+      'Both fans at 100% PWM during stable workloads',
+      'Hashrate cannot recover above 90% of nominal regardless of load profile',
+      'Intake temperature sensors near the model upper limit',
     ],
     massnahmen: [
-      'Richtige Menge Brennstoff verwenden, Bedienungsanleitung beachten',
+      'Audit room HVAC: check setpoint, filter pressure drop, and chiller status',
+      'Plug recirculation gaps in the containment system',
+      'For hydro/immersion units, verify coolant flow rate against the model spec',
     ],
   },
 };

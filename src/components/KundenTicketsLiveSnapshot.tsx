@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ref, get } from 'firebase/database';
 import { realtimeDB } from '../lib/firebase';
 import { usePingTest } from '../hooks/usePingTest';
-import { decodeStoveErrors, type DecodedStoveError } from '../utils/decodeStoveErrors';
+import { decodeRigErrors, type DecodedRigError } from '../utils/decodeRigErrors';
 import {
   BRENNBEWERTUNG_KEYS,
   type BrennbewertungKey,
@@ -33,7 +33,7 @@ interface SnapshotData {
   /** Last seen UNIX timestamp (seconds) — null when never connected. */
   lastSeenSec: number | null;
   cValues: BrennbewertungValues;
-  errors: DecodedStoveError[];
+  errors: DecodedRigError[];
 }
 
 const ZERO_C: BrennbewertungValues = {
@@ -114,7 +114,7 @@ export const KundenTicketsLiveSnapshot: React.FC<KundenTicketsLiveSnapshotProps>
           }
         }
 
-        const errors = decodeStoveErrors({
+        const errors = decodeRigErrors({
           ecode: typeof meta?.ecode === 'number' ? meta.ecode : null,
           ecode2: typeof meta?.ecode2 === 'number' ? meta.ecode2 : null,
         });

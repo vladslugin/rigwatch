@@ -7,7 +7,7 @@ import { DOC_SECTIONS, type DocSection } from '../docs/docsRegistry';
 import {
   DemoBrennbewertungGood,
   DemoBrennbewertungBad,
-  DemoOfenFunktionError,
+  DemoRigFunktionError,
   DemoCauseEntry,
 } from '../docs/demos/dealerDemos';
 import {
@@ -23,7 +23,7 @@ import { DemoTerminal, DemoRigfetch } from '../docs/demos/terminalDemos';
  * reader picture the UI. Chapters not in this map render text-only.
  *
  * Note: a Luftstrom schematic existed earlier but was removed — it was an
- * imagined drawing rather than a real reflection of HASE-stove geometry, and
+ * imagined drawing rather than a real reflection of HASE-rig geometry, and
  * a wrong picture is worse than no picture. Chapter 20 stays text-only until
  * we get an authoritative diagram from the HASE team.
  */
@@ -35,7 +35,7 @@ const DEMOS_BY_CHAPTER: Record<number, React.FC[]> = {
     DemoStatusPills,
     DemoBrennbewertungGood,
     DemoBrennbewertungBad,
-    DemoOfenFunktionError,
+    DemoRigFunktionError,
     DemoCauseEntry,
     DemoInfoToggle,
   ],

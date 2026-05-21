@@ -3,7 +3,7 @@ import { collection, query, where, orderBy, limit, onSnapshot, addDoc, updateDoc
 import { firestoreDB } from '../lib/firebase';
 import { useAuth } from './useAuth';
 import { useTranslation } from 'react-i18next';
-import { useNotificationHelpers } from '../store/useStoveStore';
+import { useNotificationHelpers } from '../store/useRigStore';
 
 export interface GlobalAlarm {
   id?: string;

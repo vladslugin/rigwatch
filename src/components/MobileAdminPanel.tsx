@@ -238,10 +238,10 @@ const MobileAdminPanel: React.FC<MobileAdminPanelProps> = ({ isOpen, onClose }) 
         await loadUsers();
         setTimeout(() => setSuccess(null), 3000);
       } else {
-        setError(result.error || 'Fehler beim Aktualisieren des Simple Mode');
+        setError(result.error || 'Fehler beim Refresh des Simple Mode');
       }
     } catch (err) {
-      setError('Fehler beim Aktualisieren des Simple Mode');
+      setError('Fehler beim Refresh des Simple Mode');
     } finally {
       setIsLoading(false);
     }

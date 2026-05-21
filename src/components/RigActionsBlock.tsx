@@ -1,12 +1,12 @@
 import React, { useState, useCallback } from 'react';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 import { ref, set } from 'firebase/database';
 import { realtimeDB } from '../lib/firebase';
 import { useTranslation } from 'react-i18next';
 
-const StoveActionsBlock: React.FC = () => {
-  const deviceId = useStoveStore(state => state.deviceId);
-  const deviceMetadata = useStoveStore(state => state.deviceMetadata);
+const RigActionsBlock: React.FC = () => {
+  const deviceId = useRigStore(state => state.deviceId);
+  const deviceMetadata = useRigStore(state => state.deviceMetadata);
   const { t } = useTranslation();
   
   const [isSettingSoftware, setIsSettingSoftware] = useState(false);
@@ -21,10 +21,10 @@ const StoveActionsBlock: React.FC = () => {
       const swsRef = ref(realtimeDB, `konstant/${deviceId}/sws`);
       await set(swsRef, 4);
       
-      alert(t('stove.softwareLevelSetSuccess'));
+      alert(t('rig.softwareLevelSetSuccess'));
     } catch (error) {
-      console.error('[StoveActionsBlock] Error setting software level:', error);
-      alert(t('stove.softwareLevelSetError'));
+      console.error('[RigActionsBlock] Error setting software level:', error);
+      alert(t('rig.softwareLevelSetError'));
     } finally {
       setIsSettingSoftware(false);
     }
@@ -39,10 +39,10 @@ const StoveActionsBlock: React.FC = () => {
       const updateRef = ref(realtimeDB, `konstant/${deviceId}/u`);
       await set(updateRef, true);
       
-      alert(t('stove.updateStartedSuccess'));
+      alert(t('rig.updateStartedSuccess'));
     } catch (error) {
-      console.error('[StoveActionsBlock] Error triggering update:', error);
-      alert(t('stove.updateStartedError'));
+      console.error('[RigActionsBlock] Error triggering update:', error);
+      alert(t('rig.updateStartedError'));
     } finally {
       setIsUpdating(false);
     }
@@ -75,7 +75,7 @@ const StoveActionsBlock: React.FC = () => {
           {deviceMetadata.f !== undefined && deviceMetadata.f > 0 && deviceMetadata.f < 100 ? (
             <div className="px-3 py-2 bg-primary/10 text-primary rounded-lg text-xs border border-primary/30">
               <div className="flex items-center justify-between mb-1">
-                <span className="font-medium">{t('stove.updatingFirmware')}</span>
+                <span className="font-medium">{t('rig.updatingFirmware')}</span>
                 <span className="font-bold">{deviceMetadata.f}%</span>
               </div>
               <div className="w-full bg-muted rounded h-1.5">
@@ -90,14 +90,14 @@ const StoveActionsBlock: React.FC = () => {
               <svg className="w-4 h-4 mr-2 text-warning" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.667-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
               </svg>
-              <span className="font-medium">{t('stove.updateAvailable')}</span>
+              <span className="font-medium">{t('rig.updateAvailable')}</span>
             </div>
           ) : deviceMetadata.f === 100 ? (
             <div className="px-3 py-2 bg-success/10 text-success rounded-lg text-xs flex items-center border border-success/30">
               <svg className="w-4 h-4 mr-2 text-success" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
-              <span className="font-medium">{t('stove.upToDate')}</span>
+              <span className="font-medium">{t('rig.upToDate')}</span>
             </div>
           ) : null}
         </div>
@@ -112,14 +112,14 @@ const StoveActionsBlock: React.FC = () => {
             {isSettingSoftware ? (
               <>
                 <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                <span>{t('stove.settingSoftware')}</span>
+                <span>{t('rig.settingSoftware')}</span>
               </>
             ) : (
               <>
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
                 </svg>
-                <span>{t('stove.setSoftwareLevel4')}</span>
+                <span>{t('rig.setSoftwareLevel4')}</span>
               </>
             )}
           </button>
@@ -134,14 +134,14 @@ const StoveActionsBlock: React.FC = () => {
               {isUpdating ? (
                 <>
                   <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span>{t('stove.updating')}</span>
+                  <span>{t('rig.updating')}</span>
                 </>
               ) : (
                 <>
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                   </svg>
-                  <span>{t('stove.update')}</span>
+                  <span>{t('rig.update')}</span>
                 </>
               )}
             </button>
@@ -152,5 +152,5 @@ const StoveActionsBlock: React.FC = () => {
   );
 };
 
-export default StoveActionsBlock;
+export default RigActionsBlock;
 

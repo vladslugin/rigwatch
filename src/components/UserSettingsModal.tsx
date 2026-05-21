@@ -5,7 +5,7 @@ import { useAuth } from '../hooks/useAuth';
 import { USER_ROLE_CONFIGS } from '../types/auth';
 import { useTranslation } from 'react-i18next';
 import i18n from '../i18n';
-import { useNotificationHelpers } from '../store/useStoveStore';
+import { useNotificationHelpers } from '../store/useRigStore';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { firestoreDB } from '../lib/firebase';
 import { useEscapeKey } from '../hooks/useEscapeKey';

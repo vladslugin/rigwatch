@@ -122,7 +122,7 @@ export const runRules = (features: FeatureBag, _signals: Signal[], params: any =
     actions.push({ action, type: 'self', eta_min: 5 });
   } else if (longOffline) {
     const offlineIssue = locale === 'de' ? 'Gerät längere Zeit offline' : 'Device offline for extended period';
-    const offlineAction = locale === 'de' ? 'Letzte Verbindung prüfen und Netzwerk überprüfen' : 'Check when device last connected and verify network';
+    const offlineAction = locale === 'de' ? 'Letzte Connection prüfen und Netzwerk überprüfen' : 'Check when device last connected and verify network';
     push({ issue: offlineIssue, probability: 0.6, why: ['offlineForMinutes>' + features.offlineForMinutes] }, ['offlineForMinutes']);
     actions.push({ action: offlineAction, type: 'self', eta_min: 5 });
   }
@@ -188,7 +188,7 @@ export const runRules = (features: FeatureBag, _signals: Signal[], params: any =
 
   // Temperature analysis (phase-aware)
   if (typeof features.temperature === 'number' && features.notIgnited !== true) {
-    // Normal fireplace temperatures can reach 450-620°C during combustion
+    // Normal rig temperatures can reach 450-620°C during combustion
     // Only flag as problematic if exceeding typical combustion range significantly
     if (features.temperature > 650) {
       push({ issue: 'Very high temperature detected', probability: 0.7, why: ['T=' + features.temperature + '°C'] }, ['temperature']);
@@ -251,14 +251,14 @@ export const runRules = (features: FeatureBag, _signals: Signal[], params: any =
 
   // Not ignited detection
   if (features.notIgnited === true) {
-    const issue = locale === 'de' ? 'Ofen nicht entzündet' : 'Stove not ignited';
+    const issue = locale === 'de' ? 'Rig nicht entzündet' : 'Rig not ignited';
     const why: string[] = [];
     if (typeof features.temperature === 'number') why.push('T=' + features.temperature + '°C');
     if (typeof features.temperatureRise === 'number') why.push('MLANG=' + features.temperatureRise + '°C/30s');
     if (typeof features.performance === 'number') why.push('P=' + features.performance + '%');
     if (typeof features.oxygenContent === 'number') why.push('O2=' + features.oxygenContent + '%');
     push({ issue, probability: 0.8, why }, ['notIgnited']);
-    actions.push({ action: locale === 'de' ? 'Zündung prüfen und Ofen gemäß Anleitung starten' : 'Check ignition and start stove per manual', type: 'self', eta_min: 5 });
+    actions.push({ action: locale === 'de' ? 'Zündung prüfen und Rig gemäß Anleitung starten' : 'Check ignition and start rig per manual', type: 'self', eta_min: 5 });
   }
 
   // Booster analysis

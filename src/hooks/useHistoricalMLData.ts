@@ -1,12 +1,12 @@
 import { useState, useCallback } from 'react';
 import { useHistoricalData } from './useFirebase';
 import { flattenHistoricalLog, mergeHistoricalLogs } from '../utils/historicalDataUtils';
-import { preprocessStoveData } from '../utils/mlEngine';
-import type { StoveData, CO2TrainingData, HistoricalLog } from '../types';
+import { preprocessRigData } from '../utils/mlEngine';
+import type { RigData, CO2TrainingData, HistoricalLog } from '../types';
 
 interface HistoricalMLDataState {
   isLoading: boolean;
-  rawData: StoveData[];
+  rawData: RigData[];
   trainingData: CO2TrainingData[];
   realCO2Count: number;
   totalPoints: number;
@@ -86,7 +86,7 @@ export const useHistoricalMLData = () => {
       }
 
       // Convert to training data
-      const trainingData = preprocessStoveData(rawData, windowSize);
+      const trainingData = preprocessRigData(rawData, windowSize);
       const realTargetCount = trainingData.filter(item => item.hasRealTarget).length;
 
       console.log(`[HistoricalML] Created ${trainingData.length} training examples, ${realTargetCount} with real CO2 targets`);

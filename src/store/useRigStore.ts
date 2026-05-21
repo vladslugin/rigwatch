@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import type {
-  StoveData,
+  RigData,
   DeviceConfig,
   DeviceMetadata,
   ParameterInfo,
@@ -9,12 +9,12 @@ import type {
   Notification,
 } from '../types';
 
-interface StoveState {
+interface RigState {
   deviceId: string | null;
   connectionStatus: ConnectionStatus;
   deviceExistence: 'unknown' | 'exists' | 'not_found';
   
-  currentData: StoveData;
+  currentData: RigData;
   deviceConfig: DeviceConfig;
   deviceMetadata: DeviceMetadata;
   
@@ -47,7 +47,7 @@ interface StoreActions {
   setConnectionStatus: (status: ConnectionStatus) => void;
   setDeviceExistence: (status: 'unknown' | 'exists' | 'not_found') => void;
   
-  updateCurrentData: (data: StoveData, skipParameters?: string[], isOptimisticUpdate?: boolean) => void;
+  updateCurrentData: (data: RigData, skipParameters?: string[], isOptimisticUpdate?: boolean) => void;
   updateDeviceConfig: (config: DeviceConfig) => void;
   updateDeviceMetadata: (metadata: DeviceMetadata) => void;
   
@@ -84,11 +84,11 @@ interface StoreActions {
   setErrorData: (data: { ecode?: number; ecode2?: number }) => void;
 }
 
-type StoveStore = StoveState & StoreActions;
+type RigStore = RigState & StoreActions;
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
 
-export const useStoveStore = create<StoveStore>((set, get) => ({
+export const useRigStore = create<RigStore>((set, get) => ({
   deviceId: null,
   connectionStatus: 'offline',
   deviceExistence: 'unknown',
@@ -172,7 +172,7 @@ export const useStoveStore = create<StoveStore>((set, get) => ({
     // For live Firebase snapshots we must replace state (not merge),
     // otherwise removed keys from /temporaer stay forever until page refresh.
     if (!isOptimisticUpdate) {
-      const nextData: StoveData = { ...filteredData };
+      const nextData: RigData = { ...filteredData };
 
       // Preserve locally protected values for skipped parameters during cooldown.
       allSkipParameters.forEach(paramId => {
@@ -583,11 +583,11 @@ export const useStoveStore = create<StoveStore>((set, get) => ({
 
 // Export store to window for debug purposes
 if (typeof window !== 'undefined') {
-  (window as any).stoveStore = useStoveStore;
+  (window as any).rigStore = useRigStore;
 }
 
 export const useNotificationHelpers = () => {
-  const addNotification = useStoveStore(state => state.addNotification);
+  const addNotification = useRigStore(state => state.addNotification);
   
   return {
     showSuccess: (message: string, options?: { isAlarm?: boolean; deviceId?: string; parameterName?: string; duration?: number }) => {

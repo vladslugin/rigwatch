@@ -6,7 +6,7 @@ import { useParameterFormatting } from '../hooks/useParameterDiscovery';
 import { getParameterDataType } from '../utils/parameterTypes';
 import { isTimeParameter, getParameterTimeFormat } from '../utils/timeFormatting';
 import { useLocalSettings } from '../hooks/useLocalSettings';
-import { useStoveStore, useNotificationHelpers } from '../store/useStoveStore';
+import { useRigStore, useNotificationHelpers } from '../store/useRigStore';
 import { realtimeDB } from '../lib/firebase';
 import { useTranslation } from 'react-i18next';
 
@@ -151,7 +151,7 @@ const ParameterCard = React.memo<ParameterCardProps>(({
   onHide, 
   decimalSeparatorVersion 
 }) => {
-  const value = useStoveStore(state => state.currentData[param.originalName]);
+  const value = useRigStore(state => state.currentData[param.originalName]);
   const { formatParameterValue } = useParameterFormatting();
   const { t } = useTranslation();
   const { hasPermission } = useAuth();
@@ -786,7 +786,7 @@ const ParameterGrid: React.FC<ParameterGridProps> = React.memo(({
   const { t } = useTranslation();
   const { getUserPreferences, getParameterSettings, setHidden } = useLocalSettings();
   const { setPositionInCategory } = useLocalSettings() as any;
-  const deviceId = useStoveStore(state => state.deviceId);
+  const deviceId = useRigStore(state => state.deviceId);
   const { showSuccess, showError } = useNotificationHelpers();
   const { user } = useAuth();
   const canDeleteParameter = user?.role === 'developer' || user?.role === 'super_admin';

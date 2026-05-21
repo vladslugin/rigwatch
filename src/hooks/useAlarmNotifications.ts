@@ -1,13 +1,13 @@
 import { useEffect, useRef, useCallback } from 'react';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 import type { ParameterInfo } from '../types';
 
 type AlarmState = 'normal' | 'low' | 'high';
 
 export const useAlarmNotifications = () => {
-  const deviceId = useStoveStore(state => state.deviceId);
-  const currentData = useStoveStore(state => state.currentData);
-  const discoveredParameters = useStoveStore(state => state.discoveredParameters);
+  const deviceId = useRigStore(state => state.deviceId);
+  const currentData = useRigStore(state => state.currentData);
+  const discoveredParameters = useRigStore(state => state.discoveredParameters);
 
   // Track last alarm state to fire only on transitions for highlighting
   const lastStateRef = useRef<Record<string, AlarmState>>({});

@@ -1,25 +1,25 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 import { ref, get, set } from 'firebase/database';
 import { realtimeDB } from '../lib/firebase';
 
-const StoveIdentificationBlock: React.FC = () => {
-  const deviceId = useStoveStore(state => state.deviceId);
+const RigIdentificationBlock: React.FC = () => {
+  const deviceId = useRigStore(state => state.deviceId);
   
-  const [selectedOfentyp, setSelectedOfentyp] = useState<string>('');
+  const [selectedRigtyp, setSelectedRigtyp] = useState<string>('');
   const [availableModels, setAvailableModels] = useState<string[]>([]);
   
-  // Input states for creating new stove
-  const [inputStoveSerial, setInputStoveSerial] = useState<string>('');
+  // Input states for creating new rig
+  const [inputRigSerial, setInputRigSerial] = useState<string>('');
   const [inputControllerSerial, setInputControllerSerial] = useState<string>('');
   const [nextFepaUID, setNextFepaUID] = useState<string>('—');
   
   const [isLoading, setIsLoading] = useState(false);
-  const [isSavingOfentyp, setIsSavingOfentyp] = useState(false);
-  const [isCreatingStove, setIsCreatingStove] = useState(false);
+  const [isSavingRigtyp, setIsSavingRigtyp] = useState(false);
+  const [isCreatingRig, setIsCreatingRig] = useState(false);
 
 
-  // Find maximum FEPA UID globally from all stoves in fepaliste
+  // Find maximum FEPA UID globally from all rigs in fepaliste
   const findMaxFepaUID = useCallback(async (): Promise<number> => {
     if (!realtimeDB) return 91000000;
 
@@ -45,13 +45,13 @@ const StoveIdentificationBlock: React.FC = () => {
       return maxUID;
 
     } catch (error) {
-      console.error('[StoveIdentificationBlock] Error finding max FEPA UID:', error);
+      console.error('[RigIdentificationBlock] Error finding max FEPA UID:', error);
       return 91000000;
     }
   }, []);
 
-  // Load stove identification data
-  const loadStoveData = useCallback(async () => {
+  // Load rig identification data
+  const loadRigData = useCallback(async () => {
     if (!realtimeDB) return;
 
     setIsLoading(true);
@@ -62,26 +62,26 @@ const StoveIdentificationBlock: React.FC = () => {
       setNextFepaUID(String(nextUID).padStart(8, '0'));
 
     } catch (error) {
-      console.error('[StoveIdentificationBlock] Error loading stove data:', error);
+      console.error('[RigIdentificationBlock] Error loading rig data:', error);
     } finally {
       setIsLoading(false);
     }
   }, [findMaxFepaUID]);
 
-  // Load available models from Firestore stove_models collection
+  // Load available models from Firestore rig_models collection
   const loadAvailableModels = useCallback(async () => {
     try {
       const { collection, getDocs } = await import('firebase/firestore');
       const { firestoreDB } = await import('../lib/firebase');
 
       if (!firestoreDB) {
-        console.error('[StoveIdentificationBlock] Firestore not initialized');
+        console.error('[RigIdentificationBlock] Firestore not initialized');
         setAvailableModels([]);
         return;
       }
 
-      const stoveModelsRef = collection(firestoreDB, 'stove_models');
-      const querySnapshot = await getDocs(stoveModelsRef);
+      const rigModelsRef = collection(firestoreDB, 'rig_models');
+      const querySnapshot = await getDocs(rigModelsRef);
 
       if (!querySnapshot.empty) {
         const models: string[] = [];
@@ -97,7 +97,7 @@ const StoveIdentificationBlock: React.FC = () => {
         setAvailableModels([]);
       }
     } catch (error) {
-      console.error('[StoveIdentificationBlock] Error loading models from Firestore:', error);
+      console.error('[RigIdentificationBlock] Error loading models from Firestore:', error);
       setAvailableModels([]);
     }
   }, []);
@@ -105,7 +105,7 @@ const StoveIdentificationBlock: React.FC = () => {
   // Update FEPA UID when input fields change
   useEffect(() => {
     const updateFepaUID = async () => {
-      if (inputStoveSerial.trim() && inputControllerSerial.trim()) {
+      if (inputRigSerial.trim() && inputControllerSerial.trim()) {
         const maxUID = await findMaxFepaUID();
         const nextUID = maxUID + 1;
         setNextFepaUID(String(nextUID).padStart(8, '0'));
@@ -115,19 +115,19 @@ const StoveIdentificationBlock: React.FC = () => {
     };
 
     updateFepaUID();
-  }, [inputStoveSerial, inputControllerSerial, findMaxFepaUID]);
+  }, [inputRigSerial, inputControllerSerial, findMaxFepaUID]);
 
   // Load data on mount and when deviceId changes
   useEffect(() => {
-    loadStoveData();
+    loadRigData();
     loadAvailableModels();
-  }, [loadStoveData, loadAvailableModels]);
+  }, [loadRigData, loadAvailableModels]);
 
-  // Handle Ofentyp change
-  const handleOfentypChange = useCallback(async (newValue: string) => {
+  // Handle Rigtyp change
+  const handleRigtypChange = useCallback(async (newValue: string) => {
     if (!realtimeDB) return;
 
-    setIsSavingOfentyp(true);
+    setIsSavingRigtyp(true);
     try {
       // Only save to device-specific path if deviceId exists
       if (deviceId) {
@@ -135,29 +135,29 @@ const StoveIdentificationBlock: React.FC = () => {
         await set(verzRef, newValue);
       }
 
-      setSelectedOfentyp(newValue);
+      setSelectedRigtyp(newValue);
     } catch (error) {
-      console.error('[StoveIdentificationBlock] Error saving Ofentyp:', error);
+      console.error('[RigIdentificationBlock] Error saving Rigtyp:', error);
     } finally {
-      setIsSavingOfentyp(false);
+      setIsSavingRigtyp(false);
     }
   }, []);
 
-  // Get stove model data from Firestore
-  const getStoveModelData = useCallback(async (modelName: string): Promise<{ articleNumber: number; softwareId: number } | null> => {
+  // Get rig model data from Firestore
+  const getRigModelData = useCallback(async (modelName: string): Promise<{ articleNumber: number; softwareId: number } | null> => {
     try {
       const { collection, query, where, getDocs } = await import('firebase/firestore');
       const { firestoreDB } = await import('../lib/firebase');
 
       if (!firestoreDB) throw new Error('Firestore not initialized');
 
-      // Query stove_models collection where name field matches the selected model
-      const stoveModelsRef = collection(firestoreDB, 'stove_models');
-      const q = query(stoveModelsRef, where('name', '==', modelName));
+      // Query rig_models collection where name field matches the selected model
+      const rigModelsRef = collection(firestoreDB, 'rig_models');
+      const q = query(rigModelsRef, where('name', '==', modelName));
       const querySnapshot = await getDocs(q);
 
       if (querySnapshot.empty) {
-        console.error('[StoveIdentificationBlock] Model not found in Firestore:', modelName);
+        console.error('[RigIdentificationBlock] Model not found in Firestore:', modelName);
         return null;
       }
 
@@ -167,34 +167,34 @@ const StoveIdentificationBlock: React.FC = () => {
 
       return { articleNumber, softwareId };
     } catch (error) {
-      console.error('[StoveIdentificationBlock] Error fetching model data:', error);
+      console.error('[RigIdentificationBlock] Error fetching model data:', error);
       return null;
     }
   }, []);
 
-  // Handle "Ofen anlegen" button
-  const handleCreateNewStove = useCallback(async () => {
-    if (!realtimeDB || !selectedOfentyp) {
-      alert('Bitte wählen Sie zuerst einen Ofentyp aus!');
+  // Handle "Rig anlegen" button
+  const handleCreateNewRig = useCallback(async () => {
+    if (!realtimeDB || !selectedRigtyp) {
+      alert('Please select Sie zuerst einen Rigtyp aus!');
       return;
     }
 
     // Validate inputs
-    if (!inputStoveSerial.trim() || !inputControllerSerial.trim()) {
-      alert('Bitte füllen Sie Seriennummer des Ofens und des Controllers aus!');
+    if (!inputRigSerial.trim() || !inputControllerSerial.trim()) {
+      alert('Bitte füllen Sie Seriennummer des Rigs und des Controllers aus!');
       return;
     }
 
     // Validate that serial numbers are valid numbers
-    const stoveSerialNum = parseInt(inputStoveSerial.trim(), 10);
+    const rigSerialNum = parseInt(inputRigSerial.trim(), 10);
     const controllerSerialNum = parseInt(inputControllerSerial.trim(), 10);
 
-    if (isNaN(stoveSerialNum) || isNaN(controllerSerialNum)) {
+    if (isNaN(rigSerialNum) || isNaN(controllerSerialNum)) {
       alert('Seriennummern müssen gültige Zahlen sein!');
       return;
     }
 
-    if (stoveSerialNum <= 0 || controllerSerialNum <= 0) {
+    if (rigSerialNum <= 0 || controllerSerialNum <= 0) {
       alert('Seriennummern müssen positive Zahlen sein!');
       return;
     }
@@ -203,13 +203,13 @@ const StoveIdentificationBlock: React.FC = () => {
     const latestMaxUID = await findMaxFepaUID();
     const actualNextUID = latestMaxUID + 1;
     const actualNextFepaUID = String(actualNextUID).padStart(8, '0');
-    const newCompleteId = `${stoveSerialNum}${controllerSerialNum}${actualNextFepaUID}`;
+    const newCompleteId = `${rigSerialNum}${controllerSerialNum}${actualNextFepaUID}`;
 
     const confirmed = window.confirm(
-      `Möchten Sie wirklich einen neuen Ofen anlegen?\n\n` +
-      `Ofen-Seriennummer: ${stoveSerialNum}\n` +
+      `Möchten Sie wirklich einen neuen Rig anlegen?\n\n` +
+      `Rig-Seriennummer: ${rigSerialNum}\n` +
       `Controller-Seriennummer: ${controllerSerialNum}\n` +
-      `Ofentyp: ${selectedOfentyp}\n` +
+      `Rigtyp: ${selectedRigtyp}\n` +
       `Neue ID: ${newCompleteId}\n` +
       `FEPA UID: ${actualNextFepaUID}\n\n` +
       `Dies erstellt neue Einträge in der Datenbank.`
@@ -217,11 +217,11 @@ const StoveIdentificationBlock: React.FC = () => {
 
     if (!confirmed) return;
 
-    setIsCreatingStove(true);
+    setIsCreatingRig(true);
 
     try {
       // 1. Get model data from Firestore
-      const modelData = await getStoveModelData(selectedOfentyp);
+      const modelData = await getRigModelData(selectedRigtyp);
       if (!modelData) {
         alert('Fehler: Modelldaten nicht in Firestore gefunden!');
         return;
@@ -230,26 +230,26 @@ const StoveIdentificationBlock: React.FC = () => {
       const { articleNumber, softwareId } = modelData;
 
       // 2. Use validated input values
-      const stoveSerialNumber = String(stoveSerialNum);
+      const rigSerialNumber = String(rigSerialNum);
 
       // 3. Use the FEPA UID that was already calculated and confirmed in the popup
       const uid = actualNextUID;
 
-      // 4. Create entry in controllertausch/fepaliste/<Ofen-Seriennummer>
+      // 4. Create entry in controllertausch/fepaliste/<Rig-Seriennummer>
       const fepalisteData = {
         a: articleNumber,
         csnr_akt: controllerSerialNum,
         csnr: controllerSerialNum,
         discard: false,
-        ofen: softwareId,
+        rig: softwareId,
         uid: uid
       };
 
-      const fepalisteRef = ref(realtimeDB, `controllertausch/fepaliste/${stoveSerialNumber}`);
+      const fepalisteRef = ref(realtimeDB, `controllertausch/fepaliste/${rigSerialNumber}`);
       await set(fepalisteRef, fepalisteData);
 
 
-      // 5. Create entry in konstant_app/<ID> for the NEW stove
+      // 5. Create entry in konstant_app/<ID> for the NEW rig
       const konstantAppData = {
         a: articleNumber,
         c: false,
@@ -262,7 +262,7 @@ const StoveIdentificationBlock: React.FC = () => {
       const konstantAppRef = ref(realtimeDB, `konstant_app/${newCompleteId}`);
       await set(konstantAppRef, konstantAppData);
 
-      // 6. Create entry in konstant/<ID> for the NEW stove
+      // 6. Create entry in konstant/<ID> for the NEW rig
       const konstantData = {
         d: false,
         k: 0,
@@ -276,7 +276,7 @@ const StoveIdentificationBlock: React.FC = () => {
       await set(konstantRef, konstantData);
 
       alert(
-        `Neuer Ofen erfolgreich angelegt!\n\n` +
+        `Neuer Rig erfolgreich angelegt!\n\n` +
         `Neue ID: ${newCompleteId}\n` +
         `UID: ${uid}\n` +
         `Artikelnummer: ${articleNumber}\n` +
@@ -284,20 +284,20 @@ const StoveIdentificationBlock: React.FC = () => {
       );
 
       // Clear input fields after successful creation
-      setInputStoveSerial('');
+      setInputRigSerial('');
       setInputControllerSerial('');
       setNextFepaUID('—');
 
       // Reload data to reflect changes
-      await loadStoveData();
+      await loadRigData();
 
     } catch (error) {
-      console.error('[StoveIdentificationBlock] Error creating new stove:', error);
-      alert('Fehler beim Anlegen des neuen Ofens! Siehe Console für Details.');
+      console.error('[RigIdentificationBlock] Error creating new rig:', error);
+      alert('Fehler beim Anlegen des neuen Rigs! Siehe Console für Details.');
     } finally {
-      setIsCreatingStove(false);
+      setIsCreatingRig(false);
     }
-  }, [selectedOfentyp, inputStoveSerial, inputControllerSerial, getStoveModelData, loadStoveData, findMaxFepaUID]);
+  }, [selectedRigtyp, inputRigSerial, inputControllerSerial, getRigModelData, loadRigData, findMaxFepaUID]);
 
   return (
     <div className="bg-muted rounded border-2 border-border flex-1 flex flex-col overflow-hidden">
@@ -315,7 +315,7 @@ const StoveIdentificationBlock: React.FC = () => {
             </svg>
           </div>
           <span>
-            Neuen Ofen anlegen
+            Neuen Rig anlegen
           </span>
         </h2>
       </div>
@@ -329,17 +329,17 @@ const StoveIdentificationBlock: React.FC = () => {
           </div>
         ) : (
           <div className="space-y-2">
-            {/* Row 1: Seriennummer des Ofens, Seriennummer des Controllers, FEPA-Nummer */}
+            {/* Row 1: Seriennummer des Rigs, Seriennummer des Controllers, FEPA-Nummer */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-              {/* Seriennummer des Ofens (Editable) */}
+              {/* Seriennummer des Rigs (Editable) */}
               <div className="p-2 bg-card rounded border border-border">
                 <div className="text-xs text-muted-foreground mb-0.5">
-                  Seriennummer des Ofens
+                  Seriennummer des Rigs
                 </div>
                 <input
                   type="text"
-                  value={inputStoveSerial}
-                  onChange={(e) => setInputStoveSerial(e.target.value)}
+                  value={inputRigSerial}
+                  onChange={(e) => setInputRigSerial(e.target.value)}
                   className="w-full px-2 py-1 text-xs font-mono bg-muted border border-border rounded focus:ring-1 focus:ring-ring text-foreground"
                   placeholder="z.B. 1000021"
                 />
@@ -367,8 +367,8 @@ const StoveIdentificationBlock: React.FC = () => {
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-success">Neu:</span>
                   <span className="font-mono font-semibold text-success">
-                    {inputStoveSerial && inputControllerSerial && nextFepaUID !== '—'
-                      ? `${inputStoveSerial}${inputControllerSerial}${nextFepaUID}`
+                    {inputRigSerial && inputControllerSerial && nextFepaUID !== '—'
+                      ? `${inputRigSerial}${inputControllerSerial}${nextFepaUID}`
                       : '—'
                     }
                   </span>
@@ -376,21 +376,21 @@ const StoveIdentificationBlock: React.FC = () => {
               </div>
             </div>
 
-            {/* Row 2: Ofentyp selector and Create button */}
+            {/* Row 2: Rigtyp selector and Create button */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              {/* Ofentyp Selector */}
+              {/* Rigtyp Selector */}
               <div className="p-2 bg-card rounded border border-border">
                 <div className="text-xs text-muted-foreground mb-0.5">
-                  Ofentyp
+                  Rigtyp
                 </div>
                 <select
-                  value={selectedOfentyp}
-                  onChange={(e) => handleOfentypChange(e.target.value)}
-                  disabled={isSavingOfentyp || availableModels.length === 0}
+                  value={selectedRigtyp}
+                  onChange={(e) => handleRigtypChange(e.target.value)}
+                  disabled={isSavingRigtyp || availableModels.length === 0}
                   className="w-full px-2 py-1 text-xs font-semibold bg-card border border-border rounded text-foreground focus:ring-1 focus:ring-ring focus:border-ring disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <option value="">
-                    {availableModels.length === 0 ? 'Keine Modelle' : 'Modell wählen...'}
+                    {availableModels.length === 0 ? 'No models' : 'Select model...'}
                   </option>
                   {availableModels.map((model) => (
                     <option key={model} value={model}>
@@ -400,14 +400,14 @@ const StoveIdentificationBlock: React.FC = () => {
                 </select>
               </div>
 
-              {/* Create New Stove Button */}
+              {/* Create New Rig Button */}
               <div className="p-2 bg-card rounded border border-border flex items-end">
                 <button
-                  onClick={handleCreateNewStove}
-                  disabled={isCreatingStove || !selectedOfentyp}
+                  onClick={handleCreateNewRig}
+                  disabled={isCreatingRig || !selectedRigtyp}
                   className="w-full px-2 py-1 bg-success hover:bg-success/80 disabled:bg-muted text-success-foreground text-xs font-semibold rounded transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
                 >
-                  {isCreatingStove ? (
+                  {isCreatingRig ? (
                     <>
                       <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                       <span>Anlegen...</span>
@@ -417,7 +417,7 @@ const StoveIdentificationBlock: React.FC = () => {
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                       </svg>
-                      <span>Ofen anlegen</span>
+                      <span>Rig anlegen</span>
                     </>
                   )}
                 </button>
@@ -430,5 +430,5 @@ const StoveIdentificationBlock: React.FC = () => {
   );
 };
 
-export default StoveIdentificationBlock;
+export default RigIdentificationBlock;
 

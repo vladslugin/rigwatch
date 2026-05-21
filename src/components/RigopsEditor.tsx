@@ -40,8 +40,8 @@ const RIGOPS_SYNTAX_MEDIUM_MAX_CHARS = 30000;
 const RIGOPS_EDITOR_TEXT_METRICS =
   'text-xs leading-5 font-mono whitespace-pre-wrap break-words [tab-size:2] tracking-normal';
 const RIGOPS_COMMAND_SNIPPETS: Array<{ command: string; snippet: string; description: string }> = [
-  { command: 'connect', snippet: 'connect <device_id>', description: 'Verbinden mit Gerät' },
-  { command: 'disconnect', snippet: 'disconnect', description: 'Verbindung trennen' },
+  { command: 'connect', snippet: 'connect <device_id>', description: 'Connect mit Gerät' },
+  { command: 'disconnect', snippet: 'disconnect', description: 'Connection trennen' },
   { command: 'set', snippet: 'set <parameter> <value>', description: 'Parameter schreiben' },
   { command: 'get', snippet: 'get <param> [as <var>]', description: 'Parameter lesen' },
   { command: 'read', snippet: 'read <param> <var>', description: 'Parameter in Variable' },
@@ -85,7 +85,7 @@ Nur #version 1 wird unterstützt. #created im Format YYYY-MM-DD.
 
 ## Kommentare im Skriptkörper
 Zeilen, die mit # beginnen, werden beim Ausführen ignoriert (nach dem Kopf). Beispiel:
-  # Nur Seriennummern 72xxxx anfassen — alte Ofen-Serien
+  # Nur Seriennummern 72xxxx anfassen — alte Rig-Serien
   fb_keys /historienliste shallow prefix 72 as listeKeys
 
 ## Syntax — Grundlagen
@@ -95,7 +95,7 @@ Zeilen, die mit # beginnen, werden beim Ausführen ignoriert (nach dem Kopf). Be
 - Index: $liste[0], $pair[1] — funktioniert, wenn die Variable eine JSON-Liste enthält (siehe "let" mit Arrays).
 - Gerät (nach connect): @PARAM für aktuelle Live-Werte; Bedingung "connected" / "!connected".
 
-## Verbindung & Gerät
+## Connection & Gerät
 connect <firebase_geraete_id>
 status
 disconnect

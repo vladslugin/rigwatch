@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 import type { NotificationType } from '../types';
 import { useTranslation } from 'react-i18next';
 import { soundManager } from '../utils/soundManager';
@@ -156,8 +156,8 @@ interface NotificationSystemProps {
 }
 
 const NotificationSystem: React.FC<NotificationSystemProps> = ({ onAlarmClick }) => {
-  const notifications = useStoveStore(state => state.notifications);
-  const removeNotification = useStoveStore(state => state.removeNotification);
+  const notifications = useRigStore(state => state.notifications);
+  const removeNotification = useRigStore(state => state.removeNotification);
 
   if (notifications.length === 0) {
     return null;

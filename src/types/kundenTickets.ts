@@ -7,9 +7,9 @@ export interface KundenTicketAuthor {
   role: string | null;
 }
 
-export interface KundenTicketStovePassport {
+export interface KundenTicketRigPassport {
   modelName: string;
-  stoveSerial: string;
+  rigSerial: string;
   controllerSerial: string;
   currentControllerSerial: string;
   imageUrl?: string;
@@ -42,7 +42,7 @@ export interface KundenTicket {
   id: string;
   status: KundenTicketStatus;
   deviceId: string;
-  stovePassport: KundenTicketStovePassport;
+  rigPassport: KundenTicketRigPassport;
   statusSnapshot: KundenTicketStatusSnapshot;
   customerQuestion: string;
   geminiAnswer: string;
@@ -57,7 +57,7 @@ export interface KundenTicket {
 
 export interface CreateKundenTicketInput {
   deviceId: string;
-  stovePassport: KundenTicketStovePassport;
+  rigPassport: KundenTicketRigPassport;
   statusSnapshot: KundenTicketStatusSnapshot;
   customerQuestion: string;
   geminiAnswer: string;

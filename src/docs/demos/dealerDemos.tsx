@@ -203,7 +203,7 @@ const BulletList: React.FC<{ items: string[]; markerColor?: string }> = ({
 );
 
 // ---------------------------------------------------------------------------
-// 1. DemoBrennbewertungGood — "Der Ofen brennt einwandfrei"
+// 1. DemoBrennbewertungGood — "Der Rig brennt einwandfrei"
 // ---------------------------------------------------------------------------
 
 export const DemoBrennbewertungGood: React.FC = () => (
@@ -228,7 +228,7 @@ export const DemoBrennbewertungGood: React.FC = () => (
         </div>
         <div style={{ minWidth: 0, flex: 1 }}>
           <h3 style={{ margin: 0, fontSize: 17, fontWeight: 600, color: '#111111' }}>
-            Der Ofen brennt einwandfrei
+            Der Rig brennt einwandfrei
           </h3>
           <p style={{ margin: '4px 0 0', fontSize: 13, color: '#6b7280' }}>
             Alle Brennparameter liegen im grünen Bereich.
@@ -236,7 +236,7 @@ export const DemoBrennbewertungGood: React.FC = () => (
           <ul style={{ listStyle: 'none', margin: '12px 0 0', padding: 0 }}>
             {[
               'Das Holz hat die richtige Restfeuchte (14 – 20 %).',
-              'Kaminzug und Brennstoffmenge passen zur Bedienungsanleitung.',
+              'Rigzug und Brennstoffmenge passen zur Bedienungsanleitung.',
               'Es treten keine Auffälligkeiten bei Anzünden oder Nachlegen auf.',
             ].map((line, idx) => (
               <li
@@ -387,7 +387,7 @@ export const DemoBrennbewertungBad: React.FC = () => (
         </div>
         <div>
           <h3 style={{ margin: 0, fontSize: 17, fontWeight: 600, color: '#111111' }}>
-            Der Ofen könnte besser brennen
+            Der Rig könnte besser brennen
           </h3>
           <p style={{ margin: '4px 0 0', fontSize: 13, color: '#6b7280' }}>
             Diese Punkte sollten zuerst überprüft werden.
@@ -398,7 +398,7 @@ export const DemoBrennbewertungBad: React.FC = () => (
       <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
         <ProblemEntry
           cKey="C1"
-          title="Der Ofen brennt sehr stark"
+          title="Der Rig brennt sehr stark"
           stars={5}
           massnahmen={[
             'Feuchtigkeit des Holzes messen (Restfeuchte 14 – 20 %)',
@@ -408,7 +408,7 @@ export const DemoBrennbewertungBad: React.FC = () => (
         />
         <ProblemEntry
           cKey="C2"
-          title="Der Ofen brennt träge"
+          title="Der Rig brennt träge"
           stars={4}
           massnahmen={[
             'Kleinere Scheite wählen',
@@ -416,9 +416,9 @@ export const DemoBrennbewertungBad: React.FC = () => (
           ]}
           infoOpen
           auswirkungen={[
-            'Ofen kommt nicht auf Touren',
+            'Rig kommt nicht auf Touren',
             'Aufheizen dauert zu lange',
-            'Ofen brennt nicht schön, wenig Flamme',
+            'Rig brennt nicht schön, wenig Flamme',
           ]}
         />
       </ul>
@@ -427,7 +427,7 @@ export const DemoBrennbewertungBad: React.FC = () => (
 );
 
 // ---------------------------------------------------------------------------
-// 3. DemoOfenFunktionError — 2 stacked errors, second one open
+// 3. DemoRigFunktionError — 2 stacked errors, second one open
 // ---------------------------------------------------------------------------
 
 interface ErrorRowProps {
@@ -456,10 +456,10 @@ const ErrorRow: React.FC<ErrorRowProps> = ({ description, pillLabel, open = fals
   </li>
 );
 
-export const DemoOfenFunktionError: React.FC = () => (
+export const DemoRigFunktionError: React.FC = () => (
   <>
     <SectionLabel />
-    <section style={cardRoot} aria-label="Beispiel: Ofen-Funktion mit Fehlern">
+    <section style={cardRoot} aria-label="Beispiel: Rig-Funktion mit Fehlern">
       <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
         <div
           style={{
@@ -478,7 +478,7 @@ export const DemoOfenFunktionError: React.FC = () => (
         </div>
         <div style={{ minWidth: 0, flex: 1 }}>
           <h3 style={{ margin: 0, fontSize: 17, fontWeight: 600, color: '#111111' }}>
-            Der Ofen meldet 2 Fehler
+            Der Rig meldet 2 Fehler
           </h3>
           <ul
             style={{

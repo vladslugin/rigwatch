@@ -1,8 +1,8 @@
 import { useCallback, useRef, useEffect } from 'react';
-import { useStoveStore, useNotificationHelpers } from '../store/useStoveStore';
+import { useRigStore, useNotificationHelpers } from '../store/useRigStore';
 import { useParameterMetadata } from './useFirebase';
 import { useLocalSettings } from './useLocalSettings';
-import type { StoveData, ParameterInfo } from '../types';
+import type { RigData, ParameterInfo } from '../types';
 import { formatParameterValue as formatValue } from '../utils/parameterTypes';
 
 // MAGIC: values <= 25 get their own y-axis by legacy rules
@@ -77,7 +77,7 @@ const baseParameterMetadata: Record<string, Partial<ParameterInfo>> = {
     isInitiallyVisibleOnChart: true, 
     color: "#ff7f0e", 
     divisor: 1, 
-    description: "Calculated stove performance.",
+    description: "Calculated rig performance.",
     minValue: 0,
     maxValue: 100
   },
@@ -117,9 +117,9 @@ const defaultMetadataValues: Partial<ParameterInfo> = {
 // (removed unused DEFAULT_COLORS)
 
 export const useParameterDiscovery = () => {
-  const deviceId = useStoveStore(state => state.deviceId);
-  const setDiscoveredParameters = useStoveStore(state => state.setDiscoveredParameters);
-  const discoveredParameters = useStoveStore(state => state.discoveredParameters);
+  const deviceId = useRigStore(state => state.deviceId);
+  const setDiscoveredParameters = useRigStore(state => state.setDiscoveredParameters);
+  const discoveredParameters = useRigStore(state => state.discoveredParameters);
   const { showError, showInfo } = useNotificationHelpers();
   const { fetchMetadata, setupParameterListener } = useParameterMetadata();
   const { getAllParameterSettings, setColor, setPosition } = useLocalSettings();
@@ -409,7 +409,7 @@ export const useParameterDiscovery = () => {
     return parsed;
   }, [fetchMetadata, setupParameterListener, getNextAvailableColor, setColor, getAllParameterSettings]);
 
-  const discoverParameters = useCallback(async (currentData: StoveData) => {
+  const discoverParameters = useCallback(async (currentData: RigData) => {
     if (!currentData || Object.keys(currentData).length === 0) {
       console.warn('[ParameterDiscovery] No data provided for discovery');
       return;

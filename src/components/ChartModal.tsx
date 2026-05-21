@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 import { useTiling } from '../context/TilingContext';
 import RealtimeChart from './RealtimeChart';
 import { useHistoricalData } from '../hooks/useFirebase';
@@ -56,12 +56,12 @@ const ChartModal: React.FC<ChartModalProps> = ({
   isHighlighted = false,
 }) => {
   // Get data from store (no additional Firebase requests)
-  const deviceId = useStoveStore(state => state.deviceId);
-  const currentData = useStoveStore(state => state.currentData);
-  const discoveredParameters = useStoveStore(state => state.discoveredParameters);
-  const connectionStatus = useStoveStore(state => state.connectionStatus);
-  const deviceMetadata = useStoveStore(state => state.deviceMetadata);
-  const deviceConfig = useStoveStore(state => state.deviceConfig);
+  const deviceId = useRigStore(state => state.deviceId);
+  const currentData = useRigStore(state => state.currentData);
+  const discoveredParameters = useRigStore(state => state.discoveredParameters);
+  const connectionStatus = useRigStore(state => state.connectionStatus);
+  const deviceMetadata = useRigStore(state => state.deviceMetadata);
+  const deviceConfig = useRigStore(state => state.deviceConfig);
 
   // Historical data loading
   const { loadHistoricalData } = useHistoricalData();
@@ -421,8 +421,8 @@ const ChartModal: React.FC<ChartModalProps> = ({
                 currentData={historicalTimestamp ? {} : currentData}
                 isHistoricalMode={!!historicalTimestamp}
                 deviceId={deviceId || ''}
-                stoveModel={deviceMetadata.ofenname || 'N/A'}
-                stoveModelInfo={deviceMetadata.ofen ? `Model #${deviceMetadata.ofen}` : ''}
+                rigModel={deviceMetadata.rigname || 'N/A'}
+                rigModelInfo={deviceMetadata.rig ? `Model #${deviceMetadata.rig}` : ''}
                 parameterSet={deviceConfig.verz === '~' || !deviceConfig.verz ? 'Default' : deviceConfig.verz}
                 compact={true}
                 chartInstanceId={chartId}

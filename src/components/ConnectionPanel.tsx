@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useFirebaseConnection, useDeviceList } from '../hooks/useFirebase';
 import { useParameterDiscovery } from '../hooks/useParameterDiscovery';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 import UserSettingsModal from './UserSettingsModal';
 import CategoriesModal from './CategoriesModal';
 import ChatSystem from './ChatSystem';
@@ -99,24 +99,24 @@ const ConnectionPanel: React.FC<ConnectionPanelProps> = ({
   const [isClearingTemporaer, setIsClearingTemporaer] = useState(false);
   
   // Use direct store access
-  const deviceId = useStoveStore(state => state.deviceId);
-  const connectionStatus = useStoveStore(state => state.connectionStatus);
-  const discoveredParameters = useStoveStore(state => state.discoveredParameters);
-  const isEditMode = useStoveStore(state => state.isEditMode);
-  const setEditMode = useStoveStore(state => state.setEditMode);
+  const deviceId = useRigStore(state => state.deviceId);
+  const connectionStatus = useRigStore(state => state.connectionStatus);
+  const discoveredParameters = useRigStore(state => state.discoveredParameters);
+  const isEditMode = useRigStore(state => state.isEditMode);
+  const setEditMode = useRigStore(state => state.setEditMode);
   // Mobile gate — used to hide actions that depend on HTML5 drag/drop or
   // mouse-based window management (Terminal, parameter/section reorder).
   // Those features just don't work on touch devices and would leave the
   // user with broken UI; better to omit them than to ship dead buttons.
   const isMobile = useIsMobile();
-  const currentData = useStoveStore(state => state.currentData);
+  const currentData = useRigStore(state => state.currentData);
   const hasCurrentData = useMemo(() => Object.keys(currentData || {}).length > 0, [currentData]);
   
   // Section ordering
-  const isSectionReorderMode = useStoveStore(state => state.isSectionReorderMode);
-  const setSectionReorderMode = useStoveStore(state => state.setSectionReorderMode);
-  const setSectionOrder = useStoveStore(state => state.setSectionOrder);
-  const deviceConfig = useStoveStore(state => state.deviceConfig);
+  const isSectionReorderMode = useRigStore(state => state.isSectionReorderMode);
+  const setSectionReorderMode = useRigStore(state => state.setSectionReorderMode);
+  const setSectionOrder = useRigStore(state => state.setSectionOrder);
+  const deviceConfig = useRigStore(state => state.deviceConfig);
 
   const { connect, disconnect, clientId, ensureActiveClientPresent } = useFirebaseConnection();
   const { testFirestoreConnection } = useParameterDiscovery();
@@ -177,7 +177,7 @@ const ConnectionPanel: React.FC<ConnectionPanelProps> = ({
   const canViewKundenTickets = role === 'admin' || role === 'developer' || role === 'super_admin';
   const isDealerRoute = typeof window !== 'undefined' && window.location.pathname.startsWith('/haendler');
 
-  // Derived values for "Alle Werte" (d flag) and "Nur App-Werte" (k flag) from device config
+  // Derived values for "All Values" (d flag) and "App Only-Werte" (k flag) from device config
   const dFromStore = useMemo(() => {
     const raw = (deviceConfig as any)?.d;
     if (typeof raw === 'boolean') return raw;
@@ -652,7 +652,7 @@ const ConnectionPanel: React.FC<ConnectionPanelProps> = ({
     setCleanupProgress(0);
 
     // Step 1: Clear store state
-    const { clearAllState } = useStoveStore.getState();
+    const { clearAllState } = useRigStore.getState();
     clearAllState();
     setCleanupProgress(20);
 
@@ -708,7 +708,7 @@ const ConnectionPanel: React.FC<ConnectionPanelProps> = ({
     setShowSearchResults(false);
     setShowFavorites(false);
 
-    const currentState = useStoveStore.getState();
+    const currentState = useRigStore.getState();
     if (currentState.connectionStatus === 'connecting' || isCleaningUp) {
       return;
     }
@@ -984,7 +984,7 @@ const ConnectionPanel: React.FC<ConnectionPanelProps> = ({
         setSectionOrder(savedOrder);
       } else {
         // Set default order if nothing saved
-        const defaultOrder = ['stove-management', 'secondary-categories', 'main-and-airflow', 'charts'];
+        const defaultOrder = ['rig-management', 'secondary-categories', 'main-and-airflow', 'charts'];
         setSectionOrder(defaultOrder);
         saveSectionOrder(defaultOrder);
       }
@@ -1521,7 +1521,7 @@ const ConnectionPanel: React.FC<ConnectionPanelProps> = ({
                     }`}
                     title={deviceId ? `Löscht /temporaer/${deviceId}` : 'Kein Gerät verbunden'}
                   >
-                    {isClearingTemporaer ? 'Lösche…' : 'Temp löschen'}
+                    {isClearingTemporaer ? 'Lösche…' : 'Clear Temp'}
                   </button>
                   <button
                     onClick={handleToggleAlleWerte}
@@ -1532,7 +1532,7 @@ const ConnectionPanel: React.FC<ConnectionPanelProps> = ({
                         : 'bg-card/60 border-border/60 text-muted-foreground ' + (deviceId && connectionStatus === 'online' ? 'hover:bg-card' : 'opacity-50 cursor-not-allowed')
                     }`}
                   >
-                    Alle Werte: {alleWerteEnabled ? 'Ja' : 'Nein'}
+                    All Values: {alleWerteEnabled ? 'Yes' : 'No'}
                   </button>
                   <button
                     onClick={handleToggleNurApp}
@@ -1544,7 +1544,7 @@ const ConnectionPanel: React.FC<ConnectionPanelProps> = ({
                     }`}
                     title="Toggle increments/decrements k by 1"
                   >
-                    Nur App: {nurAppEnabled ? 'Ja' : 'Nein'}
+                    App Only: {nurAppEnabled ? 'Yes' : 'No'}
                   </button>
                 </div>
                 <div className={`text-[10px] font-medium px-2.5 py-1 rounded-lg border text-center lg:text-left ${
@@ -1556,10 +1556,10 @@ const ConnectionPanel: React.FC<ConnectionPanelProps> = ({
                     ? 'text-foreground bg-muted border-border'
                     : 'text-success bg-success/10 border-success/30'
                 }`}>
-                  {!alleWerteEnabled && kFromStore === 0 && 'Keine Werte beobachten'}
-                  {alleWerteEnabled && kFromStore === 0 && 'Alle Werte beobachten'}
-                  {alleWerteEnabled && kFromStore > 0 && 'Alle Werte beobachten'}
-                  {!alleWerteEnabled && kFromStore > 0 && 'Nur App-Werte beobachten'}
+                  {!alleWerteEnabled && kFromStore === 0 && 'Watch values disabled'}
+                  {alleWerteEnabled && kFromStore === 0 && 'Watch all values'}
+                  {alleWerteEnabled && kFromStore > 0 && 'Watch all values'}
+                  {!alleWerteEnabled && kFromStore > 0 && 'App Only-Werte beobachten'}
                 </div>
               </div>
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 import { useHistoricalData } from '../hooks/useFirebase';
 import { ChartRefContext } from '../context/ChartRefContext';
 import type { ChartDivElement } from '../context/ChartRefContext';
@@ -19,8 +19,8 @@ const HISTORICAL_SELECT_SIZE = 10;
 
 const getSectionClassName = (isNeo: boolean, className: string) =>
   isNeo
-    ? `stove-section bg-muted border-2 border-border rounded p-3 ${className}`
-    : `stove-section bg-muted/30 border border-border rounded-xl p-3 shadow-theme-sm ${className}`;
+    ? `rig-section bg-muted border-2 border-border rounded p-3 ${className}`
+    : `rig-section bg-muted/30 border border-border rounded-xl p-3 shadow-theme-sm ${className}`;
 
 const getHeaderClassName = (isNeo: boolean) =>
   isNeo
@@ -46,10 +46,10 @@ const getContentCardClassName = (isNeo: boolean) =>
     : 'bg-card rounded-xl p-3 border border-border shadow-theme-sm';
 
 const HistoricalDataPanel: React.FC<HistoricalDataPanelProps> = ({ className = '', onLoadHistoricalDataToChart }) => {
-  const deviceId = useStoveStore(state => state.deviceId);
-  const isHistoricalMode = useStoveStore(state => state.isHistoricalMode);
-  const setHistoricalMode = useStoveStore(state => state.setHistoricalMode);
-  const historicalTimestamps = useStoveStore(state => state.historicalTimestamps);
+  const deviceId = useRigStore(state => state.deviceId);
+  const isHistoricalMode = useRigStore(state => state.isHistoricalMode);
+  const setHistoricalMode = useRigStore(state => state.setHistoricalMode);
+  const historicalTimestamps = useRigStore(state => state.historicalTimestamps);
   const chartRef = useContext(ChartRefContext);
   const { t, i18n } = useTranslation();
   const [themeName, setThemeName] = useState<ThemeName>('default');
@@ -203,7 +203,7 @@ const HistoricalDataPanel: React.FC<HistoricalDataPanelProps> = ({ className = '
             </svg>
           </button>
         </h3>
-        <div className="stove-section-content">
+        <div className="rig-section-content">
           <div className={isNeo ? 'bg-card rounded p-4 border border-border' : 'bg-card rounded-xl p-4 border border-border shadow-theme-sm'}>
             <div className="text-center text-muted-foreground">
               <div className="w-12 h-12 bg-muted rounded-xl mx-auto mb-2 flex items-center justify-center">
@@ -238,7 +238,7 @@ const HistoricalDataPanel: React.FC<HistoricalDataPanelProps> = ({ className = '
         </button>
       </h3>
       
-      <div className="stove-section-content">
+      <div className="rig-section-content">
         <div className={getContentCardClassName(isNeo)}>
           <div className="historical-data-container space-y-3">
             {/* Historical Data Selector */}
@@ -306,7 +306,7 @@ const HistoricalDataPanel: React.FC<HistoricalDataPanelProps> = ({ className = '
                 <svg className="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3m-7 0h8" />
                 </svg>
-                {isDeleting ? t('actions.loading') : 'Löschen'}
+                {isDeleting ? t('actions.loading') : 'Delete'}
               </button>
               
               <button

@@ -149,7 +149,7 @@
   "errorBlock": {
     "title": "Errors"
   },
-  "stoveStatusBlock": {
+  "rigStatusBlock": {
     "title": "Current State",
     "liveData": "Live Data",
     "systemStatus": "System Status",
@@ -166,7 +166,7 @@
     "currentSerial": "Current Controller Serial Number",
     "exchangeDate": "Exchanged On",
     "oldestSerial": "Oldest Controller Serial Number",
-    "firstExchangeDate": "Stove Registration"
+    "firstExchangeDate": "Rig Registration"
   },
   "connectionBlock": {
     "title": "Connection",
@@ -288,7 +288,7 @@
     },
     "groups": {
       "general": "General",
-      "stoves": "Devices / Stoves",
+      "rigs": "Devices / Rigs",
       "parameter": "Parameters (view scope)",
       "parameters": "Parameters (editing)",
       "categories": "Categories",
@@ -301,17 +301,17 @@
     "descriptions": {
       "read_data": "Read data",
       "export_data": "Export data",
-      "manage_stoves": "Manage stoves",
+      "manage_rigs": "Manage rigs",
       "modify_settings": "Modify settings",
       "manage_updates": "Manage updates",
       "manage_users": "Manage users",
       "assign_roles": "Assign roles",
       "developer": "Unlock developer features",
       "manage_devices": "Manage devices",
-      "stoves.check_updates": "Check for firmware updates",
-      "stoves.force_update": "Force a firmware update",
-      "stoves.alternative_update": "Use the alternative update path",
-      "stoves.models_manage": "Maintain stove models",
+      "rigs.check_updates": "Check for firmware updates",
+      "rigs.force_update": "Force a firmware update",
+      "rigs.alternative_update": "Use the alternative update path",
+      "rigs.models_manage": "Maintain rig models",
       "parameter.view_all": "See every parameter",
       "parameter.view_readable": "See only readable parameters",
       "parameter.view_writable": "See only writable parameters",
@@ -445,7 +445,7 @@
     }
   },
   "sections": {
-    "stoveManagement": "Stove Management",
+    "rigManagement": "Rig Management",
     "secondaryCategories": "Secondary Categories",
     "mainAndAirflow": "Main Parameters & Airflow",
     "charts": "Charts",
@@ -454,16 +454,16 @@
   "app": {
     "welcome": "Welcome to RigWatch",
     "pendingApproval": "Please wait for administrator approval",
-    "connectDevice": "Connect to your fireplace device to start monitoring and controlling parameters.",
+    "connectDevice": "Connect to a mining rig to start streaming live telemetry, health scores, and earnings.",
     "underReview": "Your account is currently under review.",
-    "enterFirebaseId": "Enter your Firebase ID above and click \"Connect\" to get started.",
+    "enterFirebaseId": "Enter a Rig ID above and click \"Connect\" to get started.",
     "connecting": "Connecting...",
-    "establishing": "Establishing connection to device {{id}}",
+    "establishing": "Establishing connection to rig {{id}}",
     "connectionFailed": "Connection Failed",
-    "unableToConnect": "Unable to connect to device {{id}}. Please check your Firebase ID and try again.",
-    "deviceNotFoundTitle": "Device not found",
-    "deviceNotFound": "The device with ID \"{{id}}\" does not exist.",
-    "deviceNotFoundHint": "Please verify the ID or contact support.",
+    "unableToConnect": "Unable to connect to rig {{id}}. Verify the Rig ID and try again.",
+    "deviceNotFoundTitle": "Rig not found",
+    "deviceNotFound": "No rig with ID \"{{id}}\" was found.",
+    "deviceNotFoundHint": "Verify the ID or paste a wallet-style 0x… identifier.",
     "tryAgain": "Try Again"
   },
   "connectionPanel": {
@@ -472,7 +472,7 @@
     "connecting": "Connecting…",
     "clearTemp": "Clear temp",
     "connectedController": "Connected controller:",
-    "firebaseIdPlaceholder": "Firebase ID (22 digits)",
+    "firebaseIdPlaceholder": "Rig ID (e.g. 0x0000db19)",
     "differentIdWarning": "New ID differs from connected controller",
     "favorites": "Favorites",
     "clearAll": "Clear All",
@@ -718,28 +718,28 @@
     "chooseColorTitle": "Choose Color for Parameter",
     "cancel": "Cancel"
   },
-  "stove": {
-    "panelTitle": "Stove Management",
-    "connectPrompt": "Connect to a device to access stove management features",
-    "info": "Stove Information",
+  "rig": {
+    "panelTitle": "Rig Management",
+    "connectPrompt": "Connect to a device to access rig management features",
+    "info": "Rig Information",
     "technicalData": "Technical Data",
     "manual": "Manual",
     "modelInfoUnavailable": "Model information not available",
     "softwareId": "Software ID: {{id}}",
-    "stoveInfoButton": "Stove Info",
+    "rigInfoButton": "Rig Info",
     "parameterSet": "Parameter Set",
     "default": "Default",
     "firmwareVersion": "Firmware Version",
     "unknown": "Unknown",
     "updateAvailable": "Update Available",
-    "upToDate": "Stove is up to date",
+    "upToDate": "Rig is up to date",
     "updatingFirmware": "Updating Firmware",
     "installUpdate": "Install Available Update",
     "checkUpdates": "Check for Updates",
     "forceUpdate": "Force Update",
     "debugTools": "Debug Tools",
     "testModel": "Test Model",
-    "testModelTitle": "Test stove model lookup (check console)",
+    "testModelTitle": "Test rig model lookup (check console)",
     "searchNodes": "Search Nodes",
     "alternativeUpdate": "Alternative Update:",
     "updateFilenamePlaceholder": "Update filename...",
@@ -804,9 +804,9 @@
   "notifications": {
     "close": "Close notification"
   },
-  "stoveInfo": {
-    "title": "Stove Information",
-    "loading": "Loading stove information...",
+  "rigInfo": {
+    "title": "Rig Information",
+    "loading": "Loading rig information...",
     "article": "Article #{{num}}",
     "swLabel": "SW:",
     "versionPrefix": "v{{version}}",
@@ -815,14 +815,14 @@
     "basicInfo": "Basic Information",
     "deviceId": "Device ID",
 
-    "stoveSerial": "Stove Serial",
+    "rigSerial": "Rig Serial",
     "fepaUID": "Fepa UID",
     "originalController": "Original Controller",
     "currentController": "Current Controller",
     "connectionStatus": "Connection Status",
     "pingTest": "Ping Test",
     "pingTesting": "Ping Test...",
-    "pingInfo": "Sending ping commands to stove... This takes about 9 seconds.",
+    "pingInfo": "Sending ping commands to rig... This takes about 9 seconds.",
     "statusChecking": "Checking status...",
     "statusOnline": "Online",
     "statusOffline": "Offline",
@@ -831,19 +831,19 @@
     "comments": "Comments",
     "edit": "Edit",
     "add": "Add",
-    "commentPlaceholder": "Add notes about this stove...",
+    "commentPlaceholder": "Add notes about this rig...",
     "saving": "Saving...",
     "save": "Save",
     "cancel": "Cancel",
     "noComments": "No comments added yet",
     "noDevice": "No device connected",
-    "resetTitle": "Reset the stove controller",
+    "resetTitle": "Reset the rig controller",
     "resetting": "Resetting...",
-    "resetButton": "Reset Stove",
+    "resetButton": "Reset Rig",
     "notPaired": "Not paired",
     "assign": "Assign",
     "reconnect": "Reconnect",
-    "preview": "Preview stove image",
+    "preview": "Preview rig image",
     "showQR": "Show QR code",
     "qrPlaceholder": "QR code coming soon",
     "copySummary": "Copy Summary",
@@ -872,7 +872,7 @@
     "actions": "Actions",
     "lastLogin": "Last login",
     "description": "Description",
-    "descriptionPlaceholder": "Describe this stove installation, maintenance notes, or other details...",
+    "descriptionPlaceholder": "Describe this rig installation, maintenance notes, or other details...",
     "noDescription": "No description added",
     "controllerInfoTooltip": "Show controller status information",
     "controllerStatusTitle": "Controller Status Scenarios:",
@@ -911,14 +911,14 @@
     "backToLive": "Back to Live"
   },
   "parameterVariants": {
-    "title": "Stove Models",
+    "title": "Rig Models",
     "noDevice": "No Device Connected",
-    "connectPrompt": "Connect to a device to manage stove model configurations",
+    "connectPrompt": "Connect to a device to manage rig model configurations",
     "savedCount": "{{count}} saved",
     "parametersSummary": "Parameters: {{total}} total, {{writable}} writable",
     "selectModel": "Select Model",
-    "savedModels": "Saved stove models:",
-    "noneSaved": "No stove models saved yet",
+    "savedModels": "Saved rig models:",
+    "noneSaved": "No rig models saved yet",
     "model": "Model",
     "created": "Created",
     "device": "Device",
@@ -931,18 +931,18 @@
     "loadToDevice": "Load to Device",
     "export": "Export",
     "delete": "Delete",
-    "deleteConfirm": "Are you sure you want to delete stove model \"{{name}}\"?\n\nThis action cannot be undone.",
+    "deleteConfirm": "Are you sure you want to delete rig model \"{{name}}\"?\n\nThis action cannot be undone.",
     "saveAsNew": "Save current as new model:",
     "noWritableHint": "No writable parameters detected. Only read-only measurements (T, PL, SL, P, N) are available. Writable parameters are configuration values that can be modified.",
-    "newNamePlaceholder": "Enter stove model name...",
+    "newNamePlaceholder": "Enter rig model name...",
     "noWritableTitle": "No writable parameters available to save",
     "savingModel": "Saving Model...",
     "saveNew": "Save as New Model",
     "overwrite": "Save",
-    "overwriteConfirm": "Do you want to overwrite the current stove model \"{{name}}\" with the current parameters?\n\nThis action cannot be undone.",
+    "overwriteConfirm": "Do you want to overwrite the current rig model \"{{name}}\" with the current parameters?\n\nThis action cannot be undone.",
     "overwriteHint": "Save current parameters to selected model",
     "overwriting": "Saving...",
-    "exportTitle": "Export Stove Model",
+    "exportTitle": "Export Rig Model",
     "exportHint": "Model configuration data. Click the textarea to select all for manual copying:"
   },
   "historicalAI": {
@@ -974,9 +974,9 @@
         "useButton": "Use the 'Diagramme' button to modify these values"
       },
       "rules": {
-        "rule1": "Rule 1: Stove not reaching temperature",
+        "rule1": "Rule 1: Rig not reaching temperature",
         "rule2": "Rule 2: Burns too fast after ignition/reheating",
-        "rule3": "Rule 3: Stove burns too long",
+        "rule3": "Rule 3: Rig burns too long",
         "rule4": "Rule 4: Burns too long and too hot",
         "rule5": "Rule 5: Burns too short and too hot",
         "rule6": "Rule 6: Refueled too early",
@@ -1024,8 +1024,8 @@
     }
   },
   "simpleAI": {
-    "title": "Wood stove analysis",
-    "subtitle": "Quick assessment of your wood stove",
+    "title": "Wood rig analysis",
+    "subtitle": "Quick assessment of your wood rig",
     "period": "Period",
     "date": "Date",
     "realtimeStatus": "Current Status",
@@ -1033,7 +1033,7 @@
     "problems": "Issues Found",
     "urgentAction": "Urgent action required",
     "moderateAction": "Attention required",
-    "allGood": "Your wood stove is working well!",
+    "allGood": "Your wood rig is working well!",
     "noIssues": "No critical issues found.",
     "noHistoricalData": "No historical data available",
     "onlyRealtimeAnalysis": "Analysis based on current data only."
@@ -1045,18 +1045,18 @@
     "recentIds": "Last 10 serial numbers",
     "connect": "Check",
     "checking": "Checking...",
-    "ofenSnPlaceholder": "Stove serial (7 digits)",
-    "ofenSnHelp": "Tip: the 7-digit serial from the type label is enough.",
-    "notFound": "No stove with this serial number was found.",
-    "searching": "Looking for stove...",
+    "rigSnPlaceholder": "Rig serial (7 digits)",
+    "rigSnHelp": "Tip: the 7-digit serial from the type label is enough.",
+    "notFound": "No rig with this serial number was found.",
+    "searching": "Looking for rig...",
     "toggleTheme": "Theme",
     "cards": {
       "problemTitle": "What is the problem?",
       "reasonTitle": "Why did it happen?",
       "solutionTitle": "How can it be fixed?"
     },
-    "ofenInfo": {
-      "title": "Stove passport"
+    "rigInfo": {
+      "title": "Rig passport"
     },
     "status": {
       "title": "Status",
@@ -1068,7 +1068,7 @@
       "hideDetails": "Hide details"
     },
     "problemInput": {
-      "title": "Do you have a problem with the stove?",
+      "title": "Do you have a problem with the rig?",
       "placeholder": "Describe the customer's issue in as much detail as possible...",
       "send": "Start analysis",
       "loading": "Analysing...",
@@ -1097,7 +1097,7 @@
       "resolved": "Resolved"
     },
     "sections": {
-      "passport": "Stove passport",
+      "passport": "Rig passport",
       "status": "Status analysis",
       "customerQuestion": "Customer description",
       "geminiAnswer": "AI analysis",
@@ -1143,7 +1143,7 @@
   },
   "dealerV2": {
     "header": {
-      "aria": "Stove overview",
+      "aria": "Rig overview",
       "modelLabel": "Model",
       "seriennrLabel": "Serial:",
       "unknownModel": "Unknown model",
@@ -1157,12 +1157,12 @@
     },
     "brennbewertung": {
       "aria": "Combustion quality",
-      "goodTitle": "The stove is burning correctly",
+      "goodTitle": "The rig is burning correctly",
       "goodSubtitle": "All combustion indicators are within their target range.",
       "goodPoint1": "Temperatures and burn times are good",
-      "goodPoint2": "The stove is reloaded on time",
-      "goodPoint3": "iQ can fine-tune the stove optimally",
-      "badTitle": "The stove could burn better",
+      "goodPoint2": "The rig is reloaded on time",
+      "goodPoint3": "iQ can fine-tune the rig optimally",
+      "badTitle": "The rig could burn better",
       "badSubtitle": "The controller has detected the following issues. The most likely ones are listed first.",
       "devOverrideHint": "These values come from the developer test panel, not from the device.",
       "backgroundShow": "More background",
@@ -1171,20 +1171,20 @@
       "backgroundHeading": "What does the customer typically observe?"
     },
     "funktion": {
-      "aria": "Stove function",
-      "goodTitle": "The stove operates without faults",
-      "goodPoint1": "The stove is online",
+      "aria": "Rig function",
+      "goodTitle": "The rig operates without faults",
+      "goodPoint1": "The rig is online",
       "goodPoint2": "The motors are running",
       "goodPoint3": "The temperature sensor is working",
-      "badTitle_one": "The stove reports one fault",
-      "badTitle_other": "The stove reports {{count}} faults",
+      "badTitle_one": "The rig reports one fault",
+      "badTitle_other": "The rig reports {{count}} faults",
       "showMassnahmen": "Actions",
       "hideMassnahmen": "Hide",
       "firmwareHint": "Please update the firmware first. Many faults disappear after the update."
     },
     "problemInput": {
       "aria": "Customer problem input",
-      "title": "Does the customer have a problem with the stove?",
+      "title": "Does the customer have a problem with the rig?",
       "placeholder": "Describe the problem here…",
       "analyse": "Get answer",
       "analysing": "Generating answer…",

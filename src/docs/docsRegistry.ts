@@ -40,7 +40,7 @@ const AUDIENCE_BY_NUMBER: Record<number, DocAudience> = {
   11: 'all', // Admin-Panel
   12: 'dev', // Terminal und Skripte
   13: 'user', // Chat, Tickets und Updates
-  14: 'user', // Einstellungen
+  14: 'user', // Settings
   15: 'user', // Händlermodus
   16: 'all', // Kundenservice-Inbox
   17: 'dev', // KI-Prompt-Editor
@@ -51,10 +51,10 @@ const AUDIENCE_BY_NUMBER: Record<number, DocAudience> = {
   22: 'user', // Globale Parametersuche
   23: 'user', // Parameter-Varianten
   24: 'dev', // Firebase-Konsole
-  25: 'user', // Ofen-Aktionen
+  25: 'user', // Rig-Aktionen
   26: 'user', // Historische Daten
-  27: 'all', // Anzeigeprofile
-  28: 'all', // Ofen-Identifikation
+  27: 'all', // Display Profiles
+  28: 'all', // Rig-Identifikation
   29: 'all', // App-Updates
   30: 'all', // Aktive Zuschauer
   31: 'user', // PWA + Push

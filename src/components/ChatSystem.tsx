@@ -93,19 +93,19 @@ const ChatSystem: React.FC<ChatSystemProps> = ({ isOpen, onClose, targetUser }) 
     }
 
     try {
-      // Try to get model name using the stove model hook logic
+      // Try to get model name using the rig model hook logic
       // We need to temporarily set device metadata to get the model name
       const articleNumber = deviceId.substring(0, 7); // First 7 digits might be article number
 
-      // Query Firestore for stove model based on various possible article numbers
+      // Query Firestore for rig model based on various possible article numbers
       const { collection: firestoreCollection, query: firestoreQuery, where: firestoreWhere, getDocs: firestoreGetDocs } = await import('firebase/firestore');
 
       let modelName = `Device ${deviceId.substring(0, 7)}...${deviceId.substring(18)}`;
       let modelData = null;
 
       try {
-        const stoveModelsRef = firestoreCollection(firestoreDB!, 'stove_models');
-        const q = firestoreQuery(stoveModelsRef, firestoreWhere('article_number', '==', articleNumber));
+        const rigModelsRef = firestoreCollection(firestoreDB!, 'rig_models');
+        const q = firestoreQuery(rigModelsRef, firestoreWhere('article_number', '==', articleNumber));
         const querySnapshot = await firestoreGetDocs(q);
 
         if (!querySnapshot.empty) {

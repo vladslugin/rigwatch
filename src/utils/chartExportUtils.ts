@@ -157,8 +157,8 @@ export const exportChartToCSV = (
 // Enhanced PDF export with improved layout and features
 interface PDFExportOptions {
   deviceId?: string;
-  stoveModel?: string;
-  stoveModelInfo?: string;
+  rigModel?: string;
+  rigModelInfo?: string;
   parameterSet?: string;
   historicalDate?: string | null;
   markers?: Array<{timestamp: number | null, values: Record<string, number>}>;
@@ -179,8 +179,8 @@ export const exportChartToPDF = (
 
   const { 
     deviceId = 'N/A', 
-    stoveModel = 'N/A', 
-    stoveModelInfo = '', 
+    rigModel = 'N/A', 
+    rigModelInfo = '', 
     parameterSet = 'N/A',
     historicalDate = null,
     markers = [],
@@ -215,8 +215,8 @@ export const exportChartToPDF = (
     pdf.setTextColor(100, 100, 100);
     const now = new Date();
     pdf.text(`Generated: ${formatDateWithUserTimezone(now, 'de-DE')}`, pdfWidth - margin - 10, 12, { align: 'right' });
-    pdf.text(`Firebase ID: ${deviceId}`, pdfWidth - margin - 10, 18, { align: 'right' });
-    pdf.text(`${stoveModel} ${stoveModelInfo}`.trim(), pdfWidth - margin - 10, 24, { align: 'right' });
+    pdf.text(`Rig ID: ${deviceId}`, pdfWidth - margin - 10, 18, { align: 'right' });
+    pdf.text(`${rigModel} ${rigModelInfo}`.trim(), pdfWidth - margin - 10, 24, { align: 'right' });
     
     currentY = 40; // Start content after header
     
@@ -469,14 +469,14 @@ export const exportChartToPDFLegacy = (
   chart: Chart | null,
   parameters: ParameterInfo[],
   deviceId: string = 'N/A',
-  stoveModel: string = 'N/A',
-  stoveModelInfo: string = '',
+  rigModel: string = 'N/A',
+  rigModelInfo: string = '',
   parameterSet: string = 'N/A'
 ): boolean => {
   return exportChartToPDF(chart, parameters, {
     deviceId,
-    stoveModel,
-    stoveModelInfo,
+    rigModel,
+    rigModelInfo,
     parameterSet,
     includeDataTable: true,
     includeStatistics: true

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 import type { HistoricalData } from '../analysis/historicalRules';
 import { getSimpleAIPrompt, getFallbackSimpleAnalysis, type SimpleAnalysisResult, type SimpleAnalysisData } from '../analysis/simplePrompt';
 
@@ -43,8 +43,8 @@ interface StatisticsData {
 
 const SimpleAIAnalysisCard: React.FC<SimpleAIAnalysisCardProps> = ({ className = '' }) => {
   const { t, i18n } = useTranslation();
-  const deviceId = useStoveStore(state => state.deviceId);
-  const currentData = useStoveStore(state => state.currentData);
+  const deviceId = useRigStore(state => state.deviceId);
+  const currentData = useRigStore(state => state.currentData);
 
   const [result, setResult] = useState<SimpleAnalysisResult | null>(null);
   const [loading, setLoading] = useState(false);
@@ -344,7 +344,7 @@ const SimpleAIAnalysisCard: React.FC<SimpleAIAnalysisCardProps> = ({ className =
 
       // If no data available at all, show error
       if (!analysisData.realtimeParams && !hasHistoricalData) {
-        setError('Keine Daten für die Analyse verfügbar. Prüfen Sie die Verbindung zum Kaminofen.');
+        setError('No data available for analysis. Verify the connection to the rig.');
         return;
       }
 
@@ -439,10 +439,10 @@ const SimpleAIAnalysisCard: React.FC<SimpleAIAnalysisCardProps> = ({ className =
           </svg>
           <div>
             <h4 className="text-base font-semibold text-gray-900 dark:text-white">
-              {t('simpleAI.title', 'Kamin-Analyse')}
+              {t('simpleAI.title', 'Rig-Analyse')}
             </h4>
             <p className="text-xs text-gray-600 dark:text-gray-400">
-              {t('simpleAI.subtitle', 'Schnelle Einschätzung Ihres Kamins')}
+              {t('simpleAI.subtitle', 'Schnelle Einschätzung Ihres Rigs')}
             </p>
           </div>
         </div>
@@ -589,7 +589,7 @@ const SimpleAIAnalysisCard: React.FC<SimpleAIAnalysisCardProps> = ({ className =
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <span className="text-sm font-medium text-green-900 dark:text-green-100">
-                  {t('simpleAI.allGood', 'Ihr Kamin funktioniert gut!')}
+                  {t('simpleAI.allGood', 'Ihr Rig funktioniert gut!')}
                 </span>
               </div>
               <p className="text-xs text-green-800 dark:text-green-200 mt-1">
@@ -608,7 +608,7 @@ const SimpleAIAnalysisCard: React.FC<SimpleAIAnalysisCardProps> = ({ className =
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <span className="text-xs font-medium">
-              {t('simpleAI.noHistoricalData', 'Keine Verlaufsdaten verfügbar')}
+              {t('simpleAI.noHistoricalData', 'No historical data available')}
             </span>
           </div>
           <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">

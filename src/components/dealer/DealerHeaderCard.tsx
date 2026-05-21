@@ -8,7 +8,7 @@ export interface DealerHeaderCardProps {
   modelName: string | null;
   /** Full device ID. We never display it — only the first 7 digits (Seriennr). */
   deviceId: string | null;
-  /** Optional product image URL (resolved by useStoveModel upstream). */
+  /** Optional product image URL (resolved by useRigModel upstream). */
   imageUrl: string | null;
   /**
    * Stable connectivity status for the badge. The card no longer exposes a

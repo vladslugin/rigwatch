@@ -1,8 +1,8 @@
 import React, { useEffect, useCallback } from 'react';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 
 const AppUpdateNotifier: React.FC = () => {
-  const addNotification = useStoveStore(state => state.addNotification);
+  const addNotification = useRigStore(state => state.addNotification);
 
   const handleUpdateToast = useCallback((event: Event) => {
     const detail = (event as CustomEvent).detail;
@@ -10,7 +10,7 @@ const AppUpdateNotifier: React.FC = () => {
 
     // Add update notification
     addNotification({
-      message: 'Neues Update verfügbar. Aktualisieren Sie die Seite für die neuesten Features.',
+      message: 'Neues Update verfügbar. Refresh Sie die Seite für die neuesten Features.',
       type: 'info',
       duration: 60000, // Show for 15 seconds
       isAlarm: false

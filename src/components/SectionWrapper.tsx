@@ -1,5 +1,5 @@
 import React from 'react';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 
 interface SectionWrapperProps {
   sectionId: string;
@@ -18,8 +18,8 @@ const SectionWrapper: React.FC<SectionWrapperProps> = ({
   onMoveSectionDown,
   className = ""
 }) => {
-  const isSectionReorderMode = useStoveStore(state => state.isSectionReorderMode);
-  const sectionOrder = useStoveStore(state => state.sectionOrder);
+  const isSectionReorderMode = useRigStore(state => state.isSectionReorderMode);
+  const sectionOrder = useRigStore(state => state.sectionOrder);
   
   const currentIndex = sectionOrder.indexOf(sectionId);
   const canMoveUp = currentIndex > 0;

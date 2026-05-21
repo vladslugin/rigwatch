@@ -2,7 +2,7 @@ import React, { useState, useCallback, useRef, useEffect, useMemo, lazy, Suspens
 import asciiLogo from '../assets/ascii_logo.txt?raw';
 import { realtimeDB, auth } from '../lib/firebase';
 import { ref, get, set, update, runTransaction, remove } from 'firebase/database';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 import { useAuth } from '../hooks/useAuth';
 import { useFirebaseConnection, useDeviceList, useHistoricalData } from '../hooks/useFirebase';
 import { formatHistoricalDateWithUserTimezone } from '../utils/timezone';
@@ -147,11 +147,11 @@ const BASE_COMMANDS: CommandSuggestion[] = [
   { command: 'max', description: 'Maximize/restore a window', args: ['<terminal|cards|chart|airflow|chart N>'] },
   { command: 'tile', description: 'Control tiling mode', args: ['[on|off|h|v|grid]'] },
   { command: 'opacity', description: 'Set window transparency', args: ['[0.1-1.0]'] },
-  { command: 'stove_status', description: 'Show current stove status', args: ['[duration] [interval]'] },
+  { command: 'rig_status', description: 'Show current rig status', args: ['[duration] [interval]'] },
   { command: 'stop', description: 'Stop monitoring and cancel running script', args: [] },
-  { command: 'd', description: 'Toggle/set Alle Werte mode', args: ['[true|false]'] },
-  { command: 'k', description: 'Toggle/set Nur App-Werte mode', args: ['[true|false]'] },
-  { command: 'errors', description: 'Show Fehlerlisten for PL/SL and all', args: ['[first|last] [n]'] },
+  { command: 'd', description: 'Toggle/set All Values mode', args: ['[true|false]'] },
+  { command: 'k', description: 'Toggle/set App Only-Werte mode', args: ['[true|false]'] },
+  { command: 'errors', description: 'Show Error Lists for PL/SL and all', args: ['[first|last] [n]'] },
   { command: 'snake', description: 'Play Snake (ASCII)', args: [] },
   { command: 'type_race', description: 'Type 10 words fast (ASCII)', args: [] },
   { command: '2048', description: 'Play 2048 (ASCII)', args: [] },
@@ -169,12 +169,12 @@ const MAX_UNDO_STACK = 100;
 const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
   const { user, hasPermission, getAllUsers, updateUserRole, toggleUserActive, toggleUserForceSimpleMode, toggleUserDealerMode, createUser } = useAuth();
   const { connect, disconnect, ensureActiveClientPresent } = useFirebaseConnection();
-  const deviceId = useStoveStore(state => state.deviceId);
-  const connectionStatus = useStoveStore(state => state.connectionStatus);
-  const deviceConfig = useStoveStore(state => state.deviceConfig);
-  const deviceMetadata = useStoveStore(state => state.deviceMetadata);
-  const currentData = useStoveStore(state => state.currentData);
-  const discoveredParameters = useStoveStore(state => state.discoveredParameters);
+  const deviceId = useRigStore(state => state.deviceId);
+  const connectionStatus = useRigStore(state => state.connectionStatus);
+  const deviceConfig = useRigStore(state => state.deviceConfig);
+  const deviceMetadata = useRigStore(state => state.deviceMetadata);
+  const currentData = useRigStore(state => state.currentData);
+  const discoveredParameters = useRigStore(state => state.discoveredParameters);
   
   // Tiling system
   const tiling = useTiling();
@@ -197,7 +197,7 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
   
   // Highlight timeout refs
   
-  // Ref for monitoring interval (stove_status)
+  // Ref for monitoring interval (rig_status)
   const monitoringIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const snakeIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const scriptRunningRef = useRef(false);
@@ -318,7 +318,7 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
   }, []);
 
   // Stop any running setInterval timers when the Terminal unmounts.
-  // `stove_status <duration>` and `snake` install long-lived intervals; without
+  // `rig_status <duration>` and `snake` install long-lived intervals; without
   // an unmount cleanup they keep running (and addLine into a dead component),
   // accumulating on every Terminal mount/unmount cycle.
   useEffect(() => {
@@ -2440,7 +2440,7 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
 
     if (deviceId && connectionStatus === 'online') {
       infoLines.push(`Device ID: ${deviceId}`);
-      infoLines.push(`Model: ${deviceMetadata?.ofenname || deviceMetadata?.ofen || 'N/A'}`);
+      infoLines.push(`Model: ${deviceMetadata?.rigname || deviceMetadata?.rig || 'N/A'}`);
       if (deviceMetadata?.vers) {
         infoLines.push(`Firmware: ${deviceMetadata.vers}`);
       }
@@ -2459,7 +2459,7 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
       const line = `${logo}${spacer}${info}`.replace(/ /g, '\u00A0').trimEnd();
       addLine('info', line);
     }
-  }, [addLine, connectionStatus, deviceId, deviceMetadata?.ofen, deviceMetadata?.ofenname, deviceMetadata?.vers, user?.displayName, user?.email, user?.role]);
+  }, [addLine, connectionStatus, deviceId, deviceMetadata?.rig, deviceMetadata?.rigname, deviceMetadata?.vers, user?.displayName, user?.email, user?.role]);
 
   const executeSingleCommandRef = useRef<((command: string, options?: { silentHistory?: boolean; silentEcho?: boolean }) => Promise<boolean>) | null>(null);
 
@@ -2568,11 +2568,11 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
           addLine('info', '  max <terminal|cards|chart|chart N|airflow|luftstrom> - Restore/maximize');
           addLine('info', '  tile [on|off|h|v|grid]   - Control tiling mode');
           addLine('info', '  opacity [0.1-1.0]        - Set window transparency');
-          addLine('info', '  stove_status [dur] [int] - Show stove status (dur=seconds, int=interval)');
-          addLine('info', '  stop                     - Stop stove_status monitoring / cancel script');
-          addLine('info', '  d [true|false]           - Toggle/set Alle Werte mode');
-          addLine('info', '  k [true|false]           - Toggle/set Nur App-Werte mode');
-          addLine('info', '  errors [first|last] [n]  - Show Fehlerlisten (PL/SL + all)');
+          addLine('info', '  rig_status [dur] [int] - Show rig status (dur=seconds, int=interval)');
+          addLine('info', '  stop                     - Stop rig_status monitoring / cancel script');
+          addLine('info', '  d [true|false]           - Toggle/set All Values mode');
+          addLine('info', '  k [true|false]           - Toggle/set App Only-Werte mode');
+          addLine('info', '  errors [first|last] [n]  - Show Error Lists (PL/SL + all)');
           addLine('info', '  snake                    - Play Snake (ASCII)');
           addLine('info', '  type_race                - Type 10 words fast');
           addLine('info', '  2048                     - Play 2048 (ASCII)');
@@ -2637,7 +2637,7 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
           addLine('info', '  let temp = get.T');
           addLine('info', '  let ids = [A,B,C]');
           addLine('info', '  let first = $ids[0]');
-          addLine('info', '  substr 1000028300033490000033 0 7 as ofen');
+          addLine('info', '  substr 1000028300033490000033 0 7 as rig');
           addLine('info', '  fb_keys /konstant_app as ids');
           addLine('info', '  for id in $ids { log "$id" }');
           addLine('info', '  for id in $ids { connect $id; wait 2s; disconnect }');
@@ -2659,11 +2659,11 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
           addLine('info', '  max terminal             - Restore terminal');
           addLine('info', '  tile h                   - Set horizontal tiling layout');
           addLine('info', '  opacity                  - Toggle window transparency');
-          addLine('info', '  stove_status 60 2        - Monitor for 60s, every 2s');
+          addLine('info', '  rig_status 60 2        - Monitor for 60s, every 2s');
           addLine('info', '  stop                     - Stop monitoring / cancel script');
-          addLine('info', '  d                        - Toggle Alle Werte on/off');
-          addLine('info', '  k true                   - Enable Nur App-Werte');
-          addLine('info', '  errors [first|last] [n]  - Show Fehlerlisten (PL/SL + all)');
+          addLine('info', '  d                        - Toggle All Values on/off');
+          addLine('info', '  k true                   - Enable App Only-Werte');
+          addLine('info', '  errors [first|last] [n]  - Show Error Lists (PL/SL + all)');
           addLine('info', '  snake                    - Start Snake');
           addLine('info', '  type_race                - Start typing game');
           addLine('info', '  2048                     - Start 2048 game');
@@ -2821,7 +2821,7 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
           };
 
           try {
-            addLine('info', 'Loading Fehlerlisten...');
+            addLine('info', 'Loading Error Lists...');
             const [plSnap, slSnap, allSnap] = await Promise.all([
               get(ref(realtimeDB, `fehler/PL/${deviceId}`)),
               get(ref(realtimeDB, `fehler/SL/${deviceId}`)),
@@ -2847,7 +2847,7 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
 
             addLine('info', `--- Fehlerliste PL (fehler/PL/${deviceId}) ---`);
             if (plList.length === 0) {
-              addLine('info', 'Keine Einträge');
+              addLine('info', 'No entries');
             } else {
               plList.forEach(item => {
                 addLine('output', `${item.dateTime}: ${item.value}`);
@@ -2856,7 +2856,7 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
 
             addLine('info', `--- Fehlerliste SL (fehler/SL/${deviceId}) ---`);
             if (slList.length === 0) {
-              addLine('info', 'Keine Einträge');
+              addLine('info', 'No entries');
             } else {
               slList.forEach(item => {
                 addLine('output', `${item.dateTime}: ${item.value}`);
@@ -2865,14 +2865,14 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
 
             addLine('info', `--- Fehlerübersicht (fehler/${deviceId}) ---`);
             if (allList.length === 0) {
-              addLine('info', 'Keine Einträge');
+              addLine('info', 'No entries');
             } else {
               allList.forEach(item => {
                 addLine('output', `${item.dateTime}${item.path ? ` [${item.path}]` : ''}: ${formatDecodedErrors(item.rawValue) ?? item.valueString}`);
               });
             }
           } catch (error) {
-            addLine('error', `Failed to load Fehlerlisten: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            addLine('error', `Failed to load Error Lists: ${error instanceof Error ? error.message : 'Unknown error'}`);
           }
           break;
         }
@@ -2905,14 +2905,14 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
             addLine('info', `Connecting to device: ${targetDeviceId}...`);
             
             // Clear store state before connecting
-            const { clearAllState } = useStoveStore.getState();
+            const { clearAllState } = useRigStore.getState();
             clearAllState();
             
             const success = await connect(targetDeviceId);
             
             if (success) {
               addLine('info', `✓ Successfully connected to: ${targetDeviceId}`);
-              const snapshot = useStoveStore.getState().currentData as Record<string, unknown>;
+              const snapshot = useRigStore.getState().currentData as Record<string, unknown>;
               const rawStamp = snapshot?.id_timestamp;
               if (typeof rawStamp === 'string' || typeof rawStamp === 'number') {
                 lastDataTimestampRef.current = rawStamp;
@@ -3779,7 +3779,7 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
           const match = resolvedCommand.match(/^substr\s+(.+?)\s+(-?\d+)\s+(\d+)\s+as\s+([a-zA-Z_]\w*)\s*$/i);
           if (!match) {
             addLine('error', 'Usage: substr <value> <start> <length> as <var>');
-            addLine('info', 'Example: substr 1000028300033490000033 0 7 as ofen');
+            addLine('info', 'Example: substr 1000028300033490000033 0 7 as rig');
             break;
           }
           const sourceRaw = match[1].trim();
@@ -3886,7 +3886,7 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
             const value = resolveDeviceParam(param);
             if (value !== undefined && value !== null) {
               if (baseline !== null) {
-                const snap = useStoveStore.getState().currentData as Record<string, unknown>;
+                const snap = useRigStore.getState().currentData as Record<string, unknown>;
                 const currentStamp = snap?.id_timestamp ?? null;
                 if (currentStamp === baseline) {
                   const sleepOk = await sleepCancelableMs(intervalMs);
@@ -5568,8 +5568,8 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
           addLine('info', `✓ Window opacity: ${opacityValue}`);
           break;
 
-        case 'stove_status': {
-          // Show current stove status
+        case 'rig_status': {
+          // Show current rig status
           if (!deviceId || connectionStatus !== 'online') {
             addLine('error', 'No device connected. Use "connect <device_id>" first.');
             break;
@@ -5577,7 +5577,7 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
           
           // Helper to display status
           const showStatus = () => {
-            const data = useStoveStore.getState().currentData;
+            const data = useRigStore.getState().currentData;
             const t = data.T;
             const sl = data.PL;
             const rl = data.SL;
@@ -5595,7 +5595,7 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
             
             addLine('info', '');
             addLine('output', `  ${ln}`);
-            addLine('output', `STOVE STATUS [${ts}]`);
+            addLine('output', `RIG STATUS [${ts}]`);
             addLine('output', `  ${ln}`);
             addLine('output', rw('Temp:', fmt(t, '°C')));
             addLine('output', rw('Scheibenluft:', fmt(sl, '%')));
@@ -5640,7 +5640,7 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
         }
 
         case 'd':
-          // Toggle or set "Alle Werte" (d flag) - controls whether device sends all parameter values
+          // Toggle or set "All Values" (d flag) - controls whether device sends all parameter values
           if (!deviceId || connectionStatus !== 'online') {
             addLine('error', 'No device connected. Use "connect <device_id>" first.');
             break;
@@ -5672,7 +5672,7 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
                 newD = false;
               } else {
                 addLine('error', 'Invalid value. Use: d [true|false|on|off|1|0]');
-                addLine('info', `Current state: Alle Werte = ${currentD ? 'ON' : 'OFF'}`);
+                addLine('info', `Current state: All Values = ${currentD ? 'ON' : 'OFF'}`);
                 break;
               }
             } else {
@@ -5685,17 +5685,17 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
 
             // Update Firebase
             await set(ref(realtimeDB, `konstant/${deviceId}/d`), newD);
-            addLine('info', `✓ Alle Werte (d) set to: ${newD ? 'ON' : 'OFF'}`);
+            addLine('info', `✓ All Values (d) set to: ${newD ? 'ON' : 'OFF'}`);
             addLine('output', newD 
               ? 'Device will now send ALL parameter values.' 
               : 'Device will only send app-subscribed values.');
           } catch (error) {
-            addLine('error', `Failed to update Alle Werte: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            addLine('error', `Failed to update All Values: ${error instanceof Error ? error.message : 'Unknown error'}`);
           }
           break;
 
         case 'k':
-          // Toggle or set "Nur App-Werte" (k_manual flag) - increments k counter for app-only mode
+          // Toggle or set "App Only-Werte" (k_manual flag) - increments k counter for app-only mode
           if (!deviceId || connectionStatus !== 'online') {
             addLine('error', 'No device connected. Use "connect <device_id>" first.');
             break;
@@ -5727,7 +5727,7 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
                 newKManual = false;
               } else {
                 addLine('error', 'Invalid value. Use: k [true|false|on|off|1|0]');
-                addLine('info', `Current state: Nur App-Werte = ${currentKManual ? 'ON' : 'OFF'}`);
+                addLine('info', `Current state: App Only-Werte = ${currentKManual ? 'ON' : 'OFF'}`);
                 break;
               }
             } else {
@@ -5742,12 +5742,12 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
             const kManualRef = ref(realtimeDB, `konstant/${deviceId}/k_manual`);
             await runTransaction(kManualRef, () => newKManual);
             
-            addLine('info', `✓ Nur App-Werte (k_manual) set to: ${newKManual ? 'ON' : 'OFF'}`);
+            addLine('info', `✓ App Only-Werte (k_manual) set to: ${newKManual ? 'ON' : 'OFF'}`);
             addLine('output', newKManual 
               ? 'App-only values mode enabled (+1 to k counter).' 
               : 'App-only values mode disabled.');
           } catch (error) {
-            addLine('error', `Failed to update Nur App-Werte: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            addLine('error', `Failed to update App Only-Werte: ${error instanceof Error ? error.message : 'Unknown error'}`);
           }
           break;
 

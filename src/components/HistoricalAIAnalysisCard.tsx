@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 import { useAuth } from '../hooks/useAuth';
 import { runHistoricalRules, type HistoricalRuleResult, type HistoricalData } from '../analysis/historicalRules.ts';
 import type { AIResult } from '../services/aiClient';
@@ -83,7 +83,7 @@ interface StatisticsData {
 
 const HistoricalAIAnalysisCard: React.FC<HistoricalAIAnalysisCardProps> = ({ className = '' }) => {
   const { t, i18n } = useTranslation();
-  const deviceId = useStoveStore(state => state.deviceId);
+  const deviceId = useRigStore(state => state.deviceId);
   const { user } = useAuth();
   const { configs, getFunctionPoints } = useFuzzyConfigs();
 
@@ -290,9 +290,9 @@ const HistoricalAIAnalysisCard: React.FC<HistoricalAIAnalysisCardProps> = ({ cla
   };
 
   const getDefaultHistoricalPrompt = (): string => {
-    return `Du bist ein Experte für Kamintechnik und analysierst ausschließlich historische Verbrennungsdaten und Fuzzy-Rules-Ergebnisse.
+    return `Du bist ein Experte für Rigtechnik und analysierst ausschließlich historische Verbrennungsdaten und Fuzzy-Rules-Ergebnisse.
 
-WICHTIG: Du analysierst NUR historische Daten über einen vergangenen Zeitraum. Dies sind keine Echtzeitdaten und der Kamin ist möglicherweise gerade nicht in Betrieb.
+WICHTIG: Du analysierst NUR historische Daten über einen vergangenen Zeitraum. Dies sind keine Echtzeitdaten und der Rig ist möglicherweise gerade nicht in Betrieb.
 
 === DATENVARIABLEN DEFINITIONEN ===
 anz_be: Anzahl Brennereignisse (Number of burn events)
@@ -350,7 +350,7 @@ Analysiere spezifisch:
 - Nutzungsmuster: wt0-6 (Wochentage), erster/letzter (Zeitspanne)
 
 KEINE Echtzeitinformationen wie:
-- Aktuelle Verbindungsstatus
+- Aktuelle Connection Status
 - Aktuelle Sensordaten
 - Fehlerflags aus dem laufenden Betrieb
 - Controller-Temperatur
@@ -650,7 +650,7 @@ Antworte in STRIKTEM JSON-Format:
     const rule1_condition = fuzzyAnd(rule1_or, z_ph2_schlecht1);
     
     rules.push({
-      title: t('historicalAI.calculations.rules.rule1', 'Rule 1: Stove not reaching temperature'),
+      title: t('historicalAI.calculations.rules.rule1', 'Rule 1: Rig not reaching temperature'),
       condition: '((p_ph1_schlecht ∧ z_ph1_schlecht) ∨ (p_ph4_schlecht ∧ z_ph4_schlecht)) ∧ z_ph2_schlecht1',
       calculations: [
         `p_ph1_schlecht(${p_ph1}) = ${p_ph1_schlecht.toFixed(3)}`,
@@ -697,7 +697,7 @@ Antworte in STRIKTEM JSON-Format:
     const rule3_condition = fuzzyAnd(z_ph2_schlecht2, p_ph2_gut);
     
     rules.push({
-      title: t('historicalAI.calculations.rules.rule3', 'Rule 3: Stove burns too long'),
+      title: t('historicalAI.calculations.rules.rule3', 'Rule 3: Rig burns too long'),
       condition: 'z_ph2_schlecht2 ∧ p_ph2_gut',
       calculations: [
         `z_ph2_schlecht2(${z_ph2}) = ${z_ph2_schlecht2.toFixed(3)}`,
@@ -1291,7 +1291,7 @@ Antworte in STRIKTEM JSON-Format:
     pseudocode += `    return Math.max(...values);\n`;
     pseudocode += `}\n\n`;
     
-    pseudocode += `// Membership Values berechnen (mit User-Konfiguration)\n`;
+    pseudocode += `// Membership Values berechnen (mit User-Configuration)\n`;
     pseudocode += `// NOTE: Function parameters have been customized by user via Diagramme editor\n`;
     pseudocode += `// good_p points: [${goodPPoints.join(', ')}], bad_p points: [${badPPoints.join(', ')}]\n`;
     pseudocode += `// z_ph1_gut points: [${zPh1GutPoints.join(', ')}], z_ph4_gut points: [${zPh4GutPoints.join(', ')}]\n\n`;
@@ -1320,7 +1320,7 @@ Antworte in STRIKTEM JSON-Format:
     pseudocode += `z_ph2_schlecht1 = z_ph2_schlecht(${z_ph2}) = ${z_ph2_schlecht1_val.toFixed(3)};\n`;
     pseudocode += `z_ph4_schlecht = z_ph4_schlecht(${z_ph4}) = ${z_ph4_schlecht_val.toFixed(3)};\n\n`;
     
-    pseudocode += `// REGEL 1: Ofen kommt nicht auf Temperatur\n`;
+    pseudocode += `// REGEL 1: Rig kommt nicht auf Temperatur\n`;
     pseudocode += `// ((p_ph1_schlecht ∧ z_ph1_schlecht) ∨ (p_ph4_schlecht ∧ z_ph4_schlecht)) ∧ z_ph2_schlecht1\n`;
     const cond1_1 = p_ph1_schlecht_val * z_ph1_schlecht_val;
     const cond1_2 = p_ph4_schlecht_val * z_ph4_schlecht_val;
@@ -1333,11 +1333,11 @@ Antworte in STRIKTEM JSON-Format:
     pseudocode += `rule1_condition = fuzzyAnd(cond1_or, z_ph2_schlecht1) = ${rule1_result.toFixed(3)};\n`;
     pseudocode += `if (rule1_condition > 0.1) {\n`;
     pseudocode += `    // ${rule1_result > 0.1 ? '✓ REGEL AUSGELÖST' : '✗ REGEL NICHT AUSGELÖST'}\n`;
-    pseudocode += `    addIssue("Ofen kommt nicht auf Temperatur");\n`;
+    pseudocode += `    addIssue("Rig kommt nicht auf Temperatur");\n`;
     pseudocode += `    addBCode("B0", "zu wenig Holz", z_ph2_schlecht1);\n`;
     pseudocode += `    addBCode("B2", "Holz zu feucht", z_ph2_schlecht1);\n`;
     pseudocode += `    addBCode("B4", "Holzscheite zu groß", z_ph2_schlecht1);\n`;
-    pseudocode += `    addBCode("B10", "Kaminzug zu schwach", z_ph2_schlecht1);\n`;
+    pseudocode += `    addBCode("B10", "Rigzug zu schwach", z_ph2_schlecht1);\n`;
     pseudocode += `}\n\n`;
     
     pseudocode += `// REGEL 7: zu spät nachgelegt\n`;
@@ -2083,7 +2083,7 @@ Antworte in STRIKTEM JSON-Format:
 
     const timestamp = new Date().toLocaleString();
     const report = [
-      `=== Historical Stove Analysis Report ===`,
+      `=== Historical Rig Analysis Report ===`,
       `Period: ${timePeriod} (${selectedDate})`,
       `Timestamp: ${timestamp}`,
       `Source: ${result.source || 'rules'}`,
@@ -2115,7 +2115,7 @@ Antworte in STRIKTEM JSON-Format:
       `Average performance: ${historicalData.stats.p || 0}%`,
       `Average temperature: ${historicalData.stats.t || 0}°C`,
       ``,
-      `Note: Historical analysis based on aggregated stove data. Results may vary from real-time diagnostics.`
+      `Note: Historical analysis based on aggregated rig data. Results may vary from real-time diagnostics.`
     ].filter(Boolean).join('\n');
 
     return report;
@@ -2214,7 +2214,7 @@ Antworte in STRIKTEM JSON-Format:
             <svg className="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
             </svg>
-            {t('stoveInfo.copyReport', 'Bericht')}
+            {t('rigInfo.copyReport', 'Bericht')}
           </button>
 
           <button
@@ -2355,7 +2355,7 @@ Antworte in STRIKTEM JSON-Format:
           )}
           {availableDates.length === 0 && !loadingDates && (
             <p className="text-xs text-destructive mt-2">
-              No historical data found for this stove. Data may not have been collected yet or the stove is new.
+              No historical data found for this rig. Data may not have been collected yet or the rig is new.
             </p>
           )}
         </div>
@@ -2609,7 +2609,7 @@ Antworte in STRIKTEM JSON-Format:
               <span className="text-xs font-medium">Important:</span>
             </div>
             <p className="text-xs text-warning mt-1">
-              Historical analysis based on aggregated data over the selected time period. Results complement real-time diagnostics but may not reflect current stove status.
+              Historical analysis based on aggregated data over the selected time period. Results complement real-time diagnostics but may not reflect current rig status.
             </p>
           </div>
         </div>

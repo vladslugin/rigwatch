@@ -1,29 +1,29 @@
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 import { useTheme } from '../hooks/useTheme';
 import UserSettingsModal from './UserSettingsModal';
-import StoveInfoModal from './StoveInfoModal';
+import RigInfoModal from './RigInfoModal';
 import ConnectionBlock from './ConnectionBlock';
-import StoveStatusBlock from './StoveStatusBlock';
+import RigStatusBlock from './RigStatusBlock';
 import ControllerInfoBlock from './ControllerInfoBlock';
-import StoveIdentificationBlock from './StoveIdentificationBlock';
-import StoveActionsBlock from './StoveActionsBlock';
+import RigIdentificationBlock from './RigIdentificationBlock';
+import RigActionsBlock from './RigActionsBlock';
 import RealtimeChart from './RealtimeChart';
 
 const SimpleModeLayout: React.FC = () => {
   const { t } = useTranslation();
   const { isDark, toggleTheme } = useTheme();
-  const deviceId = useStoveStore(state => state.deviceId);
-  const connectionStatus = useStoveStore(state => state.connectionStatus);
-  const discoveredParameters = useStoveStore(state => state.discoveredParameters);
-  const deviceConfig = useStoveStore(state => state.deviceConfig);
-  const deviceMetadata = useStoveStore(state => state.deviceMetadata);
-  const currentData = useStoveStore(state => state.currentData);
-  const isHistoricalMode = useStoveStore(state => state.isHistoricalMode);
+  const deviceId = useRigStore(state => state.deviceId);
+  const connectionStatus = useRigStore(state => state.connectionStatus);
+  const discoveredParameters = useRigStore(state => state.discoveredParameters);
+  const deviceConfig = useRigStore(state => state.deviceConfig);
+  const deviceMetadata = useRigStore(state => state.deviceMetadata);
+  const currentData = useRigStore(state => state.currentData);
+  const isHistoricalMode = useRigStore(state => state.isHistoricalMode);
   
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isStoveInfoOpen, setIsStoveInfoOpen] = useState(false);
+  const [isRigInfoOpen, setIsRigInfoOpen] = useState(false);
 
   // Computed connection state
   const isConnected = useMemo(() => !!deviceId && connectionStatus === 'online', [deviceId, connectionStatus]);
@@ -77,17 +77,17 @@ const SimpleModeLayout: React.FC = () => {
           {/* Connection Block - Always visible */}
           <ConnectionBlock />
 
-          {/* Stove Identification Block - Always visible */}
+          {/* Rig Identification Block - Always visible */}
           <div className={`grid grid-cols-1 ${isConnected ? 'lg:grid-cols-3' : ''} gap-3 items-stretch`}>
-            {/* Stove Identification - 2/3 width when connected, full width when not connected */}
+            {/* Rig Identification - 2/3 width when connected, full width when not connected */}
             <div className={`flex ${isConnected ? 'lg:col-span-2' : ''}`}>
-              <StoveIdentificationBlock />
+              <RigIdentificationBlock />
             </div>
 
             {/* Actions Block - 1/3 width - Only when connected */}
             {isConnected && (
               <div className="lg:col-span-1 flex">
-                <StoveActionsBlock />
+                <RigActionsBlock />
               </div>
             )}
           </div>
@@ -96,7 +96,7 @@ const SimpleModeLayout: React.FC = () => {
           {isConnected && (
             <>
               {/* Status Block - Full Width */}
-              <StoveStatusBlock />
+              <RigStatusBlock />
 
               {/* Controller Info - Full Width */}
               <ControllerInfoBlock />
@@ -106,8 +106,8 @@ const SimpleModeLayout: React.FC = () => {
                 currentData={currentData}
                 isHistoricalMode={isHistoricalMode}
                 deviceId={deviceId || 'N/A'}
-                stoveModel={deviceMetadata.ofenname || 'N/A'}
-                stoveModelInfo={deviceMetadata.ofen ? `Model #${deviceMetadata.ofen}` : ''}
+                rigModel={deviceMetadata.rigname || 'N/A'}
+                rigModelInfo={deviceMetadata.rig ? `Model #${deviceMetadata.rig}` : ''}
                 parameterSet={deviceConfig.verz === '~' || !deviceConfig.verz ? 'Default' : deviceConfig.verz}
               />
             </>
@@ -121,9 +121,9 @@ const SimpleModeLayout: React.FC = () => {
         onClose={() => setIsSettingsOpen(false)}
       />
 
-      <StoveInfoModal
-        isOpen={isStoveInfoOpen}
-        onClose={() => setIsStoveInfoOpen(false)}
+      <RigInfoModal
+        isOpen={isRigInfoOpen}
+        onClose={() => setIsRigInfoOpen(false)}
       />
     </div>
   );

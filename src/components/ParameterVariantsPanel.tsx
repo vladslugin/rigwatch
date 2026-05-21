@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 import { useParameterVariants } from '../hooks/useFirebase';
 import { useTranslation } from 'react-i18next';
 import { startDebugMonitoring } from '../utils/debugExport';
@@ -10,8 +10,8 @@ interface ParameterVariantsPanelProps {
 }
 
 const ParameterVariantsPanel: React.FC<ParameterVariantsPanelProps> = ({ className = '' }) => {
-  const deviceId = useStoveStore(state => state.deviceId);
-  const currentData = useStoveStore(state => state.currentData);
+  const deviceId = useRigStore(state => state.deviceId);
+  const currentData = useRigStore(state => state.currentData);
   const { t, i18n } = useTranslation();
   const [themeName, setThemeName] = useState<ThemeName>('default');
   useEffect(() => {
@@ -39,7 +39,7 @@ const ParameterVariantsPanel: React.FC<ParameterVariantsPanelProps> = ({ classNa
   const [debugMode, setDebugMode] = useState(false);
   const [useTakeparams, setUseTakeparams] = useState(true); // Default to true for fast loading
   
-  const discoveredParameters = useStoveStore(state => state.discoveredParameters);
+  const discoveredParameters = useRigStore(state => state.discoveredParameters);
 
   const hasCurrentData = currentData && Object.keys(currentData).length > 0;
   const currentParameterCount = Object.keys(currentData || {}).length;
@@ -246,7 +246,7 @@ const ParameterVariantsPanel: React.FC<ParameterVariantsPanelProps> = ({ classNa
 
   if (!deviceId) {
     return (
-      <div className={isNeo ? `stove-section bg-muted border-2 border-border rounded p-3 ${className}` : `stove-section bg-muted/30 border border-border rounded-xl p-3 shadow-theme-sm ${className}`}>
+      <div className={isNeo ? `rig-section bg-muted border-2 border-border rounded p-3 ${className}` : `rig-section bg-muted/30 border border-border rounded-xl p-3 shadow-theme-sm ${className}`}>
         <h3 className="flex items-center text-foreground mb-3 text-sm font-semibold border-b border-border pb-2">
           <div className={isNeo ? 'w-8 h-8 bg-muted rounded flex items-center justify-center mr-2 border border-border' : 'w-8 h-8 bg-muted rounded-full flex items-center justify-center mr-2 border border-border'}>
           <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -255,7 +255,7 @@ const ParameterVariantsPanel: React.FC<ParameterVariantsPanelProps> = ({ classNa
           </div>
           <span>{t('parameterVariants.title')}</span>
         </h3>
-        <div className="stove-section-content">
+        <div className="rig-section-content">
           <div className={isNeo ? 'bg-card rounded p-4 border border-border' : 'bg-card rounded-xl p-4 border border-border shadow-theme-sm'}>
             <div className="text-center text-muted-foreground">
               <div className={isNeo ? 'w-12 h-12 bg-muted rounded mx-auto mb-2 flex items-center justify-center' : 'w-12 h-12 bg-muted rounded-xl mx-auto mb-2 flex items-center justify-center'}>
@@ -273,7 +273,7 @@ const ParameterVariantsPanel: React.FC<ParameterVariantsPanelProps> = ({ classNa
   }
 
   return (
-    <div className={isNeo ? `stove-section bg-muted border-2 border-border rounded p-3 ${className}` : `stove-section bg-muted/30 border border-border rounded-xl p-3 shadow-theme-sm ${className}`}>
+    <div className={isNeo ? `rig-section bg-muted border-2 border-border rounded p-3 ${className}` : `rig-section bg-muted/30 border border-border rounded-xl p-3 shadow-theme-sm ${className}`}>
       <h3 className="flex items-center text-foreground mb-3 text-sm font-semibold border-b border-border pb-2">
         <div className={isNeo ? 'w-8 h-8 bg-muted rounded flex items-center justify-center mr-2 border border-border' : 'w-8 h-8 bg-muted rounded-full flex items-center justify-center mr-2 border border-border'}>
           <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -286,7 +286,7 @@ const ParameterVariantsPanel: React.FC<ParameterVariantsPanelProps> = ({ classNa
         </div>
       </h3>
       
-      <div className="stove-section-content">
+      <div className="rig-section-content">
         <div className="parameter-variants-container space-y-3">
             
             {/* Current Status - Simplified */}

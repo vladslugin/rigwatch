@@ -338,15 +338,15 @@ export class CSVDataLoader {
       // User's files patterns
       'training-data-1.csv', 'training-data-2.csv', 'training-data-3.csv', 'training-data-4.csv', 'training-data-5.csv',
       // Common names
-      'training-data.csv', 'stove-data.csv', 'co2-measurements.csv', 'sensor-data.csv', 'example-data.csv',
-      'measurement-data.csv', 'fireplace-data.csv', 'data.csv', 'export.csv', 'samples.csv',
+      'training-data.csv', 'rig-data.csv', 'co2-measurements.csv', 'sensor-data.csv', 'example-data.csv',
+      'measurement-data.csv', 'rig-data.csv', 'data.csv', 'export.csv', 'samples.csv',
       // Numbered patterns
       'data-1.csv', 'data-2.csv', 'data-3.csv', 'data-4.csv', 'data-5.csv',
       'file-1.csv', 'file-2.csv', 'file-3.csv', 'file-4.csv', 'file-5.csv',
       // Date patterns (common export formats)
       '2024-data.csv', '2025-data.csv', 'export-2024.csv', 'export-2025.csv',
       // German patterns
-      'messdaten.csv', 'kamin-daten.csv', 'ofen-daten.csv', 'temperatur.csv'
+      'messdaten.csv', 'rig-daten.csv', 'rig-daten.csv', 'temperatur.csv'
     ];
     
     // Check each pattern

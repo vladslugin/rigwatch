@@ -50,8 +50,8 @@ export const USER_ROLE_CONFIGS: Record<UserRole, UserRoleConfig> = {
   admin: {
     level: 2,
     name: 'Admin',
-    description: 'Can manage stove settings',
-    permissions: ['read_data', 'export_data', 'manage_stoves', 'modify_settings'],
+    description: 'Can manage rig settings',
+    permissions: ['read_data', 'export_data', 'manage_rigs', 'modify_settings'],
     color: '#3b82f6', // blue
     parameterViewScope: 'all',
     categoryVisibility: { mode: 'all', categories: [] }
@@ -60,7 +60,7 @@ export const USER_ROLE_CONFIGS: Record<UserRole, UserRoleConfig> = {
     level: 3,
     name: 'Developer',
     description: 'Can write updates and manage users',
-    permissions: ['read_data', 'export_data', 'manage_stoves', 'modify_settings', 'manage_updates', 'manage_users', 'assign_roles', 'developer', 'users.manage_privileges', 'stoves.models_manage', 'stoves.check_updates', 'stoves.force_update', 'stoves.alternative_update'],
+    permissions: ['read_data', 'export_data', 'manage_rigs', 'modify_settings', 'manage_updates', 'manage_users', 'assign_roles', 'developer', 'users.manage_privileges', 'rigs.models_manage', 'rigs.check_updates', 'rigs.force_update', 'rigs.alternative_update'],
     color: '#8b5cf6', // purple
     parameterViewScope: 'all',
     categoryVisibility: { mode: 'all', categories: [] }
@@ -69,7 +69,7 @@ export const USER_ROLE_CONFIGS: Record<UserRole, UserRoleConfig> = {
     level: 3, // Same level as developer
     name: 'Super Admin',
     description: 'Can manage users but not write updates',
-    permissions: ['read_data', 'export_data', 'manage_stoves', 'modify_settings', 'manage_users', 'assign_roles'],
+    permissions: ['read_data', 'export_data', 'manage_rigs', 'modify_settings', 'manage_users', 'assign_roles'],
     color: '#ef4444', // red
     parameterViewScope: 'all',
     categoryVisibility: { mode: 'all', categories: [] }

@@ -2,8 +2,8 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next';
 import { get, ref } from 'firebase/database';
 
-import { useDeviceList, useFirebaseConnection, useStoveModel } from '../hooks/useFirebase';
-import { useStoveStore } from '../store/useStoveStore';
+import { useDeviceList, useFirebaseConnection, useRigModel } from '../hooks/useFirebase';
+import { useRigStore } from '../store/useRigStore';
 import { useAuth } from '../hooks/useAuth';
 import { realtimeDB } from '../lib/firebase';
 import { askDealerAssistant } from '../services/dealerAiClient';
@@ -13,17 +13,17 @@ import { useBrennbewertung } from '../hooks/useBrennbewertung';
 import { useBrennbewertungKnowledge } from '../hooks/useBrennbewertungKnowledge';
 import { useDealerPromptSettings } from '../hooks/useDealerPromptSettings';
 import { resolveBySeriennr, extractSeriennr } from '../utils/seriennrResolver';
-import { decodeStoveErrors } from '../utils/decodeStoveErrors';
+import { decodeRigErrors } from '../utils/decodeRigErrors';
 
 import { DealerHeaderCard } from './dealer/DealerHeaderCard';
 import { BrennbewertungCard } from './dealer/BrennbewertungCard';
-import { OfenFunktionCard } from './dealer/OfenFunktionCard';
+import { RigFunktionCard } from './dealer/RigFunktionCard';
 import { ProblemInputCard } from './dealer/ProblemInputCard';
 import { DevCsPanel } from './dealer/DevCsPanel';
 import { BrennbewertungKnowledgeEditor } from './dealer/BrennbewertungKnowledgeEditor';
 import { DealerPromptEditor } from './dealer/DealerPromptEditor';
 
-import type { KundenTicketStovePassport } from '../types/kundenTickets';
+import type { KundenTicketRigPassport } from '../types/kundenTickets';
 
 interface FavoriteDevice {
   id: string;
@@ -32,7 +32,7 @@ interface FavoriteDevice {
 
 const FAVORITES_STORAGE_KEY = 'firebaseIdFavorites_v2';
 
-const pickStoveModelImageUrl = (modelData: unknown): string | null => {
+const pickRigModelImageUrl = (modelData: unknown): string | null => {
   if (!modelData || typeof modelData !== 'object') return null;
   const d = modelData as Record<string, unknown>;
   const raw = d.img_url ?? d.image_url ?? d.imageUrl;
@@ -59,21 +59,21 @@ const DealerModeLayout: React.FC = () => {
   // Firebase + store wiring (unchanged from v1).
   const { connect } = useFirebaseConnection();
   const { getAllDeviceIds } = useDeviceList();
-  const { getStoveModelName, getStoveModelData } = useStoveModel();
-  const getStoveModelNameRef = useRef(getStoveModelName);
-  const getStoveModelDataRef = useRef(getStoveModelData);
+  const { getRigModelName, getRigModelData } = useRigModel();
+  const getRigModelNameRef = useRef(getRigModelName);
+  const getRigModelDataRef = useRef(getRigModelData);
   useEffect(() => {
-    getStoveModelNameRef.current = getStoveModelName;
-    getStoveModelDataRef.current = getStoveModelData;
-  }, [getStoveModelName, getStoveModelData]);
+    getRigModelNameRef.current = getRigModelName;
+    getRigModelDataRef.current = getRigModelData;
+  }, [getRigModelName, getRigModelData]);
 
   const { createKundenTicket, isLoading: isSendingTicket } = useKundenTickets();
 
-  const deviceId = useStoveStore((state) => state.deviceId);
-  const connectionStatus = useStoveStore((state) => state.connectionStatus);
-  const deviceMetadata = useStoveStore((state) => state.deviceMetadata);
-  const deviceExistence = useStoveStore((state) => state.deviceExistence);
-  const errorData = useStoveStore((state) => state.errorData);
+  const deviceId = useRigStore((state) => state.deviceId);
+  const connectionStatus = useRigStore((state) => state.connectionStatus);
+  const deviceMetadata = useRigStore((state) => state.deviceMetadata);
+  const deviceExistence = useRigStore((state) => state.deviceExistence);
+  const errorData = useRigStore((state) => state.errorData);
 
   // Brennbewertung wiring (commit 1).
   const ping = usePingTest(deviceId);
@@ -141,9 +141,9 @@ const DealerModeLayout: React.FC = () => {
   // Track auto-connect attempts so we don't loop on the URL ?id= parameter.
   const autoConnectAttemptedRef = useRef(false);
 
-  // Decoded controller errors — empty when stove is healthy.
+  // Decoded controller errors — empty when rig is healthy.
   const decodedErrors = useMemo(
-    () => decodeStoveErrors({ ecode: errorData?.ecode, ecode2: errorData?.ecode2 }),
+    () => decodeRigErrors({ ecode: errorData?.ecode, ecode2: errorData?.ecode2 }),
     [errorData?.ecode, errorData?.ecode2],
   );
 
@@ -327,7 +327,7 @@ const DealerModeLayout: React.FC = () => {
   }, [deviceId]);
 
   // Reset the customer-problem / AI-answer / escalation state whenever the
-  // dealer switches stoves — otherwise the analysis from the previous Ofen
+  // dealer switches rigs — otherwise the analysis from the previous Rig
   // would stick around on the new card and mislead the dealer.
   useEffect(() => {
     setCustomerProblem('');
@@ -372,28 +372,28 @@ const DealerModeLayout: React.FC = () => {
     (async () => {
       try {
         const [modelNameRaw, modelData] = await Promise.all([
-          getStoveModelNameRef.current().catch(() => ''),
-          getStoveModelDataRef.current().catch(() => null),
+          getRigModelNameRef.current().catch(() => ''),
+          getRigModelDataRef.current().catch(() => null),
         ]);
         if (cancelled) return;
         let name = (modelNameRaw || '').trim();
         if (!name || name === 'Unknown Model') {
-          const fromMeta = typeof deviceMetadata?.ofenname === 'string' ? deviceMetadata.ofenname.trim() : '';
+          const fromMeta = typeof deviceMetadata?.rigname === 'string' ? deviceMetadata.rigname.trim() : '';
           if (fromMeta) name = fromMeta;
         }
         setModelInfo({
           name: name && name !== 'Unknown Model' ? name : null,
-          imageUrl: pickStoveModelImageUrl(modelData),
+          imageUrl: pickRigModelImageUrl(modelData),
         });
       } catch (error) {
-        console.warn('[DealerMode] Failed to load stove model:', error);
+        console.warn('[DealerMode] Failed to load rig model:', error);
         if (!cancelled) setModelInfo({ name: null, imageUrl: null });
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [deviceId, deviceMetadata?.ofenname, isConnected]);
+  }, [deviceId, deviceMetadata?.rigname, isConnected]);
 
   // ─── Cards mount/unmount animation ──────────────────────────────────────
   useEffect(() => {
@@ -460,9 +460,9 @@ const DealerModeLayout: React.FC = () => {
       const seriennr = extractSeriennr(deviceId);
       // Passport for the ticket: we keep the full device ID + seriennr for
       // the back-office, but the dealer view itself never displays them.
-      const passport: KundenTicketStovePassport = {
+      const passport: KundenTicketRigPassport = {
         modelName: modelInfo.name || 'Unbekanntes Modell',
-        stoveSerial: seriennr,
+        rigSerial: seriennr,
         controllerSerial: deviceId.length > 7 ? deviceId.substring(7, 14) : 'Unbekannt',
         currentControllerSerial: 'Unbekannt',
         imageUrl: modelInfo.imageUrl ?? undefined,
@@ -489,15 +489,15 @@ const DealerModeLayout: React.FC = () => {
 
       const ok = await createKundenTicket({
         deviceId,
-        stovePassport: passport,
+        rigPassport: passport,
         statusSnapshot: {
           health:
             brennbewertung.isAllZero && decodedErrors.filter((e) => e.dealerVisible).length === 0
               ? 'good'
               : 'bad',
           headline: brennbewertung.isAllZero
-            ? 'Der Ofen brennt einwandfrei'
-            : 'Der Ofen könnte besser brennen',
+            ? 'Der Rig brennt einwandfrei'
+            : 'Der Rig könnte besser brennen',
           details: brennbewertung.topThree
             .map((k) => `${k} (${brennbewertung.values[k]}): ${knowledge[k].title}`)
             .join(' • '),
@@ -590,7 +590,7 @@ const DealerModeLayout: React.FC = () => {
                       handleConnect();
                     }
                   }}
-                  placeholder={t('dealerRadar.ofenSnPlaceholder') as string}
+                  placeholder={t('dealerRadar.rigSnPlaceholder') as string}
                   inputMode="numeric"
                   className="w-full rounded-l-theme border border-input bg-background px-4 py-3 text-base outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
                 />
@@ -710,7 +710,7 @@ const DealerModeLayout: React.FC = () => {
               source={brennbewertung.source}
             />
 
-            <OfenFunktionCard
+            <RigFunktionCard
               errors={decodedErrors}
               showFirmwareHint={decodedErrors.some((e) => e.dealerVisible)}
             />

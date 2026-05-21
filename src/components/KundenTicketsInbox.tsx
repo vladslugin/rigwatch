@@ -194,8 +194,8 @@ const KundenTicketsInbox: React.FC<KundenTicketsInboxProps> = ({ isOpen, onClose
       if (!needle) return true;
       const haystack = [
         ticket.deviceId,
-        ticket.stovePassport?.stoveSerial,
-        ticket.stovePassport?.modelName,
+        ticket.rigPassport?.rigSerial,
+        ticket.rigPassport?.modelName,
         ticket.customerQuestion,
         ticket.author?.displayName,
         ticket.author?.email,
@@ -283,7 +283,7 @@ const KundenTicketsInbox: React.FC<KundenTicketsInboxProps> = ({ isOpen, onClose
     const confirmed = window.confirm(
       t('kundenTickets.delete.confirm', {
         ref:
-          selectedTicket.stovePassport?.stoveSerial ||
+          selectedTicket.rigPassport?.rigSerial ||
           selectedTicket.deviceId.slice(0, 7),
       }) as string,
     );
@@ -408,7 +408,7 @@ const KundenTicketsInbox: React.FC<KundenTicketsInboxProps> = ({ isOpen, onClose
                     >
                       <div className="flex items-center justify-between gap-2">
                         <span className="truncate font-mono text-xs text-muted-foreground" title={ticket.deviceId}>
-                          {ticket.stovePassport?.stoveSerial || ticket.deviceId}
+                          {ticket.rigPassport?.rigSerial || ticket.deviceId}
                         </span>
                         <span
                           className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide ${STATUS_PILL_CLASSES[ticket.status]}`}
@@ -463,7 +463,7 @@ const KundenTicketsInbox: React.FC<KundenTicketsInboxProps> = ({ isOpen, onClose
                       </button>
                     </div>
                     <h3 className="mt-1 text-lg font-semibold text-foreground">
-                      {selectedTicket.stovePassport.modelName}
+                      {selectedTicket.rigPassport.modelName}
                     </h3>
                     <p className="text-xs text-muted-foreground">
                       {formatTicketDate(selectedTicket.createdAt)}
@@ -494,7 +494,7 @@ const KundenTicketsInbox: React.FC<KundenTicketsInboxProps> = ({ isOpen, onClose
                     {selectedTicket.author?.email && (
                       <a
                         href={`mailto:${selectedTicket.author.email}?subject=${encodeURIComponent(
-                          `[HASE] Ticket ${selectedTicket.stovePassport.stoveSerial}`,
+                          `[HASE] Ticket ${selectedTicket.rigPassport.rigSerial}`,
                         )}`}
                         className="inline-flex items-center gap-1 rounded-theme border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted"
                       >
@@ -545,17 +545,17 @@ const KundenTicketsInbox: React.FC<KundenTicketsInboxProps> = ({ isOpen, onClose
                 <section className="rounded-theme border border-border bg-muted/20 p-4">
                   <h4 className="text-sm font-semibold text-foreground">{t('kundenTickets.sections.passport')}</h4>
                   <dl className="mt-2 grid grid-cols-[max-content_1fr] gap-x-3 gap-y-1 text-sm">
-                    <dt className="text-xs uppercase tracking-wide text-muted-foreground">Ofen-SN</dt>
-                    <dd className="font-mono text-foreground">{selectedTicket.stovePassport.stoveSerial}</dd>
+                    <dt className="text-xs uppercase tracking-wide text-muted-foreground">Rig-SN</dt>
+                    <dd className="font-mono text-foreground">{selectedTicket.rigPassport.rigSerial}</dd>
                     <dt className="text-xs uppercase tracking-wide text-muted-foreground">Controller-SN</dt>
-                    <dd className="font-mono text-foreground">{selectedTicket.stovePassport.controllerSerial}</dd>
+                    <dd className="font-mono text-foreground">{selectedTicket.rigPassport.controllerSerial}</dd>
                     <dt className="text-xs uppercase tracking-wide text-muted-foreground">Aktuell</dt>
                     <dd className="font-mono text-foreground">
-                      {selectedTicket.stovePassport.currentControllerSerial}
-                      {selectedTicket.stovePassport.currentControllerSerial &&
-                        selectedTicket.stovePassport.currentControllerSerial !== 'Unbekannt' &&
-                        selectedTicket.stovePassport.currentControllerSerial !==
-                          selectedTicket.stovePassport.controllerSerial && (
+                      {selectedTicket.rigPassport.currentControllerSerial}
+                      {selectedTicket.rigPassport.currentControllerSerial &&
+                        selectedTicket.rigPassport.currentControllerSerial !== 'Unbekannt' &&
+                        selectedTicket.rigPassport.currentControllerSerial !==
+                          selectedTicket.rigPassport.controllerSerial && (
                           <span className="ml-2 rounded-full border border-warning/40 bg-warning/10 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-warning">
                             getauscht
                           </span>

@@ -4,7 +4,7 @@
 export type Permission =
   | 'read_data'
   | 'export_data'
-  | 'manage_stoves'
+  | 'manage_rigs'
   | 'modify_settings'
   | 'manage_updates'
   | 'manage_users'
@@ -12,10 +12,10 @@ export type Permission =
   | 'developer'
   | 'manage_devices'
   // New granular permissions
-  | 'stoves.check_updates'
-  | 'stoves.force_update'
-  | 'stoves.alternative_update'
-  | 'stoves.models_manage'
+  | 'rigs.check_updates'
+  | 'rigs.force_update'
+  | 'rigs.alternative_update'
+  | 'rigs.models_manage'
   | 'parameter.view_all'
   | 'parameter.view_readable'
   | 'parameter.view_writable'
@@ -37,17 +37,17 @@ export type Permission =
 export const ALL_PERMISSIONS: Permission[] = [
   'read_data',
   'export_data',
-  'manage_stoves',
+  'manage_rigs',
   'modify_settings',
   'manage_updates',
   'manage_users',
   'assign_roles',
   'developer',
   'manage_devices',
-  'stoves.check_updates',
-  'stoves.force_update',
-  'stoves.alternative_update',
-  'stoves.models_manage',
+  'rigs.check_updates',
+  'rigs.force_update',
+  'rigs.alternative_update',
+  'rigs.models_manage',
   'parameter.view_all',
   'parameter.view_readable',
   'parameter.view_writable',

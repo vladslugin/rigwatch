@@ -16,7 +16,7 @@
  * traverse the tree; Firestore lookups go by (collection, docId).
  */
 
-import { RIGS, RIG_BY_ID, PARAMETER_METADATA, buildKonstant, buildKonstantApp, type RigProfile } from './rigData';
+import { RIGS, RIG_BY_ID, PARAMETER_METADATA, RIG_MODELS, buildKonstant, buildKonstantApp, type RigProfile } from './rigData';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -101,7 +101,7 @@ const fs: Record<string, Map<string, any>> = {
   kunden_tickets: new Map(),
   users_chats: new Map(),
   role_configs: new Map(),
-  stove_models: new Map(),
+  rig_models: new Map(),
   dealer_prompt_settings: new Map(),
   brennbewertung_knowledge: new Map(),
   rigops_script_library_v1: new Map(),
@@ -113,11 +113,17 @@ for (const [k, meta] of Object.entries(PARAMETER_METADATA)) {
   fs.masse_und_gewichte.set(k, { ...meta });
 }
 
+// Seed rig model catalog — queried by the `useRigModel` hook with
+// where('article_number', '==', ...) against the device's konstant_app.a.
+for (const m of RIG_MODELS) {
+  fs.rig_models.set(`model_${m.article_number}`, { ...m });
+}
+
 // Seed default role configs (mirrors what the legacy app stores).
 fs.role_configs.set('viewer',     { permissions: ['read_data', 'export_data'], level: 1 });
-fs.role_configs.set('admin',      { permissions: ['read_data', 'export_data', 'manage_stoves', 'modify_settings'], level: 2 });
-fs.role_configs.set('developer',  { permissions: ['read_data', 'export_data', 'manage_stoves', 'modify_settings', 'manage_updates', 'manage_users', 'assign_roles'], level: 3 });
-fs.role_configs.set('super_admin',{ permissions: ['read_data', 'export_data', 'manage_stoves', 'modify_settings', 'manage_users', 'assign_roles'], level: 3 });
+fs.role_configs.set('admin',      { permissions: ['read_data', 'export_data', 'manage_rigs', 'modify_settings'], level: 2 });
+fs.role_configs.set('developer',  { permissions: ['read_data', 'export_data', 'manage_rigs', 'modify_settings', 'manage_updates', 'manage_users', 'assign_roles'], level: 3 });
+fs.role_configs.set('super_admin',{ permissions: ['read_data', 'export_data', 'manage_rigs', 'modify_settings', 'manage_users', 'assign_roles'], level: 3 });
 fs.role_configs.set('pending',    { permissions: [], level: 0 });
 
 // ─────────────────────────────────────────────────────────────────────────────

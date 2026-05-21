@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 
 export interface ErrorInfo {
   code: number;
@@ -46,7 +46,7 @@ const decodeErrors = (eValue?: number, e2Value?: number): ErrorInfo[] => {
  * Multiple calls to this hook are cheap and don't create duplicate listeners.
  */
 export const useErrors = () => {
-  const errorData = useStoveStore(state => state.errorData);
+  const errorData = useRigStore(state => state.errorData);
 
   const errors = useMemo(
     () => decodeErrors(errorData.ecode, errorData.ecode2),

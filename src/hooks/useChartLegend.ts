@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useLocalSettings } from './useLocalSettings';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 import type { ParameterInfo } from '../types';
 
 export const useChartLegend = () => {
@@ -9,8 +9,8 @@ export const useChartLegend = () => {
     setColor 
   } = useLocalSettings();
   
-  const discoveredParameters = useStoveStore(state => state.discoveredParameters);
-  const setDiscoveredParameters = useStoveStore(state => state.setDiscoveredParameters);
+  const discoveredParameters = useRigStore(state => state.discoveredParameters);
+  const setDiscoveredParameters = useRigStore(state => state.setDiscoveredParameters);
 
   // Toggle parameter visibility on chart with local storage
   const toggleParameterVisibility = useCallback(async (paramId: string, visible: boolean) => {

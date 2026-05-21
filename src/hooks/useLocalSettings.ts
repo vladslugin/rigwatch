@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 import { defaultBaseParameterSettings, defaultParameterColors, defaultUserPreferences } from '../data/defaultSettings';
 
 // Local settings structure - ONLY VISUAL SETTINGS
@@ -36,9 +36,9 @@ interface UserPreferences {
 }
 
 export const useLocalSettings = () => {
-  const deviceId = useStoveStore(state => state.deviceId);
-  const discoveredParameters = useStoveStore(state => state.discoveredParameters);
-  const setDiscoveredParameters = useStoveStore(state => state.setDiscoveredParameters);
+  const deviceId = useRigStore(state => state.deviceId);
+  const discoveredParameters = useRigStore(state => state.discoveredParameters);
+  const setDiscoveredParameters = useRigStore(state => state.setDiscoveredParameters);
 
   // Get all settings from localStorage
   const getStorageData = useCallback((): LocalSettingsStorage => {
@@ -460,7 +460,7 @@ export const useLocalSettings = () => {
       console.error('[LocalSettings] Failed to load section order:', error);
     }
     // Default order if nothing saved
-    return ['stove-management', 'secondary-categories', 'main-and-airflow', 'charts'];
+    return ['rig-management', 'secondary-categories', 'main-and-airflow', 'charts'];
   }, [deviceId]);
 
   const saveSectionOrder = useCallback((order: string[]) => {

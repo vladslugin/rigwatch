@@ -2,7 +2,7 @@ import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import type { ParameterInfo } from '../types/firebase';
 import { getParameterDataType } from '../utils/parameterTypes';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 import { useLocalSettings } from '../hooks/useLocalSettings';
 import { useTranslation } from 'react-i18next';
 import { useEscapeKey } from '../hooks/useEscapeKey';
@@ -65,7 +65,7 @@ const ParameterListModal: React.FC<ParameterListModalProps> = ({
   // Live parameters from store override the props once we have anything in
   // there — keeps the table in sync with Firebase pushes without us wiring
   // a redundant subscription per modal instance.
-  const storeParameters = useStoveStore((state) => state.discoveredParameters);
+  const storeParameters = useRigStore((state) => state.discoveredParameters);
   const currentParameters = storeParameters.length > 0 ? storeParameters : parameters;
 
   const { getParameterSettings, toggleHidden } = useLocalSettings();

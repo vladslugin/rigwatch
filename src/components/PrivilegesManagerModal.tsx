@@ -21,12 +21,12 @@ const ROLES: UserRole[] = ['pending', 'viewer', 'admin', 'developer', 'super_adm
 /**
  * Permission groups by namespace prefix. Anything that doesn't start with one
  * of the listed prefixes is bucketed under "general" (the legacy / un-prefixed
- * permissions like `read_data`, `manage_stoves`, etc.). Order here also drives
+ * permissions like `read_data`, `manage_rigs`, etc.). Order here also drives
  * the render order of the groups so similar things stay together.
  */
 const PERMISSION_GROUPS: { id: string; prefix: string }[] = [
   { id: 'general', prefix: '' }, // catch-all, evaluated last
-  { id: 'stoves', prefix: 'stoves.' },
+  { id: 'rigs', prefix: 'rigs.' },
   { id: 'parameter', prefix: 'parameter.' },
   { id: 'parameters', prefix: 'parameters.' },
   { id: 'categories', prefix: 'categories.' },

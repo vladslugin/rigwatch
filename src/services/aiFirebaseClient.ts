@@ -25,7 +25,7 @@ export interface AnalyzeInput extends NormalizeInput {
   deviceId: string;
 }
 
-export const analyzeStoveWithFirebase = async (
+export const analyzeRigWithFirebase = async (
   input: AnalyzeInput,
   options?: { regenerate?: boolean; sendPII?: boolean; model?: string; locale?: 'de' | 'en' }
 ): Promise<AIResult> => {

@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { ref, onValue, off } from 'firebase/database';
 import { realtimeDB } from '../lib/firebase';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 
-export const useStoveComment = () => {
-  const deviceId = useStoveStore(state => state.deviceId);
+export const useRigComment = () => {
+  const deviceId = useRigStore(state => state.deviceId);
   const [comment, setComment] = useState<string>('');
   const [loading, setLoading] = useState(false);
 
@@ -22,7 +22,7 @@ export const useStoveComment = () => {
       setComment(commentValue || '');
       setLoading(false);
     }, (error) => {
-      console.error('[useStoveComment] Error loading comment:', error);
+      console.error('[useRigComment] Error loading comment:', error);
       setComment('');
       setLoading(false);
     });

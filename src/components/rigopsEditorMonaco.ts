@@ -29,8 +29,8 @@ const RIGOPS_KEYWORDS = [
 ];
 
 const RIGOPS_SNIPPETS: Array<{ command: string; snippet: string; description: string }> = [
-  { command: 'connect', snippet: 'connect <device_id>', description: 'Verbinden mit Gerät' },
-  { command: 'disconnect', snippet: 'disconnect', description: 'Verbindung trennen' },
+  { command: 'connect', snippet: 'connect <device_id>', description: 'Connect mit Gerät' },
+  { command: 'disconnect', snippet: 'disconnect', description: 'Connection trennen' },
   { command: 'set', snippet: 'set <parameter> <value>', description: 'Parameter schreiben' },
   { command: 'get', snippet: 'get <param> [as <var>]', description: 'Parameter lesen' },
   { command: 'read', snippet: 'read <param> <var>', description: 'Parameter in Variable' },

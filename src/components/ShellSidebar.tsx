@@ -31,7 +31,7 @@ type NavItem = {
 };
 
 const NAV_ITEMS: NavItem[] = [
-  { section: 'stove-management', label: 'Geräteübersicht', icon: Cpu },
+  { section: 'rig-management', label: 'Geräteübersicht', icon: Cpu },
   { section: 'secondary-categories', label: 'Parameter', icon: Layers },
   { section: 'main-and-airflow', label: 'Brennraum', icon: Flame },
   { section: 'charts', label: 'Diagramme', icon: BarChart3 },
@@ -120,14 +120,14 @@ export function ShellSidebar({ onOpenDocs, onOpenSettings }: ShellSidebarProps) 
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  tooltip="Einstellungen"
+                  tooltip="Settings"
                   onClick={() => {
                     onOpenSettings?.();
                     window.dispatchEvent(new CustomEvent('shell-open-settings'));
                   }}
                 >
                   <Settings />
-                  <span>Einstellungen</span>
+                  <span>Settings</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>

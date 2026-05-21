@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 import { useTranslation } from 'react-i18next';
 import { formatDateWithUserTimezone } from '../utils/timezone';
 import { ref, get, set } from 'firebase/database';
@@ -7,7 +7,7 @@ import { realtimeDB } from '../lib/firebase';
 
 const ControllerInfoBlock: React.FC = () => {
   const { i18n } = useTranslation();
-  const deviceId = useStoveStore(state => state.deviceId);
+  const deviceId = useRigStore(state => state.deviceId);
   
   const [currentControllerSerial, setCurrentControllerSerial] = useState<string>('—');
   const [firstControllerSerial, setFirstControllerSerial] = useState<string>('—');
@@ -20,10 +20,10 @@ const ControllerInfoBlock: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showInfoTooltip, setShowInfoTooltip] = useState(false);
 
-  // Parse device ID to get stove serial
+  // Parse device ID to get rig serial
   const parseDeviceId = (deviceId: string): string => {
     if (deviceId.length !== 22) return '';
-    return deviceId.substring(0, 7); // First 7 characters = Stove Serial
+    return deviceId.substring(0, 7); // First 7 characters = Rig Serial
   };
 
   // Helper to format dates
@@ -67,21 +67,21 @@ const ControllerInfoBlock: React.FC = () => {
     
     setIsLoading(true);
     try {
-      const stoveSerial = parseDeviceId(deviceId);
-      if (!stoveSerial) {
+      const rigSerial = parseDeviceId(deviceId);
+      if (!rigSerial) {
         console.error('[ControllerInfoBlock] Invalid device ID format');
         return;
       }
 
       // Load current controller serial (csnr_akt)
-      const csnrAktRef = ref(realtimeDB, `controllertausch/fepaliste/${stoveSerial}/csnr_akt`);
+      const csnrAktRef = ref(realtimeDB, `controllertausch/fepaliste/${rigSerial}/csnr_akt`);
       const csnrAktSnapshot = await get(csnrAktRef);
       const csnrAkt = csnrAktSnapshot.exists() ? String(csnrAktSnapshot.val()).trim() : '—';
       setCurrentControllerSerial(csnrAkt);
       setEditValue(csnrAkt);
 
       // Load first controller serial (csnr)
-      const csnrRef = ref(realtimeDB, `controllertausch/fepaliste/${stoveSerial}/csnr`);
+      const csnrRef = ref(realtimeDB, `controllertausch/fepaliste/${rigSerial}/csnr`);
       const csnrSnapshot = await get(csnrRef);
       
       let csnr: string;
@@ -98,7 +98,7 @@ const ControllerInfoBlock: React.FC = () => {
       setFirstControllerFromDeviceId(fromDeviceId);
 
       // Load exchange date (datum)
-      const datumRef = ref(realtimeDB, `controllertausch/erl/${stoveSerial}/datum`);
+      const datumRef = ref(realtimeDB, `controllertausch/erl/${rigSerial}/datum`);
       const datumSnapshot = await get(datumRef);
       const datum = datumSnapshot.exists() ? String(datumSnapshot.val()) : '';
       setExchangeDate(formatDate(datum));
@@ -127,13 +127,13 @@ const ControllerInfoBlock: React.FC = () => {
     
     setIsSaving(true);
     try {
-      const stoveSerial = parseDeviceId(deviceId);
-      if (!stoveSerial) {
+      const rigSerial = parseDeviceId(deviceId);
+      if (!rigSerial) {
         console.error('[ControllerInfoBlock] Invalid device ID format');
         return;
       }
 
-      const csnrAktRef = ref(realtimeDB, `controllertausch/fepaliste/${stoveSerial}/csnr_akt`);
+      const csnrAktRef = ref(realtimeDB, `controllertausch/fepaliste/${rigSerial}/csnr_akt`);
       await set(csnrAktRef, editValue.trim());
       
       setCurrentControllerSerial(editValue.trim());
@@ -203,7 +203,7 @@ const ControllerInfoBlock: React.FC = () => {
                     <button
                       onClick={handleEdit}
                       className="flex-shrink-0 ml-1 p-1 text-muted-foreground hover:text-primary rounded"
-                      title="Bearbeiten"
+                      title="Edit"
                     >
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -214,7 +214,7 @@ const ControllerInfoBlock: React.FC = () => {
               ) : (
                 <div className="space-y-1">
                   <div className="text-xs text-muted-foreground mb-1">
-                    Bearbeiten
+                    Edit
                   </div>
                   <input
                     type="text"

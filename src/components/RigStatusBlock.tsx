@@ -1,9 +1,9 @@
 import React from 'react';
-import { useStoveStatus } from '../hooks/useStoveStatus';
-import type { ComponentError } from '../hooks/useStoveStatus';
+import { useRigStatus } from '../hooks/useRigStatus';
+import type { ComponentError } from '../hooks/useRigStatus';
 import { useTranslation } from 'react-i18next';
 
-const StoveStatusBlock: React.FC = () => {
+const RigStatusBlock: React.FC = () => {
   const {
     temperature,
     scheibenluft,
@@ -12,7 +12,7 @@ const StoveStatusBlock: React.FC = () => {
     motorAErrors,
     motorBErrors,
     sensorErrors
-  } = useStoveStatus();
+  } = useRigStatus();
   const { t } = useTranslation();
 
   // Helper to format values
@@ -61,7 +61,7 @@ const StoveStatusBlock: React.FC = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
           </div>
-          <span>{t('stoveStatusBlock.title')}</span>
+          <span>{t('rigStatusBlock.title')}</span>
         </h2>
       </div>
 
@@ -70,12 +70,12 @@ const StoveStatusBlock: React.FC = () => {
         {/* Live Data Section */}
         <div className="mb-3 pb-3 border-b border-border">
           <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-            {t('stoveStatusBlock.liveData')}
+            {t('rigStatusBlock.liveData')}
           </h3>
           <div className="grid grid-cols-4 gap-2">
             <div className="p-2 bg-muted/50 rounded-lg text-center">
               <div className="text-xs text-muted-foreground mb-0.5">
-                {t('stoveStatusBlock.temperature')}
+                {t('rigStatusBlock.temperature')}
               </div>
               <div className="text-lg font-bold text-foreground [font-variant-numeric:tabular-nums]">
                 {formatValue(temperature, ' °C')}
@@ -83,7 +83,7 @@ const StoveStatusBlock: React.FC = () => {
             </div>
             <div className="p-2 bg-muted/50 rounded-lg text-center">
               <div className="text-xs text-muted-foreground mb-0.5">
-                {t('stoveStatusBlock.scheibenluft')}
+                {t('rigStatusBlock.scheibenluft')}
               </div>
               <div className="text-lg font-bold text-foreground [font-variant-numeric:tabular-nums]">
                 {formatValue(scheibenluft, ' %')}
@@ -91,7 +91,7 @@ const StoveStatusBlock: React.FC = () => {
             </div>
             <div className="p-2 bg-muted/50 rounded-lg text-center">
               <div className="text-xs text-muted-foreground mb-0.5">
-                {t('stoveStatusBlock.rueckwandluft')}
+                {t('rigStatusBlock.rueckwandluft')}
               </div>
               <div className="text-lg font-bold text-foreground [font-variant-numeric:tabular-nums]">
                 {formatValue(rueckwandluft, ' %')}
@@ -99,7 +99,7 @@ const StoveStatusBlock: React.FC = () => {
             </div>
             <div className="p-2 bg-muted/50 rounded-lg text-center">
               <div className="text-xs text-muted-foreground mb-0.5">
-                {t('stoveStatusBlock.brennphase')}
+                {t('rigStatusBlock.brennphase')}
               </div>
               <div className="text-sm font-semibold text-foreground">
                 {brennprigopsLabel}
@@ -111,12 +111,12 @@ const StoveStatusBlock: React.FC = () => {
         {/* Status Section */}
         <div>
           <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-            {t('stoveStatusBlock.systemStatus')}
+            {t('rigStatusBlock.systemStatus')}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-            {renderStatus(motorAErrors, t('stoveStatusBlock.motorA'))}
-            {renderStatus(motorBErrors, t('stoveStatusBlock.motorB'))}
-            {renderStatus(sensorErrors, t('stoveStatusBlock.sensor'))}
+            {renderStatus(motorAErrors, t('rigStatusBlock.motorA'))}
+            {renderStatus(motorBErrors, t('rigStatusBlock.motorB'))}
+            {renderStatus(sensorErrors, t('rigStatusBlock.sensor'))}
           </div>
         </div>
       </div>
@@ -124,5 +124,5 @@ const StoveStatusBlock: React.FC = () => {
   );
 };
 
-export default StoveStatusBlock;
+export default RigStatusBlock;
 

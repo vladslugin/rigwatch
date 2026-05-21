@@ -8,14 +8,14 @@
  * Keep both copies of the table in sync if Claus adds new fault codes.
  */
 
-export interface DecodedStoveError {
+export interface DecodedRigError {
   description: string;
   source: 'E' | 'E2';
   bit: number;
   /**
    * Whether dealers should see this error. "kein Strom" entries are filtered
    * out per Claus' 2026-05-05 request — they fire as a side-effect of the
-   * stove being switched off and would only confuse the dealer.
+   * rig being switched off and would only confuse the dealer.
    */
   dealerVisible: boolean;
   /** Concrete steps a dealer / customer can try first. */
@@ -30,7 +30,7 @@ interface ErrorDefinition {
 }
 
 const ERROR_DEFINITIONS: Record<'E' | 'E2', ReadonlyArray<ErrorDefinition>> = {
-  // Hinweis: HASE baut Holz-Kaminöfen (kein Pellet!). Motor A/B sind nach
+  // Hinweis: HASE baut Holz-Rigöfen (kein Pellet!). Motor A/B sind nach
   // aktuellem Stand die Stellmotoren der Primär- (PL) bzw. Sekundärluftklappe
   // (SL). Die Maßnahmen sind generisch gehalten und sollten von Claus / dem
   // HASE-Team noch fachlich verifiziert werden.
@@ -50,7 +50,7 @@ const ERROR_DEFINITIONS: Record<'E' | 'E2', ReadonlyArray<ErrorDefinition>> = {
       description: 'Motor A dreht durch',
       dealerVisible: true,
       massnahmen: [
-        'Mechanische Verbindung Motor ↔ Klappe prüfen (Mitnehmer / Kupplung)',
+        'Mechanische Connection Motor ↔ Klappe prüfen (Mitnehmer / Kupplung)',
         'Klappenwelle auf Bruch oder ausgeschlagene Lagerung kontrollieren',
         'Endschalter / Positionsrückmeldung prüfen',
       ],
@@ -70,7 +70,7 @@ const ERROR_DEFINITIONS: Record<'E' | 'E2', ReadonlyArray<ErrorDefinition>> = {
       description: 'Motor B dreht durch',
       dealerVisible: true,
       massnahmen: [
-        'Mechanische Verbindung Motor ↔ Klappe prüfen (Mitnehmer / Kupplung)',
+        'Mechanische Connection Motor ↔ Klappe prüfen (Mitnehmer / Kupplung)',
         'Klappe auf Blockade durch Asche / Verbrennungsrückstände prüfen',
         'Endschalter / Positionsrückmeldung prüfen',
       ],
@@ -87,7 +87,7 @@ const ERROR_DEFINITIONS: Record<'E' | 'E2', ReadonlyArray<ErrorDefinition>> = {
     },
   ],
   E2: [
-    // "kein Strom" — fires when the stove is simply switched off; we hide
+    // "kein Strom" — fires when the rig is simply switched off; we hide
     // these from dealers so the error card stays meaningful.
     { bit: 2, description: 'Motor A kein Strom', dealerVisible: false, massnahmen: [] },
     { bit: 5, description: 'Motor B kein Strom', dealerVisible: false, massnahmen: [] },
@@ -97,7 +97,7 @@ const ERROR_DEFINITIONS: Record<'E' | 'E2', ReadonlyArray<ErrorDefinition>> = {
 const decodeRegister = (
   source: 'E' | 'E2',
   value: number | undefined | null,
-): DecodedStoveError[] => {
+): DecodedRigError[] => {
   if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) return [];
   return ERROR_DEFINITIONS[source]
     .filter((def) => (value & (1 << def.bit)) !== 0)
@@ -110,10 +110,10 @@ const decodeRegister = (
     }));
 };
 
-export const decodeStoveErrors = (input: {
+export const decodeRigErrors = (input: {
   ecode?: number | null;
   ecode2?: number | null;
-}): DecodedStoveError[] => [
+}): DecodedRigError[] => [
   ...decodeRegister('E', input.ecode),
   ...decodeRegister('E2', input.ecode2),
 ];

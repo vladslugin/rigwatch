@@ -115,16 +115,42 @@ export const PARAMETER_METADATA: Record<string, {
   TRIG1:{name: 'Shares Accepted',      einheit: '/min', div: 1, form: 0, min: 0,   max: 500,   was: 'Accepted share rate.',                             color: '#10b981', yAxisID: 'y3', favorite: 0, position: 6, show_in_legend: false, visible_on_chart: false, dataType: 'int',   kategorie: 'pool' },
 };
 
+/**
+ * Registry of unique rig models — each entry seeded into the Firestore
+ * `rig_models` collection. Article numbers are the primary key the legacy
+ * UI uses to look up a model from `konstant_app/{rigId}.a`.
+ */
+export const RIG_MODELS = [
+  { article_number: '1',  name: 'Antminer S21 Pro',    vendor: 'Bitmain',    cooling: 'air',        algo: 'SHA-256',    hashrate_th: 234,  power_w: 3531 },
+  { article_number: '2',  name: 'Antminer S21',        vendor: 'Bitmain',    cooling: 'air',        algo: 'SHA-256',    hashrate_th: 200,  power_w: 3550 },
+  { article_number: '3',  name: 'Antminer S19 XP',     vendor: 'Bitmain',    cooling: 'air',        algo: 'SHA-256',    hashrate_th: 140,  power_w: 3010 },
+  { article_number: '4',  name: 'Antminer S19j Pro',   vendor: 'Bitmain',    cooling: 'air',        algo: 'SHA-256',    hashrate_th: 104,  power_w: 3068 },
+  { article_number: '5',  name: 'Antminer S19',        vendor: 'Bitmain',    cooling: 'air',        algo: 'SHA-256',    hashrate_th: 95,   power_w: 3250 },
+  { article_number: '6',  name: 'Antminer KS5L',       vendor: 'Bitmain',    cooling: 'air',        algo: 'kHeavyHash', hashrate_th: 12,   power_w: 3500 },
+  { article_number: '7',  name: 'Antminer KS3',        vendor: 'Bitmain',    cooling: 'air',        algo: 'kHeavyHash', hashrate_th: 8.3,  power_w: 3188 },
+  { article_number: '8',  name: 'Bitmain L7',          vendor: 'Bitmain',    cooling: 'air',        algo: 'Scrypt',     hashrate_th: 9500, power_w: 3425 },
+  { article_number: '9',  name: 'Whatsminer M60S',     vendor: 'MicroBT',    cooling: 'hydro',      algo: 'SHA-256',    hashrate_th: 186,  power_w: 3441 },
+  { article_number: '10', name: 'Whatsminer M50S',     vendor: 'MicroBT',    cooling: 'air',        algo: 'SHA-256',    hashrate_th: 126,  power_w: 3276 },
+  { article_number: '11', name: 'Whatsminer M30S++',   vendor: 'MicroBT',    cooling: 'air',        algo: 'SHA-256',    hashrate_th: 112,  power_w: 3472 },
+  { article_number: '12', name: 'Iceriver KS3L',       vendor: 'Iceriver',   cooling: 'air',        algo: 'kHeavyHash', hashrate_th: 5,    power_w: 3400 },
+] as const;
+
+const MODEL_TO_ARTICLE = new Map<string, string>(
+  RIG_MODELS.map((m) => [m.name, m.article_number]),
+);
+
 /** Build the konstant_app/{deviceId} blob the legacy UI consumes. */
 export const buildKonstantApp = (rig: RigProfile) => ({
-  ofenname: `${rig.name} · ${rig.model}`,
-  ofen: rig.model,
+  rigname: `${rig.name} · ${rig.model}`,
+  rig: rig.model,
   vers: rig.firmware,
   shareData: true,
   f: 0,
   v: false,
   comment: `${rig.location} · ${rig.algo}`,
   active_clients: {},
+  // Article number ties the device to its model record in `rig_models`.
+  a: Number(MODEL_TO_ARTICLE.get(rig.model) ?? 1),
 });
 
 /** Snapshot of the konstant/{deviceId} config. */

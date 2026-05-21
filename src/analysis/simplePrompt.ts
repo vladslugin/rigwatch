@@ -27,7 +27,7 @@ export const getSimpleAIPrompt = (data: SimpleAnalysisData): string => {
   const hasRealtime = data.realtimeParams && Object.keys(data.realtimeParams).length > 0;
   const hasHistorical = data.historicalStats && Object.keys(data.historicalStats).length > 0;
   
-  return `Du bist ein Kaminofen-Experte und hilfst Nutzern dabei, ihren Kaminofen zu verstehen.
+  return `Du bist ein rig-Experte und hilfst Nutzern dabei, ihren rig zu verstehen.
 Antworte in einfacher, verständlicher Sprache ohne technische Begriffe.
 
 WICHTIG: Antworte ausschließlich in ${data.locale === 'de' ? 'Deutsch' : 'Englisch'}.
@@ -36,7 +36,7 @@ ${hasRealtime ? `
 === AKTUELLE KAMINOFEN-DATEN ===
 ${JSON.stringify(data.realtimeParams, null, 2)}
 
-Verbindungsstatus: ${data.connectionStatus || 'unbekannt'}
+Connection Status: ${data.connectionStatus || 'unbekannt'}
 ${data.realtimeErrors?.length ? `Aktuelle Probleme: ${data.realtimeErrors.join(', ')}` : ''}
 ` : ''}
 
@@ -48,8 +48,8 @@ ${JSON.stringify(data.historicalStats, null, 2)}
 Analysiere die verfügbaren Daten und gib eine einfache, verständliche Einschätzung ab:
 
 1. KURZE ZUSAMMENFASSUNG (max. 2 Sätze):
-   ${hasRealtime ? '- Aktueller Zustand: Beschreibe kurz, was gerade mit dem Kaminofen passiert.' : ''}
-   ${hasHistorical ? '- Verlauf: Beschreibe kurz, wie der Kaminofen im gewählten Zeitraum funktioniert hat.' : ''}
+   ${hasRealtime ? '- Aktueller Zustand: Beschreibe kurz, was gerade mit dem rig passiert.' : ''}
+   ${hasHistorical ? '- Verlauf: Beschreibe kurz, wie der rig im gewählten Zeitraum funktioniert hat.' : ''}
 
 2. HAUPTPROBLEME (falls vorhanden, max. 3 Probleme):
    - Liste nur Probleme auf, ohne Lösungen oder Ratschläge
@@ -64,7 +64,7 @@ ANTWORT-FORMAT (STRIKTES JSON):
 }
 
 Verwende keine Fachbegriffe wie "Performance", "B-Codes", "Fuzzy-Logic" etc.
-Erkläre alles so, als würdest du mit jemandem sprechen, der zum ersten Mal einen Kamin benutzt.`;
+Erkläre alles so, als würdest du mit jemandem sprechen, der zum ersten Mal einen Rig benutzt.`;
 };
 
 /**
@@ -88,7 +88,7 @@ export const getFallbackSimpleAnalysis = (data: SimpleAnalysisData): SimpleAnaly
   const hasHistorical = data.historicalStats && Object.keys(data.historicalStats).length > 0;
   
   return {
-    realtime_summary: hasRealtime ? "Kaminofen-Daten werden analysiert..." : "",
+    realtime_summary: hasRealtime ? "rig-Daten werden analysiert..." : "",
     historical_summary: hasHistorical ? "Verlaufsdaten werden ausgewertet..." : "",
     main_issues: [],
     urgency: 'low',

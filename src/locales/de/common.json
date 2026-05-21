@@ -140,7 +140,7 @@
     "liveDataActive": "Live-Daten aktiv"
   },
   "sections": {
-    "stoveManagement": "Ofenverwaltung",
+    "rigManagement": "Rigverwaltung",
     "secondaryCategories": "Sekundäre Kategorien",
     "mainAndAirflow": "Hauptparameter & Luftstrom",
     "charts": "Diagramme",
@@ -149,7 +149,7 @@
   "app": {
     "welcome": "Willkommen bei RigWatch",
     "pendingApproval": "Bitte warten Sie auf die Genehmigung durch den Administrator",
-    "connectDevice": "Verbinden Sie Ihr Kamin-Gerät, um mit der Überwachung und Steuerung zu beginnen.",
+    "connectDevice": "Verbinden Sie Ihr Rig-Gerät, um mit der Überwachung und Steuerung zu beginnen.",
     "underReview": "Ihr Konto wird derzeit überprüft.",
     "enterFirebaseId": "Geben Sie oben Ihre Firebase-ID ein und klicken Sie auf \"Verbinden\".",
     "connecting": "Verbindung wird hergestellt...",
@@ -218,7 +218,7 @@
   "errorBlock": {
     "title": "Fehler"
   },
-  "stoveStatusBlock": {
+  "rigStatusBlock": {
     "title": "Momentaner Zustand",
     "liveData": "Live-Daten",
     "systemStatus": "Systemstatus",
@@ -235,7 +235,7 @@
     "currentSerial": "Seriennummer des momentan eingebauten Controllers",
     "exchangeDate": "Ausgetauscht am",
     "oldestSerial": "Seriennummer des ältesten eingebauten Controllers",
-    "firstExchangeDate": "Ofen-Eingabe"
+    "firstExchangeDate": "Rig-Eingabe"
   },
   "connectionBlock": {
     "title": "Verbindung",
@@ -357,7 +357,7 @@
     },
     "groups": {
       "general": "Allgemein",
-      "stoves": "Geräte / Öfen",
+      "rigs": "Geräte / Öfen",
       "parameter": "Parameter (Anzeigebereich)",
       "parameters": "Parameter (Bearbeitung)",
       "categories": "Kategorien",
@@ -370,17 +370,17 @@
     "descriptions": {
       "read_data": "Daten lesen",
       "export_data": "Daten exportieren",
-      "manage_stoves": "Öfen verwalten",
+      "manage_rigs": "Öfen verwalten",
       "modify_settings": "Einstellungen ändern",
       "manage_updates": "Updates verwalten",
       "manage_users": "Benutzer verwalten",
       "assign_roles": "Rollen zuweisen",
       "developer": "Entwickler-Funktionen freischalten",
       "manage_devices": "Geräte verwalten",
-      "stoves.check_updates": "Auf Firmware-Updates prüfen",
-      "stoves.force_update": "Firmware-Update erzwingen",
-      "stoves.alternative_update": "Alternatives Update verwenden",
-      "stoves.models_manage": "Ofenmodelle pflegen",
+      "rigs.check_updates": "Auf Firmware-Updates prüfen",
+      "rigs.force_update": "Firmware-Update erzwingen",
+      "rigs.alternative_update": "Alternatives Update verwenden",
+      "rigs.models_manage": "Rigmodelle pflegen",
       "parameter.view_all": "Alle Parameter sehen",
       "parameter.view_readable": "Nur lesbare Parameter sehen",
       "parameter.view_writable": "Nur schreibbare Parameter sehen",
@@ -718,28 +718,28 @@
     "chooseColorTitle": "Farbe für Parameter auswählen",
     "cancel": "Abbrechen"
   },
-  "stove": {
-    "panelTitle": "Ofenverwaltung",
-    "connectPrompt": "Verbinden Sie ein Gerät, um auf die Ofenverwaltung zuzugreifen",
-    "info": "Ofeninformationen",
+  "rig": {
+    "panelTitle": "Rigverwaltung",
+    "connectPrompt": "Verbinden Sie ein Gerät, um auf die Rigverwaltung zuzugreifen",
+    "info": "Riginformationen",
     "technicalData": "Technische Daten",
     "manual": "Handbuch",
     "modelInfoUnavailable": "Modellinformationen nicht verfügbar",
     "softwareId": "Software-ID: {{id}}",
-    "stoveInfoButton": "Ofeninfo",
+    "rigInfoButton": "Riginfo",
     "parameterSet": "Parametersatz",
     "default": "Standard",
     "firmwareVersion": "Firmware-Version",
     "unknown": "Unbekannt",
     "updateAvailable": "Update verfügbar",
-    "upToDate": "Ofen ist auf dem neuesten Stand",
+    "upToDate": "Rig ist auf dem neuesten Stand",
     "updatingFirmware": "Firmware wird aktualisiert",
     "installUpdate": "Verfügbares Update installieren",
     "checkUpdates": "Nach Updates suchen",
     "forceUpdate": "Update erzwingen",
     "debugTools": "Debug-Tools",
     "testModel": "Modell testen",
-    "testModelTitle": "Ofenmodell-Suche testen (Konsole prüfen)",
+    "testModelTitle": "Rigmodell-Suche testen (Konsole prüfen)",
     "searchNodes": "Knoten suchen",
     "alternativeUpdate": "Alternatives Update:",
     "updateFilenamePlaceholder": "Update-Dateiname...",
@@ -804,9 +804,9 @@
   "notifications": {
     "close": "Benachrichtigung schließen"
   },
-  "stoveInfo": {
-    "title": "Ofeninformationen",
-    "loading": "Ofeninformationen werden geladen...",
+  "rigInfo": {
+    "title": "Riginformationen",
+    "loading": "Riginformationen werden geladen...",
     "article": "Artikel #{{num}}",
     "swLabel": "SW:",
     "versionPrefix": "v{{version}}",
@@ -814,14 +814,14 @@
     "manual": "Handbuch",
     "basicInfo": "Grundlegende Informationen",
     "deviceId": "Geräte-ID",
-    "stoveSerial": "Ofen-Seriennummer",
+    "rigSerial": "Rig-Seriennummer",
     "fepaUID": "Fepa UID",
     "originalController": "Ursprünglicher Controller",
     "currentController": "Aktueller Controller",
     "connectionStatus": "Verbindungsstatus",
     "pingTest": "Ping-Test",
     "pingTesting": "Ping-Test...",
-    "pingInfo": "Sende Ping-Befehle an den Ofen... Das dauert etwa 9 Sekunden.",
+    "pingInfo": "Sende Ping-Befehle an den Rig... Das dauert etwa 9 Sekunden.",
     "statusChecking": "Status wird geprüft...",
     "statusOnline": "Online",
     "statusOffline": "Offline",
@@ -830,19 +830,19 @@
     "comments": "Kommentare",
     "edit": "Bearbeiten",
     "add": "Hinzufügen",
-    "commentPlaceholder": "Notizen zu diesem Ofen hinzufügen...",
+    "commentPlaceholder": "Notizen zu diesem Rig hinzufügen...",
     "saving": "Speichere...",
     "save": "Speichern",
     "cancel": "Abbrechen",
     "noComments": "Noch keine Kommentare",
     "noDevice": "Kein Gerät verbunden",
-    "resetTitle": "Ofen-Controller zurücksetzen",
+    "resetTitle": "Rig-Controller zurücksetzen",
     "resetting": "Setze zurück...",
-    "resetButton": "Ofen zurücksetzen",
+    "resetButton": "Rig zurücksetzen",
     "notPaired": "Nicht gekoppelt",
     "assign": "Zuweisen",
     "reconnect": "Neu verbinden",
-    "preview": "Ofenbild anzeigen",
+    "preview": "Rigbild anzeigen",
     "showQR": "QR-Code anzeigen",
     "qrPlaceholder": "QR-Code kommt bald",
     "copySummary": "Zusammenfassung kopieren",
@@ -871,7 +871,7 @@
     "actions": "Aktionen",
     "lastLogin": "Letzte Anmeldung",
     "description": "Beschreibung",
-    "descriptionPlaceholder": "Beschreiben Sie diese Ofeninstallation, Wartungsnotizen oder andere Details...",
+    "descriptionPlaceholder": "Beschreiben Sie diese Riginstallation, Wartungsnotizen oder andere Details...",
     "noDescription": "Keine Beschreibung hinzugefügt",
     "controllerInfoTooltip": "Controller-Statusinformationen anzeigen",
     "controllerStatusTitle": "Controller-Status-Szenarien:",
@@ -910,14 +910,14 @@
     "backToLive": "Zurück zu Live"
   },
   "parameterVariants": {
-    "title": "Ofenmodelle",
+    "title": "Rigmodelle",
     "noDevice": "Kein Gerät verbunden",
-    "connectPrompt": "Verbinden Sie ein Gerät, um Ofenmodell-Konfigurationen zu verwalten",
+    "connectPrompt": "Verbinden Sie ein Gerät, um Rigmodell-Konfigurationen zu verwalten",
     "savedCount": "{{count}} gespeichert",
     "parametersSummary": "Parameter: {{total}} gesamt, {{writable}} schreibbar",
     "selectModel": "Modell auswählen",
-    "savedModels": "Gespeicherte Ofenmodelle:",
-    "noneSaved": "Noch keine Ofenmodelle gespeichert",
+    "savedModels": "Gespeicherte Rigmodelle:",
+    "noneSaved": "Noch keine Rigmodelle gespeichert",
     "model": "Modell",
     "created": "Erstellt",
     "device": "Gerät",
@@ -930,18 +930,18 @@
     "loadToDevice": "Auf Gerät laden",
     "export": "Exportieren",
     "delete": "Löschen",
-    "deleteConfirm": "Möchten Sie das Ofenmodell \"{{name}}\" wirklich löschen?\n\nDieser Vorgang kann nicht rückgängig gemacht werden.",
+    "deleteConfirm": "Möchten Sie das Rigmodell \"{{name}}\" wirklich löschen?\n\nDieser Vorgang kann nicht rückgängig gemacht werden.",
     "saveAsNew": "Aktuelles als neues Modell speichern:",
     "noWritableHint": "Keine schreibbaren Parameter erkannt. Nur schreibgeschützte Messwerte (T, PL, SL, P, N) sind verfügbar. Schreibbare Parameter sind Konfigurationswerte, die geändert werden können.",
-    "newNamePlaceholder": "Name des Ofenmodells eingeben...",
+    "newNamePlaceholder": "Name des Rigmodells eingeben...",
     "noWritableTitle": "Keine schreibbaren Parameter zum Speichern verfügbar",
     "savingModel": "Modell wird gespeichert...",
     "saveNew": "Als neues Modell speichern",
     "overwrite": "Speichern",
-    "overwriteConfirm": "Möchten Sie das aktuelle Ofenmodell \"{{name}}\" mit den aktuellen Parametern überschreiben?\n\nDieser Vorgang kann nicht rückgängig gemacht werden.",
+    "overwriteConfirm": "Möchten Sie das aktuelle Rigmodell \"{{name}}\" mit den aktuellen Parametern überschreiben?\n\nDieser Vorgang kann nicht rückgängig gemacht werden.",
     "overwriteHint": "Aktuelle Parameter in ausgewähltes Modell speichern",
     "overwriting": "Speichere...",
-    "exportTitle": "Ofenmodell exportieren",
+    "exportTitle": "Rigmodell exportieren",
     "exportHint": "Modellkonfiguration. Klicken Sie in das Textfeld, um alles zum manuellen Kopieren auszuwählen:"
   },
   "historicalAI": {
@@ -973,9 +973,9 @@
         "useButton": "Verwenden Sie den 'Diagramme'-Button, um diese Werte zu ändern"
       },
       "rules": {
-        "rule1": "Regel 1: Ofen erreicht nicht die Temperatur",
+        "rule1": "Regel 1: Rig erreicht nicht die Temperatur",
         "rule2": "Regel 2: Brennt zu schnell nach Anzündung/Aufheizung",
-        "rule3": "Regel 3: Ofen brennt zu lange",
+        "rule3": "Regel 3: Rig brennt zu lange",
         "rule4": "Regel 4: Brennt zu lange und zu heiß",
         "rule5": "Regel 5: Brennt zu kurz und zu heiß",
         "rule6": "Regel 6: Zu früh nachgelegt",
@@ -996,8 +996,8 @@
         "B7": "zu spät nachgelegt",
         "B8": "generell gute Verbrennung",
         "B9": "generell schlechte Verbrennung",
-        "B10": "Kaminzug zu schwach",
-        "B11": "Kaminzug zu stark",
+        "B10": "Rigzug zu schwach",
+        "B11": "Rigzug zu stark",
         "B12": "Brennstoff ist geeignet",
         "B13": "richtig nachgelegt"
       },
@@ -1023,8 +1023,8 @@
     }
   },
   "simpleAI": {
-    "title": "Kaminofen-Analyse",
-    "subtitle": "Schnelle Einschätzung Ihres Kaminofens",
+    "title": "Rigrig-Analyse",
+    "subtitle": "Schnelle Einschätzung Ihres Rigrigs",
     "period": "Zeitraum",
     "date": "Datum",
     "realtimeStatus": "Aktueller Zustand",
@@ -1032,7 +1032,7 @@
     "problems": "Gefundene Probleme",
     "urgentAction": "Dringende Maßnahmen erforderlich",
     "moderateAction": "Aufmerksamkeit erforderlich",
-    "allGood": "Ihr Kaminofen funktioniert gut!",
+    "allGood": "Ihr Rigrig funktioniert gut!",
     "noIssues": "Es wurden keine kritischen Probleme gefunden.",
     "noHistoricalData": "Keine Verlaufsdaten verfügbar",
     "onlyRealtimeAnalysis": "Die Analyse basiert nur auf aktuellen Daten."
@@ -1044,18 +1044,18 @@
     "recentIds": "Letzte 10 Seriennummern",
     "connect": "Prüfen",
     "checking": "Prüfe...",
-    "ofenSnPlaceholder": "Ofen-Seriennummer (7 Ziffern)",
-    "ofenSnHelp": "Tipp: Die 7-stellige Seriennummer vom Typenschild reicht aus.",
-    "notFound": "Kein Ofen mit dieser Seriennummer gefunden.",
-    "searching": "Ofen wird gesucht...",
+    "rigSnPlaceholder": "Rig-Seriennummer (7 Ziffern)",
+    "rigSnHelp": "Tipp: Die 7-stellige Seriennummer vom Typenschild reicht aus.",
+    "notFound": "Kein Rig mit dieser Seriennummer gefunden.",
+    "searching": "Rig wird gesucht...",
     "toggleTheme": "Thema",
     "cards": {
       "problemTitle": "Was ist das Problem?",
       "reasonTitle": "Warum ist es passiert?",
       "solutionTitle": "Wie kann man es lösen?"
     },
-    "ofenInfo": {
-      "title": "Ofen"
+    "rigInfo": {
+      "title": "Rig"
     },
     "status": {
       "title": "Status",
@@ -1067,7 +1067,7 @@
       "hideDetails": "Details ausblenden"
     },
     "problemInput": {
-      "title": "Haben Sie ein Problem mit dem Ofen?",
+      "title": "Haben Sie ein Problem mit dem Rig?",
       "placeholder": "Bitte beschreiben Sie das Problem des Kunden möglichst konkret...",
       "send": "Analyse starten",
       "loading": "Analyse läuft...",
@@ -1096,7 +1096,7 @@
       "resolved": "Gelöst"
     },
     "sections": {
-      "passport": "Ofen",
+      "passport": "Rig",
       "status": "Statusanalyse",
       "customerQuestion": "Kundenbeschreibung",
       "geminiAnswer": "KI-Analyse",
@@ -1142,7 +1142,7 @@
   },
   "dealerV2": {
     "header": {
-      "aria": "Ofen-Übersicht",
+      "aria": "Rig-Übersicht",
       "modelLabel": "Modell",
       "seriennrLabel": "Seriennr.:",
       "unknownModel": "Unbekanntes Modell",
@@ -1156,12 +1156,12 @@
     },
     "brennbewertung": {
       "aria": "Brennbewertung",
-      "goodTitle": "Der Ofen brennt einwandfrei",
+      "goodTitle": "Der Rig brennt einwandfrei",
       "goodSubtitle": "Alle Brennindikatoren liegen im optimalen Bereich.",
       "goodPoint1": "Die Temperaturen und Abbrandzeiten sind gut",
       "goodPoint2": "Es wird rechtzeitig nachgelegt",
-      "goodPoint3": "iQ kann den Ofen optimal einstellen",
-      "badTitle": "Der Ofen könnte besser brennen",
+      "goodPoint3": "iQ kann den Rig optimal einstellen",
+      "badTitle": "Der Rig könnte besser brennen",
       "badSubtitle": "Der Controller erkennt folgende Auffälligkeiten. Die wahrscheinlichsten stehen zuerst.",
       "devOverrideHint": "Diese Werte stammen aus dem Entwickler-Testpanel, nicht vom Gerät.",
       "backgroundShow": "Mehr Hintergrund",
@@ -1170,20 +1170,20 @@
       "backgroundHeading": "Was beobachtet der Kunde typischerweise?"
     },
     "funktion": {
-      "aria": "Ofen-Funktion",
-      "goodTitle": "Der Ofen funktioniert fehlerfrei",
-      "goodPoint1": "Der Ofen ist online",
+      "aria": "Rig-Funktion",
+      "goodTitle": "Der Rig funktioniert fehlerfrei",
+      "goodPoint1": "Der Rig ist online",
       "goodPoint2": "Die Motoren funktionieren",
       "goodPoint3": "Der Temperatursensor funktioniert",
-      "badTitle_one": "Der Ofen meldet einen Fehler",
-      "badTitle_other": "Der Ofen meldet {{count}} Fehler",
+      "badTitle_one": "Der Rig meldet einen Fehler",
+      "badTitle_other": "Der Rig meldet {{count}} Fehler",
       "showMassnahmen": "Maßnahmen",
       "hideMassnahmen": "Schließen",
       "firmwareHint": "Bitte zuerst die Firmware aktualisieren. Viele Fehler verschwinden nach dem Update."
     },
     "problemInput": {
       "aria": "Problembeschreibung",
-      "title": "Haben Sie ein Problem mit dem Ofen?",
+      "title": "Haben Sie ein Problem mit dem Rig?",
       "placeholder": "Bitte beschreiben Sie das Problem…",
       "analyse": "Antwort bekommen",
       "analysing": "Antwort wird generiert…",

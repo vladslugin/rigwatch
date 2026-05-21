@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { ref, onValue, off } from 'firebase/database';
 import { realtimeDB } from '../lib/firebase';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 
 export interface ComponentError {
   code: string;
   description: string;
 }
 
-export interface StoveStatusData {
+export interface RigStatusData {
   temperature?: number;
   scheibenluft?: number;
   rueckwandluft?: number;
@@ -43,14 +43,14 @@ const ERROR_DEFINITIONS = {
   ]
 };
 
-export const useStoveStatus = () => {
-  const deviceId = useStoveStore(state => state.deviceId);
+export const useRigStatus = () => {
+  const deviceId = useRigStore(state => state.deviceId);
   
   // FIXED: Get live data directly from store to ensure reactivity
-  const temperature = useStoveStore(state => state.currentData.T);
-  const scheibenluft = useStoveStore(state => state.currentData.PL);
-  const rueckwandluft = useStoveStore(state => state.currentData.SL);
-  const brennphase = useStoveStore(state => {
+  const temperature = useRigStore(state => state.currentData.T);
+  const scheibenluft = useRigStore(state => state.currentData.PL);
+  const rueckwandluft = useRigStore(state => state.currentData.SL);
+  const brennphase = useRigStore(state => {
     const f = state.currentData.F;
     return typeof f === 'number' ? f : undefined;
   });
@@ -68,7 +68,7 @@ export const useStoveStatus = () => {
   // Subscribe to motor and sensor statuses from konstant_app/<id>
   useEffect(() => {
     if (!deviceId || !realtimeDB) {
-      console.log('[useStoveStatus] No deviceId or realtimeDB');
+      console.log('[useRigStatus] No deviceId or realtimeDB');
       setComponentErrors({
         motorAErrors: [],
         motorBErrors: [],
@@ -77,14 +77,14 @@ export const useStoveStatus = () => {
       return;
     }
 
-    console.log(`[useStoveStatus] Setting up status listeners for device: ${deviceId}`);
+    console.log(`[useRigStatus] Setting up status listeners for device: ${deviceId}`);
 
     // Listen to konstant_app for motor and sensor statuses
     const konstantAppRef = ref(realtimeDB, `konstant_app/${deviceId}`);
 
     const handleStatusUpdate = onValue(konstantAppRef, (snapshot) => {
       if (!snapshot.exists()) {
-        console.log('[useStoveStatus] No konstant_app data found');
+        console.log('[useRigStatus] No konstant_app data found');
         setComponentErrors({
           motorAErrors: [],
           motorBErrors: [],
@@ -94,7 +94,7 @@ export const useStoveStatus = () => {
       }
 
       const data = snapshot.val();
-      console.log('[useStoveStatus] konstant_app data:', data);
+      console.log('[useRigStatus] konstant_app data:', data);
 
       // Check error codes
       const ecode = data.ecode ?? 0;
@@ -132,12 +132,12 @@ export const useStoveStatus = () => {
         sensorErrors,
       });
     }, (error) => {
-      console.error('[useStoveStatus] konstant_app listener error:', error);
+      console.error('[useRigStatus] konstant_app listener error:', error);
     });
 
     // Cleanup function
     return () => {
-      console.log(`[useStoveStatus] Cleaning up status listeners for device: ${deviceId}`);
+      console.log(`[useRigStatus] Cleaning up status listeners for device: ${deviceId}`);
       off(konstantAppRef, 'value', handleStatusUpdate);
     };
   }, [deviceId]);

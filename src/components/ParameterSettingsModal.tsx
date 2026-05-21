@@ -9,7 +9,7 @@ import { useAuth } from '../hooks/useAuth';
 import { emergencyStopAllTests, forceCleanupStuckTests, testAlarmManager } from '../utils/testAlarmSystem';
 import { firestoreDB } from '../lib/firebase';
 import { doc as fsDoc, setDoc as fsSetDoc } from 'firebase/firestore';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 import { useCategoryManager } from '../hooks/useCategoryManager';
 import { useEscapeKey } from '../hooks/useEscapeKey';
 
@@ -133,7 +133,7 @@ const ParameterSettingsModal: React.FC<ParameterSettingsModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const currentDeviceId = useStoveStore(state => state.deviceId);
+  const currentDeviceId = useRigStore(state => state.deviceId);
   // Category management
   const { availableCategories: managedCategories, createCategory, renameCategory, deleteCategory } = useCategoryManager();
   
@@ -572,7 +572,7 @@ const ParameterSettingsModal: React.FC<ParameterSettingsModalProps> = ({
     setIsTestingAlarm(true);
     try {
       const paramId = parameter.originalName;
-      const currentValueRaw = (useStoveStore.getState().currentData as any)?.[paramId];
+      const currentValueRaw = (useRigStore.getState().currentData as any)?.[paramId];
       const currentValue = Number(currentValueRaw);
       if (!isFinite(currentValue)) {
         console.warn('[ParameterSettings] Cannot start test alarm: current value is not numeric');
@@ -1190,7 +1190,7 @@ const ParameterSettingsModal: React.FC<ParameterSettingsModalProps> = ({
                             </>
                           ) : (
                             <>
-                              <span>Erstellen</span>
+                              <span>Create</span>
                             </>
                           )}
                         </button>

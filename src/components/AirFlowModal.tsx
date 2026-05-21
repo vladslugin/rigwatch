@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 import { useTiling } from '../context/TilingContext';
 import { getPLValues, getSLValues, getRLValues } from '../utils/parameterTypes';
 import { useTranslation } from 'react-i18next';
@@ -28,10 +28,10 @@ const AirFlowModal: React.FC<AirFlowModalProps> = ({ isOpen, onClose, onActivate
   const tiling = useTiling();
 
   // Get data from store (no additional Firebase requests)
-  const deviceId = useStoveStore(state => state.deviceId);
-  const currentData = useStoveStore(state => state.currentData);
-  const connectionStatus = useStoveStore(state => state.connectionStatus);
-  const discoveredParameters = useStoveStore(state => state.discoveredParameters);
+  const deviceId = useRigStore(state => state.deviceId);
+  const currentData = useRigStore(state => state.currentData);
+  const connectionStatus = useRigStore(state => state.connectionStatus);
+  const discoveredParameters = useRigStore(state => state.discoveredParameters);
 
   // Position and size state
   const [position, setPosition] = useState({ x: 100, y: 100 });

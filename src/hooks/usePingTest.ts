@@ -13,7 +13,7 @@ export interface PingTestState {
 /**
  * Active connectivity check that proves the controller is currently listening.
  *
- * Mechanism (matches the existing logic in ConnectionBlock.tsx / StoveInfoModal.tsx):
+ * Mechanism (matches the existing logic in ConnectionBlock.tsx / RigInfoModal.tsx):
  *   1. Read `konstant_app/<id>/c` — the controller's command-counter.
  *   2. Write three random pings into `konstant/<id>/p`, 2 s apart.
  *   3. Wait another 3 s, then re-read the counter.
@@ -21,7 +21,7 @@ export interface PingTestState {
  *
  * The whole exchange takes ~9–11 s. We use this rather than passively comparing
  * `tsfc` because the controller's heartbeat cadence is not strictly fixed, so
- * a passive freshness check produces false offlines for slow stoves.
+ * a passive freshness check produces false offlines for slow rigs.
  *
  * The hook auto-cancels in-flight checks when the device changes or the
  * component unmounts (via a generation token), so stale results never overwrite

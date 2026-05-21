@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { ref, get, set } from 'firebase/database';
 import { realtimeDB } from '../lib/firebase';
-import { useStoveStore } from '../store/useStoveStore';
-import { useStoveModel } from '../hooks/useFirebase';
+import { useRigStore } from '../store/useRigStore';
+import { useRigModel } from '../hooks/useFirebase';
 import { useTranslation } from 'react-i18next';
 import { formatDateWithUserTimezone } from '../utils/timezone';
 import AIAnalysisWrapper from './AIAnalysisWrapper';
 import { useAuth } from '../hooks/useAuth';
 import { useEscapeKey } from '../hooks/useEscapeKey';
 
-interface StoveInfoModalProps {
+interface RigInfoModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-interface StoveInfo {
-  stoveSerial: string;
+interface RigInfo {
+  rigSerial: string;
   controllerSerial: string;
   fepaUID: string;
   softwareId: number;
-  stoveName: string;
-  stoveModelData: any;
+  rigName: string;
+  rigModelData: any;
   lastLogin: number;
   softwareVersion: string;
   versionVariant?: string;
@@ -28,12 +28,12 @@ interface StoveInfo {
   comment: string;
 }
 
-const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
-  const deviceId = useStoveStore(state => state.deviceId);
-  // const deviceMetadata = useStoveStore(state => state.deviceMetadata);
-  // Use cached data like in StoveManagementPanel.tsx
-  const { getStoveModelName, getStoveModelData, cachedModelName, cachedModelData } = useStoveModel();
-  const [stoveInfo, setStoveInfo] = useState<StoveInfo | null>(null);
+const RigInfoModal: React.FC<RigInfoModalProps> = ({ isOpen, onClose }) => {
+  const deviceId = useRigStore(state => state.deviceId);
+  // const deviceMetadata = useRigStore(state => state.deviceMetadata);
+  // Use cached data like in RigManagementPanel.tsx
+  const { getRigModelName, getRigModelData, cachedModelName, cachedModelData } = useRigModel();
+  const [rigInfo, setRigInfo] = useState<RigInfo | null>(null);
   const [comment, setComment] = useState('');
   const [isEditingComment, setIsEditingComment] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -61,7 +61,7 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
           const recentHistory = parsedHistory.filter((entry: any) => entry.ts > cutoff);
           setPingHistory(recentHistory.slice(0, 5)); // Keep only last 5
         } catch (error) {
-          console.warn('[StoveInfoModal] Failed to parse ping history from localStorage:', error);
+          console.warn('[RigInfoModal] Failed to parse ping history from localStorage:', error);
         }
       }
     }
@@ -74,7 +74,7 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
       try {
         localStorage.setItem(storageKey, JSON.stringify(newHistory));
       } catch (error) {
-        console.warn('[StoveInfoModal] Failed to save ping history to localStorage:', error);
+        console.warn('[RigInfoModal] Failed to save ping history to localStorage:', error);
       }
     }
   };
@@ -85,24 +85,24 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
   const [showImagePreview, setShowImagePreview] = useState(false);
   const [showControllerInfo, setShowControllerInfo] = useState(false);
   
-  // Stove reset states
+  // Rig reset states
   const [isResetting, setIsResetting] = useState(false);
 
   // Parse device ID into components
-  const parseDeviceId = (deviceId: string): { stoveSerial: string; controllerSerial: string; fepaUID: string } => {
+  const parseDeviceId = (deviceId: string): { rigSerial: string; controllerSerial: string; fepaUID: string } => {
     if (deviceId.length !== 22) {
-      return { stoveSerial: 'Invalid', controllerSerial: 'Invalid', fepaUID: 'Invalid' };
+      return { rigSerial: 'Invalid', controllerSerial: 'Invalid', fepaUID: 'Invalid' };
     }
     
     return {
-      stoveSerial: deviceId.substring(0, 7),
+      rigSerial: deviceId.substring(0, 7),
       controllerSerial: deviceId.substring(7, 14),
       fepaUID: deviceId.substring(14, 22)
     };
   };
 
-  // Fallback stove name for cases where Firestore lookup fails
-  const getStoveName = (softwareId: number): string => {
+  // Fallback rig name for cases where Firestore lookup fails
+  const getRigName = (softwareId: number): string => {
     return `Software ID ${softwareId}`;
   };
 
@@ -110,11 +110,11 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
   useEffect(() => {
     if (!isOpen || !deviceId || !realtimeDB) return;
 
-    const loadStoveInfo = async () => {
+    const loadRigInfo = async () => {
       setLoading(true);
 
       try {
-        const { stoveSerial, controllerSerial, fepaUID } = parseDeviceId(deviceId);
+        const { rigSerial, controllerSerial, fepaUID } = parseDeviceId(deviceId);
         
         // Load basic info from konstant_app
         const konstantAppRef = ref(realtimeDB!, `konstant_app/${deviceId}`);
@@ -122,7 +122,7 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
         const konstantAppData = konstantAppSnapshot.val() || {};
 
         // Load current controller serial from controllertausch
-        const controllerRef = ref(realtimeDB!, `controllertausch/fepaliste/${stoveSerial}/csnr_akt`);
+        const controllerRef = ref(realtimeDB!, `controllertausch/fepaliste/${rigSerial}/csnr_akt`);
         const controllerSnapshot = await get(controllerRef);
         const rawCurrentController = controllerSnapshot.val();
         // Ensure consistent string comparison by converting to string and trimming
@@ -133,43 +133,43 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
         const commentSnapshot = await get(commentRef);
         const commentValue = commentSnapshot.val() || '';
 
-        // Determine model name and data (use cache like in StoveManagementPanel.tsx)
-        let stoveName = getStoveName(konstantAppData.ofen || 0); // fallback
-        let stoveModelData = null;
+        // Determine model name and data (use cache like in RigManagementPanel.tsx)
+        let rigName = getRigName(konstantAppData.rig || 0); // fallback
+        let rigModelData = null;
 
         if (cachedModelName && cachedModelName !== 'Unknown Model') {
-          stoveName = cachedModelName;
+          rigName = cachedModelName;
           if (cachedModelData) {
-            stoveModelData = cachedModelData;
+            rigModelData = cachedModelData;
           }
         } else {
           try {
             const [modelName, modelData] = await Promise.all([
-              getStoveModelName(),
-              getStoveModelData()
+              getRigModelName(),
+              getRigModelData()
             ]);
             
             if (modelName && modelName !== 'Unknown Model') {
-              stoveName = modelName;
+              rigName = modelName;
             }
             
             if (modelData) {
-              stoveModelData = modelData;
+              rigModelData = modelData;
             }
             
           } catch (error) {
-            stoveName = getStoveName(konstantAppData.ofen || 0);
+            rigName = getRigName(konstantAppData.rig || 0);
           }
         }
 
-        // Create complete stove information
-        const fullStoveInfo: StoveInfo = {
-          stoveSerial,
+        // Create complete rig information
+        const fullRigInfo: RigInfo = {
+          rigSerial,
           controllerSerial,
           fepaUID,
-          softwareId: konstantAppData.ofen || 0,
-          stoveName,
-          stoveModelData,
+          softwareId: konstantAppData.rig || 0,
+          rigName,
+          rigModelData,
           lastLogin: konstantAppData.tsfc || 0,
           softwareVersion: konstantAppData.vers || 'Unknown',
           versionVariant: (konstantAppData.versu ? String(konstantAppData.versu).trim() : '') || 'undefined',
@@ -177,24 +177,24 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
           comment: commentValue
         };
 
-        setStoveInfo(fullStoveInfo);
+        setRigInfo(fullRigInfo);
         setComment(commentValue);
 
       } catch (error) {
-        console.error('[StoveInfoModal] Error loading stove info:', error);
+        console.error('[RigInfoModal] Error loading rig info:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    loadStoveInfo();
+    loadRigInfo();
     
     // Cleanup function
     return () => {
       if (!isOpen) {
         setConnectionStatus('unknown');
         setResponseTime(null);
-        setStoveInfo(null);
+        setRigInfo(null);
         setComment('');
         setLoading(false);
         setIsResetting(false);
@@ -210,13 +210,13 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
       const commentRef = ref(realtimeDB!, `konstant_app/${deviceId}/comment`);
       await set(commentRef, comment);
       
-      if (stoveInfo) {
-        setStoveInfo({ ...stoveInfo, comment });
+      if (rigInfo) {
+        setRigInfo({ ...rigInfo, comment });
       }
       
       setIsEditingComment(false);
     } catch (error) {
-      console.error('[StoveInfoModal] Error saving comment:', error);
+      console.error('[RigInfoModal] Error saving comment:', error);
     }
   };
 
@@ -285,7 +285,7 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
       }
 
     } catch (error) {
-      console.error('[StoveInfoModal] ❌ Error during ping test:', error);
+      console.error('[RigInfoModal] ❌ Error during ping test:', error);
       setConnectionStatus('offline');
       const newHistory = [{ ts: Date.now(), ok: false }, ...pingHistory].slice(0, 5);
       setPingHistory(newHistory);
@@ -293,8 +293,8 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
     }
   };
 
-  // Reset stove function - set konstant/<deviceId>/r to true
-  const handleStoveReset = async () => {
+  // Reset rig function - set konstant/<deviceId>/r to true
+  const handleRigReset = async () => {
     if (!deviceId || !realtimeDB) return;
     const resetRole = String(user?.role || '').toLowerCase();
     if (resetRole !== 'developer' && resetRole !== 'super_admin') {
@@ -316,7 +316,7 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
       }, 2000);
 
     } catch (error) {
-      console.error('[StoveInfoModal] ❌ Error sending stove reset command:', error);
+      console.error('[RigInfoModal] ❌ Error sending rig reset command:', error);
       setIsResetting(false);
     }
   };
@@ -336,16 +336,16 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
   
   // Relative time helper
   const formatRelative = (timestamp: number): string => {
-    if (!timestamp) return t('stoveInfo.notSet', 'Not set');
+    if (!timestamp) return t('rigInfo.notSet', 'Not set');
     const diffMs = Date.now() - timestamp * 1000;
     const sec = Math.round(diffMs / 1000);
     const min = Math.round(sec / 60);
     const hr = Math.round(min / 60);
     const day = Math.round(hr / 24);
-    if (sec < 60) return t('stoveInfo.relSeconds', '{{n}}s ago', { n: sec });
-    if (min < 60) return t('stoveInfo.relMinutes', '{{n}}m ago', { n: min });
-    if (hr < 24) return t('stoveInfo.relHours', '{{n}}h ago', { n: hr });
-    return t('stoveInfo.relDays', '{{n}}d ago', { n: day });
+    if (sec < 60) return t('rigInfo.relSeconds', '{{n}}s ago', { n: sec });
+    if (min < 60) return t('rigInfo.relMinutes', '{{n}}m ago', { n: min });
+    if (hr < 24) return t('rigInfo.relHours', '{{n}}h ago', { n: hr });
+    return t('rigInfo.relDays', '{{n}}d ago', { n: day });
   };
   
   // Utilities
@@ -359,32 +359,32 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
   };
   
   const copySummary = () => {
-    if (!stoveInfo || !deviceId) return;
+    if (!rigInfo || !deviceId) return;
     const lines = [
-      `Model: ${stoveInfo.stoveName}`,
+      `Model: ${rigInfo.rigName}`,
       `Device ID: ${deviceId}`,
-      `Stove Serial: ${stoveInfo.stoveSerial}`,
-      `FEPA UID: ${stoveInfo.fepaUID}`,
-      `SW: ${stoveInfo.softwareId} | FW: ${stoveInfo.softwareVersion}`,
-      `Last seen: ${formatTimestamp(stoveInfo.lastLogin)} (${formatRelative(stoveInfo.lastLogin)})`
+      `Rig Serial: ${rigInfo.rigSerial}`,
+      `FEPA UID: ${rigInfo.fepaUID}`,
+      `SW: ${rigInfo.softwareId} | FW: ${rigInfo.softwareVersion}`,
+      `Last seen: ${formatTimestamp(rigInfo.lastLogin)} (${formatRelative(rigInfo.lastLogin)})`
     ];
     copyToClipboard(lines.join('\n'));
   };
   
-  const isNotPaired = !!stoveInfo && (!stoveInfo.currentControllerSerial || stoveInfo.currentControllerSerial === 'Unknown');
+  const isNotPaired = !!rigInfo && (!rigInfo.currentControllerSerial || rigInfo.currentControllerSerial === 'Unknown');
   
   // More robust controller comparison - normalize both values to strings and trim
-  const controllerChanged = !!stoveInfo && 
-    stoveInfo.currentControllerSerial && 
-    stoveInfo.controllerSerial && 
-    stoveInfo.currentControllerSerial !== 'Unknown' &&
-    String(stoveInfo.currentControllerSerial).trim() !== String(stoveInfo.controllerSerial).trim();
+  const controllerChanged = !!rigInfo && 
+    rigInfo.currentControllerSerial && 
+    rigInfo.controllerSerial && 
+    rigInfo.currentControllerSerial !== 'Unknown' &&
+    String(rigInfo.currentControllerSerial).trim() !== String(rigInfo.controllerSerial).trim();
   
-  const statusLabel = connectionStatus === 'online' ? t('stoveInfo.statusOnline', 'Online')
-    : connectionStatus === 'offline' ? t('stoveInfo.statusOffline', 'Offline')
-    : isNotPaired ? t('stoveInfo.notPaired', 'Not paired')
-    : connectionStatus === 'testing' ? t('stoveInfo.statusChecking', 'Checking…')
-    : t('stoveInfo.statusUnknown', 'Unknown');
+  const statusLabel = connectionStatus === 'online' ? t('rigInfo.statusOnline', 'Online')
+    : connectionStatus === 'offline' ? t('rigInfo.statusOffline', 'Offline')
+    : isNotPaired ? t('rigInfo.notPaired', 'Not paired')
+    : connectionStatus === 'testing' ? t('rigInfo.statusChecking', 'Checking…')
+    : t('rigInfo.statusUnknown', 'Unknown');
   
   const statusColor = connectionStatus === 'online' ? 'bg-success'
     : connectionStatus === 'offline' ? 'bg-destructive'
@@ -397,15 +397,15 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="stove-info-modal fixed inset-0 bg-black/45 backdrop-blur-md p-4 flex items-center justify-center z-50" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="stove-info-title">
+    <div className="rig-info-modal fixed inset-0 bg-black/45 backdrop-blur-md p-4 flex items-center justify-center z-50" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="rig-info-title">
       <div 
         className="bg-card rounded-xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-          <h2 id="stove-info-title" className="text-base font-semibold text-foreground">
-            {t('stoveInfo.title', 'Stove Information')}
+          <h2 id="rig-info-title" className="text-base font-semibold text-foreground">
+            {t('rigInfo.title', 'Rig Information')}
           </h2>
           <div className="flex items-center gap-2">
             {/* Actions Menu */}
@@ -414,7 +414,7 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
                 onClick={() => setIsMoreOpen(v => !v)} 
                 className="h-8 px-3 inline-flex items-center gap-1.5 text-sm font-medium text-foreground hover:bg-accent rounded-md transition-colors"
               >
-                {t('stoveInfo.actions', 'Actions')}
+                {t('rigInfo.actions', 'Actions')}
                 <svg className="w-3.5 h-3.5 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
@@ -422,48 +422,48 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
               {isMoreOpen && (
                 <div className="absolute right-0 mt-2 w-52 bg-card border border-border rounded-lg shadow-theme-lg z-20 overflow-hidden">
                   <div className="py-1">
-                    {stoveInfo?.stoveModelData?.technical_data_url && (
-                      <a href={stoveInfo.stoveModelData.technical_data_url} target="_blank" rel="noopener noreferrer" className="flex items-center px-3 py-2 text-sm text-foreground hover:bg-accent transition-colors">
+                    {rigInfo?.rigModelData?.technical_data_url && (
+                      <a href={rigInfo.rigModelData.technical_data_url} target="_blank" rel="noopener noreferrer" className="flex items-center px-3 py-2 text-sm text-foreground hover:bg-accent transition-colors">
                         <svg className="w-4 h-4 mr-2.5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        {t('stoveInfo.technicalData', 'Technical Data')}
+                        {t('rigInfo.technicalData', 'Technical Data')}
                       </a>
                     )}
-                    {stoveInfo?.stoveModelData?.replacement_instructions_url && (
-                      <a href={stoveInfo.stoveModelData.replacement_instructions_url} target="_blank" rel="noopener noreferrer" className="flex items-center px-3 py-2 text-sm text-foreground hover:bg-accent transition-colors">
+                    {rigInfo?.rigModelData?.replacement_instructions_url && (
+                      <a href={rigInfo.rigModelData.replacement_instructions_url} target="_blank" rel="noopener noreferrer" className="flex items-center px-3 py-2 text-sm text-foreground hover:bg-accent transition-colors">
                         <svg className="w-4 h-4 mr-2.5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                         </svg>
-                        {t('stoveInfo.manual', 'Manual')}
+                        {t('rigInfo.manual', 'Manual')}
                       </a>
                     )}
-                    {(stoveInfo?.stoveModelData?.technical_data_url || stoveInfo?.stoveModelData?.replacement_instructions_url) && (
+                    {(rigInfo?.rigModelData?.technical_data_url || rigInfo?.rigModelData?.replacement_instructions_url) && (
                       <div className="my-1 border-t border-border" />
                     )}
                     <button onClick={() => { copySummary(); setIsMoreOpen(false); }} className="flex items-center w-full text-left px-3 py-2 text-sm text-foreground hover:bg-accent transition-colors">
                       <svg className="w-4 h-4 mr-2.5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                       </svg>
-                      {t('stoveInfo.copySummary', 'Copy Summary')}
+                      {t('rigInfo.copySummary', 'Copy Summary')}
                     </button>
                     <div className="my-1 border-t border-border" />
                     <button 
-                      onClick={handleStoveReset}
+                      onClick={handleRigReset}
                       disabled={isResetting || (String(user?.role||'').toLowerCase() !== 'developer' && String(user?.role||'').toLowerCase() !== 'super_admin')}
                       className="flex items-center w-full text-left px-3 py-2 text-sm text-destructive hover:bg-destructive/10 disabled:opacity-50 transition-colors"
                     >
                       {isResetting ? (
                         <>
                           <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2.5"></div>
-                          {t('stoveInfo.resetting', 'Resetting...')}
+                          {t('rigInfo.resetting', 'Resetting...')}
                         </>
                       ) : (
                         <>
                           <svg className="w-4 h-4 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                           </svg>
-                          {t('stoveInfo.resetButton', 'Reset Stove')}
+                          {t('rigInfo.resetButton', 'Reset Rig')}
                         </>
                       )}
                     </button>
@@ -471,7 +471,7 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
                       <svg className="w-4 h-4 mr-2.5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
                       </svg>
-                      {showRaw ? t('stoveInfo.hideRaw', 'Hide Raw') : t('stoveInfo.showRaw', 'Show Raw')}
+                      {showRaw ? t('rigInfo.hideRaw', 'Hide Raw') : t('rigInfo.showRaw', 'Show Raw')}
                     </button>
                   </div>
                 </div>
@@ -494,20 +494,20 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
           {loading ? (
             <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
               <div className="w-6 h-6 border-2 border-border border-t-foreground rounded-full animate-spin mb-3"></div>
-              <p className="text-sm">{t('stoveInfo.loading')}</p>
+              <p className="text-sm">{t('rigInfo.loading')}</p>
             </div>
-          ) : stoveInfo ? (
+          ) : rigInfo ? (
             <>
               {/* Model Information */}
-              {stoveInfo.stoveModelData ? (
+              {rigInfo.rigModelData ? (
                 <div className="bg-muted rounded-lg p-5 border border-border">
                   <div className="flex flex-col sm:flex-row gap-5">
-                    {stoveInfo.stoveModelData.img_url && (
+                    {rigInfo.rigModelData.img_url && (
                       <div className="flex-shrink-0">
                         <div className="relative group">
                           <img 
-                            src={stoveInfo.stoveModelData.img_url} 
-                            alt={stoveInfo.stoveName} 
+                            src={rigInfo.rigModelData.img_url} 
+                            alt={rigInfo.rigName} 
                             className="w-28 h-28 sm:w-32 sm:h-32 object-contain rounded-lg border border-border bg-card cursor-pointer transition-transform hover:scale-105" 
                             onClick={() => setShowImagePreview(true)}
                           />
@@ -520,7 +520,7 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-semibold text-foreground mb-3">{stoveInfo.stoveName}</h3>
+                      <h3 className="text-lg font-semibold text-foreground mb-3">{rigInfo.rigName}</h3>
                       
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                         <div className="flex items-center text-sm text-muted-foreground">
@@ -528,35 +528,35 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                           </svg>
                           <span className="text-muted-foreground">Article:</span>
-                          <span className="ml-1.5 text-foreground font-medium">{stoveInfo.stoveModelData.article_number || 'N/A'}</span>
+                          <span className="ml-1.5 text-foreground font-medium">{rigInfo.rigModelData.article_number || 'N/A'}</span>
                         </div>
                         <div className="flex items-center text-sm text-muted-foreground">
                           <svg className="w-4 h-4 mr-2 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                           </svg>
                           <span className="text-muted-foreground">Firmware:</span>
-                          <span className="ml-1.5 text-foreground font-medium">{stoveInfo.softwareVersion || 'Unknown'}</span>
+                          <span className="ml-1.5 text-foreground font-medium">{rigInfo.softwareVersion || 'Unknown'}</span>
                         </div>
                         <div className="flex items-center text-sm text-muted-foreground">
                           <svg className="w-4 h-4 mr-2 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
                           </svg>
                           <span className="text-muted-foreground">Software ID:</span>
-                          <span className="ml-1.5 text-foreground font-medium">{stoveInfo.softwareId}</span>
+                          <span className="ml-1.5 text-foreground font-medium">{rigInfo.softwareId}</span>
                         </div>
                         <div className="flex items-center text-sm text-muted-foreground">
                           <svg className="w-4 h-4 mr-2 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                           </svg>
-                          <span className="text-muted-foreground">{t('stoveInfo.versionVariant', 'Version variant')}:</span>
-                          <span className="ml-1.5 text-foreground font-medium">{stoveInfo.versionVariant || 'undefined'}</span>
+                          <span className="text-muted-foreground">{t('rigInfo.versionVariant', 'Version variant')}:</span>
+                          <span className="ml-1.5 text-foreground font-medium">{rigInfo.versionVariant || 'undefined'}</span>
                         </div>
                         <div className="flex items-center text-sm text-muted-foreground">
                           <svg className="w-4 h-4 mr-2 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                           </svg>
                           <span className="text-muted-foreground">Last login:</span>
-                          <span className="ml-1.5 text-foreground font-medium">{formatRelative(stoveInfo.lastLogin)}</span>
+                          <span className="ml-1.5 text-foreground font-medium">{formatRelative(rigInfo.lastLogin)}</span>
                         </div>
                       </div>
                     </div>
@@ -570,19 +570,19 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                       </svg>
                     </div>
-                    <h3 className="text-base font-semibold text-foreground mb-2">{stoveInfo.stoveName}</h3>
+                    <h3 className="text-base font-semibold text-foreground mb-2">{rigInfo.rigName}</h3>
                     <div className="flex justify-center gap-2 text-xs mb-2">
                       <span className="px-2.5 py-1 bg-card text-muted-foreground rounded-md font-medium">
-                        {t('stoveInfo.swLabel')} {stoveInfo.softwareId}
+                        {t('rigInfo.swLabel')} {rigInfo.softwareId}
                       </span>
                       <span className="px-2.5 py-1 bg-card text-muted-foreground rounded-md font-medium">
-                        {t('stoveInfo.versionPrefix', { version: stoveInfo.softwareVersion })}
+                        {t('rigInfo.versionPrefix', { version: rigInfo.softwareVersion })}
                       </span>
                       <span className="px-2.5 py-1 bg-card text-muted-foreground rounded-md font-medium">
-                        {t('stoveInfo.versionVariant', 'Version variant')}: {stoveInfo.versionVariant || 'undefined'}
+                        {t('rigInfo.versionVariant', 'Version variant')}: {rigInfo.versionVariant || 'undefined'}
                       </span>
                     </div>
-                    <p className="text-xs text-muted-foreground">{t('stoveInfo.modelInfoUnavailable', 'Model information not available')}</p>
+                    <p className="text-xs text-muted-foreground">{t('rigInfo.modelInfoUnavailable', 'Model information not available')}</p>
                   </div>
                 </div>
               )}
@@ -602,7 +602,7 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                       </svg>
                     </div>
-                    <h3 className="text-sm font-semibold text-foreground">{t('stoveInfo.identifiers', 'Identifiers')}</h3>
+                    <h3 className="text-sm font-semibold text-foreground">{t('rigInfo.identifiers', 'Identifiers')}</h3>
                   </div>
                   
                   <div className="space-y-3">
@@ -610,7 +610,7 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
                     <div className="group">
                       <div className="flex items-center justify-between mb-1.5">
                         <label className="text-xs font-medium text-muted-foreground">
-                          {t('stoveInfo.deviceId', 'Device ID')}
+                          {t('rigInfo.deviceId', 'Device ID')}
                         </label>
                         <button 
                           onClick={() => copyToClipboard(deviceId || '')} 
@@ -632,14 +632,14 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
                       />
                     </div>
                     
-                    {/* Stove Serial */}
+                    {/* Rig Serial */}
                     <div className="group">
                       <div className="flex items-center justify-between mb-1.5">
                         <label className="text-xs font-medium text-muted-foreground">
-                          {t('stoveInfo.stoveSerial', 'Stove Serial')}
+                          {t('rigInfo.rigSerial', 'Rig Serial')}
                         </label>
                         <button 
-                          onClick={() => copyToClipboard(stoveInfo.stoveSerial)} 
+                          onClick={() => copyToClipboard(rigInfo.rigSerial)} 
                           className="p-1 rounded hover:bg-accent opacity-0 group-hover:opacity-100 transition-opacity" 
                           aria-label={t('actions.copy', 'Copy') as string}
                         >
@@ -651,10 +651,10 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
                       </div>
                       <input 
                         type="text" 
-                        value={stoveInfo.stoveSerial} 
+                        value={rigInfo.rigSerial} 
                         readOnly 
                         className="w-full text-sm font-mono bg-muted border border-border rounded-md px-3 py-2 text-foreground cursor-pointer hover:bg-accent transition-colors" 
-                        onClick={() => copyToClipboard(stoveInfo.stoveSerial)}
+                        onClick={() => copyToClipboard(rigInfo.rigSerial)}
                       />
                     </div>
                     
@@ -662,10 +662,10 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
                     <div className="group">
                       <div className="flex items-center justify-between mb-1.5">
                         <label className="text-xs font-medium text-muted-foreground">
-                          {t('stoveInfo.fepaUID', 'FEPA UID')}
+                          {t('rigInfo.fepaUID', 'FEPA UID')}
                         </label>
                         <button 
-                          onClick={() => copyToClipboard(stoveInfo.fepaUID)} 
+                          onClick={() => copyToClipboard(rigInfo.fepaUID)} 
                           className="p-1 rounded hover:bg-accent opacity-0 group-hover:opacity-100 transition-opacity" 
                           aria-label={t('actions.copy', 'Copy') as string}
                         >
@@ -677,23 +677,23 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
                       </div>
                       <input 
                         type="text" 
-                        value={stoveInfo.fepaUID} 
+                        value={rigInfo.fepaUID} 
                         readOnly 
                         className="w-full text-sm font-mono bg-muted border border-border rounded-md px-3 py-2 text-foreground cursor-pointer hover:bg-accent transition-colors" 
-                        onClick={() => copyToClipboard(stoveInfo.fepaUID)}
+                        onClick={() => copyToClipboard(rigInfo.fepaUID)}
                       />
                     </div>
                     
                     {/* Copy All Button */}
                     <div className="pt-3 border-t border-border">
                       <button 
-                        onClick={() => copyToClipboard(`Device ID: ${deviceId}\nStove Serial: ${stoveInfo.stoveSerial}\nFEPA UID: ${stoveInfo.fepaUID}`)} 
+                        onClick={() => copyToClipboard(`Device ID: ${deviceId}\nRig Serial: ${rigInfo.rigSerial}\nFEPA UID: ${rigInfo.fepaUID}`)} 
                         className="w-full inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-foreground hover:bg-accent rounded-md transition-colors"
                       >
                         <svg className="w-4 h-4 mr-2 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                         </svg>
-                        {t('stoveInfo.copyAll', 'Copy All Identifiers')}
+                        {t('rigInfo.copyAll', 'Copy All Identifiers')}
                       </button>
                     </div>
                   </div>
@@ -708,7 +708,7 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
                         </svg>
                       </div>
-                      <h3 className="text-sm font-semibold text-foreground">{t('stoveInfo.connectionStatus', 'Connectivity')}</h3>
+                      <h3 className="text-sm font-semibold text-foreground">{t('rigInfo.connectionStatus', 'Connectivity')}</h3>
                     </div>
                     <button 
                       onClick={handleTestConnection} 
@@ -718,14 +718,14 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
                       {connectionStatus === 'testing' ? (
                         <>
                           <div className="w-3.5 h-3.5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin"></div>
-                          {t('stoveInfo.pingTesting', 'Testing...')}
+                          {t('rigInfo.pingTesting', 'Testing...')}
                         </>
                       ) : (
                         <>
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
                           </svg>
-                          {t('stoveInfo.pingTest', 'Ping')}
+                          {t('rigInfo.pingTest', 'Ping')}
                         </>
                       )}
                     </button>
@@ -743,20 +743,20 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
                       </span>
                     </div>
                     <p className="text-xs text-muted-foreground ml-4.5">
-                      {t('stoveInfo.lastLogin', 'Last login')}: {formatTimestamp(stoveInfo.lastLogin)} ({formatRelative(stoveInfo.lastLogin)})
+                      {t('rigInfo.lastLogin', 'Last login')}: {formatTimestamp(rigInfo.lastLogin)} ({formatRelative(rigInfo.lastLogin)})
                     </p>
                   </div>
                   
                   {/* Ping History */}
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <h4 className="text-xs font-medium text-muted-foreground">{t('stoveInfo.pingHistory', 'Ping History')}</h4>
+                      <h4 className="text-xs font-medium text-muted-foreground">{t('rigInfo.pingHistory', 'Ping History')}</h4>
                       <span className="text-xs text-muted-foreground">{pingHistory.length}/5</span>
                     </div>
                     
                     {pingHistory.length === 0 ? (
                       <div className="text-xs text-muted-foreground text-center py-4 bg-muted rounded-md">
-                        {t('stoveInfo.noPings', 'No ping tests performed yet')}
+                        {t('rigInfo.noPings', 'No ping tests performed yet')}
                       </div>
                     ) : (
                       <div className="space-y-1.5">
@@ -770,9 +770,9 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
                             </div>
                             <span className={`text-xs font-medium ${p.ok ? 'text-success' : 'text-destructive'}`}>
                               {p.ok ? (
-                                typeof p.rttMs === 'number' ? `${p.rttMs}ms` : t('stoveInfo.pingOK', 'OK')
+                                typeof p.rttMs === 'number' ? `${p.rttMs}ms` : t('rigInfo.pingOK', 'OK')
                               ) : (
-                                t('stoveInfo.pingTimeout', 'Timeout')
+                                t('rigInfo.pingTimeout', 'Timeout')
                               )}
                             </span>
                           </div>
@@ -791,12 +791,12 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
                         </svg>
                       </div>
-                      <h3 className="text-sm font-semibold text-foreground">{t('stoveInfo.controllers', 'Controllers')}</h3>
+                      <h3 className="text-sm font-semibold text-foreground">{t('rigInfo.controllers', 'Controllers')}</h3>
                     </div>
                     <button
                       onClick={() => setShowControllerInfo(!showControllerInfo)}
                       className="p-1.5 rounded-md hover:bg-accent transition-colors"
-                      title={t('stoveInfo.controllerInfoTooltip', 'Show controller status information')}
+                      title={t('rigInfo.controllerInfoTooltip', 'Show controller status information')}
                     >
                       <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -808,12 +808,12 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
                   {showControllerInfo && (
                     <div className="mb-4 p-3 bg-muted rounded-md text-xs space-y-2">
                       <p className="font-medium text-foreground">
-                        {t('stoveInfo.controllerStatusTitle', 'Controller Status Scenarios:')}
+                        {t('rigInfo.controllerStatusTitle', 'Controller Status Scenarios:')}
                       </p>
                       <div className="space-y-1.5 text-muted-foreground">
-                        <p><span className="font-medium">{t('stoveInfo.normalState', 'Normal:')}</span> Original = Current</p>
-                        <p><span className="font-medium">{t('stoveInfo.notPairedState', 'Not paired:')}</span> Current is null/Unknown</p>
-                        <p><span className="font-medium">{t('stoveInfo.changedState', 'Changed:')}</span> Original ≠ Current</p>
+                        <p><span className="font-medium">{t('rigInfo.normalState', 'Normal:')}</span> Original = Current</p>
+                        <p><span className="font-medium">{t('rigInfo.notPairedState', 'Not paired:')}</span> Current is null/Unknown</p>
+                        <p><span className="font-medium">{t('rigInfo.changedState', 'Changed:')}</span> Original ≠ Current</p>
                       </div>
                     </div>
                   )}
@@ -822,12 +822,12 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
                     {/* Original Controller */}
                     <div>
                       <label className="block text-xs font-medium text-muted-foreground mb-1.5">
-                        {t('stoveInfo.originalController', 'Original Controller')}
+                        {t('rigInfo.originalController', 'Original Controller')}
                         <span className="text-muted-foreground font-normal ml-1">(from device ID)</span>
                       </label>
                       <input 
                         type="text" 
-                        value={stoveInfo.controllerSerial || t('stoveInfo.notSet', 'Not set')} 
+                        value={rigInfo.controllerSerial || t('rigInfo.notSet', 'Not set')} 
                         readOnly 
                         className="w-full text-sm font-mono bg-muted border border-border rounded-md px-3 py-2 text-foreground" 
                       />
@@ -837,7 +837,7 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
                     <div>
                       <div className="flex items-center justify-between mb-1.5">
                         <label className="text-xs font-medium text-muted-foreground">
-                          {t('stoveInfo.currentController', 'Current Controller')}
+                          {t('rigInfo.currentController', 'Current Controller')}
                           <span className="text-muted-foreground font-normal ml-1">(actual)</span>
                         </label>
                         {controllerChanged && (
@@ -845,18 +845,18 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
-                            {t('stoveInfo.controllerChanged', 'Changed')}
+                            {t('rigInfo.controllerChanged', 'Changed')}
                           </span>
                         )}
                         {isNotPaired && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium rounded-md bg-muted text-muted-foreground">
-                            {t('stoveInfo.notPaired', 'Not paired')}
+                            {t('rigInfo.notPaired', 'Not paired')}
                           </span>
                         )}
                       </div>
                       <input 
                         type="text" 
-                        value={stoveInfo.currentControllerSerial || t('stoveInfo.notSet', 'Not set')} 
+                        value={rigInfo.currentControllerSerial || t('rigInfo.notSet', 'Not set')} 
                         readOnly 
                         className={`w-full text-sm font-mono border rounded-md px-3 py-2 ${
                           isNotPaired
@@ -879,7 +879,7 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>
                       </div>
-                      <h3 className="text-sm font-semibold text-foreground">{t('stoveInfo.description', 'Description')}</h3>
+                      <h3 className="text-sm font-semibold text-foreground">{t('rigInfo.description', 'Description')}</h3>
                     </div>
                     {!isEditingComment && (
                       <button
@@ -889,7 +889,7 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>
-                        {stoveInfo.comment ? t('actions.edit', 'Edit') : t('actions.add', 'Add')}
+                        {rigInfo.comment ? t('actions.edit', 'Edit') : t('actions.add', 'Add')}
                       </button>
                     )}
                   </div>
@@ -901,7 +901,7 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
                         onChange={(e) => setComment(e.target.value)}
                         className="w-full p-3 border border-border rounded-md bg-muted text-foreground placeholder-muted-foreground resize-none focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent text-sm"
                         rows={3}
-                        placeholder={t('stoveInfo.descriptionPlaceholder', 'Describe this stove installation, maintenance notes, or other details...') as string}
+                        placeholder={t('rigInfo.descriptionPlaceholder', 'Describe this rig installation, maintenance notes, or other details...') as string}
                         maxLength={500}
                       />
                       <div className="flex justify-between items-center">
@@ -911,7 +911,7 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
                         <div className="flex gap-2">
                           <button
                             onClick={() => {
-                              setComment(stoveInfo!.comment);
+                              setComment(rigInfo!.comment);
                               setIsEditingComment(false);
                             }}
                             className="px-3 py-1.5 text-sm font-medium text-foreground hover:bg-accent rounded-md transition-colors"
@@ -923,16 +923,16 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
                             disabled={loading}
                             className="px-3 py-1.5 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/80 disabled:opacity-50 rounded-md transition-colors"
                           >
-                            {loading ? t('stoveInfo.saving', 'Saving...') : t('actions.save', 'Save')}
+                            {loading ? t('rigInfo.saving', 'Saving...') : t('actions.save', 'Save')}
                           </button>
                         </div>
                       </div>
                     </div>
                   ) : (
                     <div className="bg-muted border border-border rounded-md p-3 min-h-[80px] flex items-center">
-                      {stoveInfo.comment ? (
+                      {rigInfo.comment ? (
                         <p className="text-foreground whitespace-pre-wrap text-sm leading-relaxed">
-                          {stoveInfo.comment}
+                          {rigInfo.comment}
                         </p>
                       ) : (
                         <div className="flex items-center w-full justify-center text-center">
@@ -940,7 +940,7 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
                             <svg className="w-5 h-5 text-muted-foreground mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
-                            <p className="text-muted-foreground text-xs">{t('stoveInfo.noDescription', 'No description added')}</p>
+                            <p className="text-muted-foreground text-xs">{t('rigInfo.noDescription', 'No description added')}</p>
                           </div>
                         </div>
                       )}
@@ -954,7 +954,7 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-sm font-semibold text-foreground">Raw Data</h3>
                     <button 
-                      onClick={() => copyToClipboard(JSON.stringify(stoveInfo, null, 2))}
+                      onClick={() => copyToClipboard(JSON.stringify(rigInfo, null, 2))}
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-foreground hover:bg-accent rounded-md transition-colors"
                     >
                       <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -964,7 +964,7 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
                     </button>
                   </div>
                   <div className="bg-muted rounded-md p-4 overflow-auto max-h-80 border border-border">
-                    <pre className="text-xs text-foreground font-mono leading-relaxed">{JSON.stringify(stoveInfo, null, 2)}</pre>
+                    <pre className="text-xs text-foreground font-mono leading-relaxed">{JSON.stringify(rigInfo, null, 2)}</pre>
                   </div>
                 </div>
               )}
@@ -974,14 +974,14 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
               <svg className="w-10 h-10 mb-3 text-muted-foreground/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
               </svg>
-              <p className="text-sm">{t('stoveInfo.noDevice')}</p>
+              <p className="text-sm">{t('rigInfo.noDevice')}</p>
             </div>
           )}
         </div>
       </div>
       
       {/* Image Preview Modal */}
-      {showImagePreview && stoveInfo?.stoveModelData?.img_url && (
+      {showImagePreview && rigInfo?.rigModelData?.img_url && (
         <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-[60]" onClick={() => setShowImagePreview(false)}>
           <div className="relative max-w-4xl max-h-[90vh] p-4">
             <button
@@ -994,13 +994,13 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
               </svg>
             </button>
             <img
-              src={stoveInfo.stoveModelData.img_url}
-              alt={stoveInfo.stoveName}
+              src={rigInfo.rigModelData.img_url}
+              alt={rigInfo.rigName}
               className="max-w-full max-h-full object-contain rounded-lg"
               onClick={(e) => e.stopPropagation()}
             />
             <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-black/60 backdrop-blur-sm text-white px-4 py-2 rounded-lg text-sm">
-              {stoveInfo.stoveName}
+              {rigInfo.rigName}
             </div>
           </div>
         </div>
@@ -1010,4 +1010,4 @@ const StoveInfoModal: React.FC<StoveInfoModalProps> = ({ isOpen, onClose }) => {
   );
 };
 
-export default StoveInfoModal; 
+export default RigInfoModal; 

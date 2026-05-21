@@ -3,7 +3,7 @@
  *
  * The controller emits seven status variables C0..C6, each a percentage 0..100
  * indicating how strongly the named condition applies. When all of them are 0
- * the stove is burning correctly. When any is non-zero, the dealer view shows
+ * the rig is burning correctly. When any is non-zero, the dealer view shows
  * the top three with star ratings and remediation guidance.
  *
  * Variables live under RTDB path `statistik_monat_tage/<deviceId>/c`.
@@ -16,7 +16,7 @@ export type BrennbewertungKey = typeof BRENNBEWERTUNG_KEYS[number];
 export type BrennbewertungValues = Record<BrennbewertungKey, number>;
 
 export interface BrennbewertungVariableInfo {
-  /** Short headline shown as the bullet text, e.g. "Der Ofen erwärmt sich nur langsam". */
+  /** Short headline shown as the bullet text, e.g. "Der Rig erwärmt sich nur langsam". */
   title: string;
   /** Possible root causes ("Grund"). */
   grund: string[];

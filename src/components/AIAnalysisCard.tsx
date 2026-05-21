@@ -2,10 +2,10 @@ import * as React from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatDateWithUserTimezone } from '../utils/timezone';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 import { useAuth } from '../hooks/useAuth';
 import type { AIResult } from '../services/aiClient';
-import { analyzeStoveWithFirebase } from '../services/aiFirebaseClient';
+import { analyzeRigWithFirebase } from '../services/aiFirebaseClient';
 import { normalize } from '../analysis/normalize';
 import { runRules } from '../analysis/rules';
 
@@ -15,12 +15,12 @@ interface AIAnalysisCardProps {
 
 const AIAnalysisCard: React.FC<AIAnalysisCardProps> = ({ className = '' }) => {
   const { t, i18n } = useTranslation();
-  const deviceId = useStoveStore(state => state.deviceId);
+  const deviceId = useRigStore(state => state.deviceId);
   const { user } = useAuth();
-  const deviceConfig = useStoveStore(state => state.deviceConfig);
-  const currentData = useStoveStore(state => state.currentData);
-  const deviceMetadata = useStoveStore(state => state.deviceMetadata);
-  const connectionStatus = useStoveStore(state => state.connectionStatus);
+  const deviceConfig = useRigStore(state => state.deviceConfig);
+  const currentData = useRigStore(state => state.currentData);
+  const deviceMetadata = useRigStore(state => state.deviceMetadata);
+  const connectionStatus = useRigStore(state => state.connectionStatus);
 
   const [result, setResult] = useState<AIResult | null>(null);
   const [loading, setLoading] = useState(false);
@@ -77,7 +77,7 @@ const AIAnalysisCard: React.FC<AIAnalysisCardProps> = ({ className = '' }) => {
   }, [result?.actions]);
 
   const getDefaultAIPrompt = (): string => {
-    return `You are an experienced stove diagnostic expert analyzing real-time sensor data.
+    return `You are an experienced rig diagnostic expert analyzing real-time sensor data.
 
 === REAL-TIME SENSOR VARIABLES ===
 T: Current combustion temperature (°C)
@@ -103,7 +103,7 @@ Connection Test Results:
 {{PING_RESULTS}}
 
 Provide a comprehensive analysis in {{LOCALE}} focusing on:
-1. Current stove operation status and performance
+1. Current rig operation status and performance
 2. Any immediate safety concerns or issues
 3. Sensor readings analysis (temperature, oxygen, performance)
 4. Error codes interpretation and recommendations
@@ -127,7 +127,7 @@ Provide your analysis in STRICT JSON format:
   const sanitize = (obj: any) => {
     try {
       const copy: any = { ...obj };
-      const removeKeys = ['ofenname', 'ofen', 'vers', 'serial', 'csnr', 'ip', 'mac', 'uuid', 'deviceId', 'model', 'modell', 'name'];
+      const removeKeys = ['rigname', 'rig', 'vers', 'serial', 'csnr', 'ip', 'mac', 'uuid', 'deviceId', 'model', 'modell', 'name'];
       removeKeys.forEach(k => { if (k in copy) delete copy[k]; });
       if ('a' in copy) delete copy['a'];
       return copy;
@@ -149,7 +149,7 @@ Provide your analysis in STRICT JSON format:
       .replace('{{LOCALE}}', i18n.language === 'de' ? 'German' : 'English');
   };
 
-  // Ping test similar to StoveInfoModal
+  // Ping test similar to RigInfoModal
   const testConnection = async (): Promise<{ success: boolean; rtt?: number }> => {
     if (!deviceId) return { success: false };
 
@@ -253,7 +253,7 @@ Provide your analysis in STRICT JSON format:
         res = { ...rules, source: 'rules' };
       } else {
         // Try AI first, fallback to rules
-        res = await analyzeStoveWithFirebase(
+        res = await analyzeRigWithFirebase(
           { deviceId: undefined as any, app: sanitize(deviceMetadata) as any, core: sanitize({ ...(deviceConfig as any), ...(currentData as any) }) as any, ui: enhancedUiContext },
           { regenerate, model: 'gemini-2.5-flash', locale: enhancedUiContext.locale || 'en' }
         );
@@ -320,8 +320,8 @@ Provide your analysis in STRICT JSON format:
 
         if (!realtimeDB) return;
 
-        const stoveSerial = deviceId.substring(0, 7);
-        const controllerRef = ref(realtimeDB, `controllertausch/fepaliste/${stoveSerial}/csnr_akt`);
+        const rigSerial = deviceId.substring(0, 7);
+        const controllerRef = ref(realtimeDB, `controllertausch/fepaliste/${rigSerial}/csnr_akt`);
         const controllerSnapshot = await get(controllerRef);
         const rawCurrentController = controllerSnapshot.val();
         const currentController = rawCurrentController ? String(rawCurrentController).trim() : null;
@@ -358,7 +358,7 @@ Provide your analysis in STRICT JSON format:
 
     const timestamp = formatDateWithUserTimezone(new Date(), 'de-DE');
     const report = [
-      `=== AI Stove Analysis Report ===`,
+      `=== AI Rig Analysis Report ===`,
       `Timestamp: ${timestamp}`,
       ``,
       `SUMMARY: ${result.summary}`,
@@ -488,7 +488,7 @@ Provide your analysis in STRICT JSON format:
             <svg className="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
             </svg>
-            {t('stoveInfo.copyReport', 'Bericht kopieren')}
+            {t('rigInfo.copyReport', 'Bericht kopieren')}
           </button>
           {result && (
             <>
@@ -592,8 +592,8 @@ Provide your analysis in STRICT JSON format:
             {/* Current step description */}
             <div className="text-center">
               <div className="text-sm font-medium text-foreground">
-                {analysisStep === 'ping' && 'Testing stove connection...'}
-                {analysisStep === 'analyzing' && 'Analyzing stove data with AI...'}
+                {analysisStep === 'ping' && 'Testing rig connection...'}
+                {analysisStep === 'analyzing' && 'Analyzing rig data with AI...'}
               </div>
               {analysisStep === 'analyzing' && (
                 <div className="text-xs text-muted-foreground mt-1">
@@ -856,9 +856,9 @@ Provide your analysis in STRICT JSON format:
               <div>
                 <h4 className="font-semibold text-foreground mb-2">Data Sources:</h4>
                 <ul className="space-y-1 ml-4">
-                  <li><span className="font-medium">Connection Test:</span> Real-time ping test to verify stove connectivity</li>
+                  <li><span className="font-medium">Connection Test:</span> Real-time ping test to verify rig connectivity</li>
                   <li><span className="font-medium">Sensor Data:</span> Temperature, oxygen, performance parameters</li>
-                  <li><span className="font-medium">Error Codes:</span> Specific error messages from stove diagnostics</li>
+                  <li><span className="font-medium">Error Codes:</span> Specific error messages from rig diagnostics</li>
                   <li><span className="font-medium">Historical Data:</span> Recent operation patterns and trends</li>
                 </ul>
               </div>

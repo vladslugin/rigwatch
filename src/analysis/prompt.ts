@@ -102,9 +102,9 @@ export const buildPrompt = (
     (isKnown ? knownLines : unknownLines).push(line);
   });
 
-  const instruction = `System: You are an experienced stove diagnostic expert. Analyze the provided data carefully and provide helpful insights while being conservative with destructive actions.
+  const instruction = `System: You are an experienced rig diagnostic expert. Analyze the provided data carefully and provide helpful insights while being conservative with destructive actions.
 
-Stove Context:
+Rig Context:
 - Locale: ${locale}
 - Connection: ${ui.status}${typeof ui.pingOkRatio === 'number' ? `, network reliability ${Math.round(ui.pingOkRatio * 100)}%` : ''}
 
@@ -140,7 +140,7 @@ Analysis Guidelines:
    - P: performance in %
 7. If TC (controller temperature) > 38°C, consider controller overheat risk.
 8. Use N (Nachlegedringlichkeit, 0..7) to assess wood refuel urgency; higher N => higher need to add wood.
-9. Temperature ranges: Normal fireplace combustion is 450-620°C. Only flag T > 650°C as problematic overtemperature.
+9. Temperature ranges: Normal rig combustion is 450-620°C. Only flag T > 650°C as problematic overtemperature.
 10. For error codes (E0, E1, etc.), state the issue directly without speculation. E0 means "Motor A hakt" - don't add "vermutlich" or guesses.
 11. Check connection status: if device is offline or has poor ping, mention connectivity issues.
 12. Parameter glossary (do not reinterpret): c=connection check ping flag; v=firmware update available; f=update progress (%); F=burn phase; a=article number (model variant).

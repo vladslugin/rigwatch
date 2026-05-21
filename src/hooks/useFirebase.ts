@@ -2,11 +2,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { ref, onValue, set, update, get } from 'firebase/database';
 import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
 import { realtimeDB, firestoreDB } from '../lib/firebase';
-import { useStoveStore, useNotificationHelpers } from '../store/useStoveStore';
+import { useRigStore, useNotificationHelpers } from '../store/useRigStore';
 import { useAuth } from './useAuth';
 import { queueSetCommand, queueCommand, commandQueue } from '../utils/commandQueue';
 import type { 
-  StoveData, 
+  RigData, 
   DeviceConfig, 
   DeviceMetadata, 
   ParameterMetadata,
@@ -62,19 +62,19 @@ const clearDeviceCaches = () => {
 };
 
 export const useFirebaseConnection = () => {
-  const deviceId = useStoveStore(state => state.deviceId);
-  const connectionStatus = useStoveStore(state => state.connectionStatus);
+  const deviceId = useRigStore(state => state.deviceId);
+  const connectionStatus = useRigStore(state => state.connectionStatus);
   // REMOVED: isHistoricalMode - no longer needed, historical mode is handled by chart component
   const { user } = useAuth();
   
-  const setDeviceId = useStoveStore(state => state.setDeviceId);
-  const setConnectionStatus = useStoveStore(state => state.setConnectionStatus);
-  const setDeviceExistence = useStoveStore(state => state.setDeviceExistence);
-	const updateCurrentData = useStoveStore(state => state.updateCurrentData);
+  const setDeviceId = useRigStore(state => state.setDeviceId);
+  const setConnectionStatus = useRigStore(state => state.setConnectionStatus);
+  const setDeviceExistence = useRigStore(state => state.setDeviceExistence);
+	const updateCurrentData = useRigStore(state => state.updateCurrentData);
 	
-  const updateDeviceConfig = useStoveStore(state => state.updateDeviceConfig);
-  const updateDeviceMetadata = useStoveStore(state => state.updateDeviceMetadata);
-  const setErrorData = useStoveStore(state => state.setErrorData);
+  const updateDeviceConfig = useRigStore(state => state.updateDeviceConfig);
+  const updateDeviceMetadata = useRigStore(state => state.updateDeviceMetadata);
+  const setErrorData = useRigStore(state => state.setErrorData);
   
   const { showError, showSuccess, showInfo } = useNotificationHelpers();
   const VERBOSE_FIREBASE_LOGS = false;
@@ -182,7 +182,7 @@ export const useFirebaseConnection = () => {
   const allowKWriteOnceRef = useRef<boolean>(false);
   const zeroClientsTimeoutRef = useRef<number | null>(null);
   const isCurrentDeviceContext = useCallback((targetDeviceId: string) => {
-    return useStoveStore.getState().deviceId === targetDeviceId;
+    return useRigStore.getState().deviceId === targetDeviceId;
   }, []);
 
   const scheduleKRecalc = useCallback(async (deviceId: string) => {
@@ -315,7 +315,7 @@ export const useFirebaseConnection = () => {
       }
 
       if (temporaerSnapshot && temporaerSnapshot.exists()) {
-        const initialData = temporaerSnapshot.val() as StoveData;
+        const initialData = temporaerSnapshot.val() as RigData;
         updateCurrentData(initialData, undefined, true);
       }
 
@@ -335,12 +335,12 @@ export const useFirebaseConnection = () => {
 
     const temporaerUnsubscribe = onValue(temporaerRef, (snapshot) => {
       if (!isCurrentDeviceContext(deviceId)) return;
-      const data = snapshot.val() as StoveData | null;
+      const data = snapshot.val() as RigData | null;
       // Handle full deletion of /temporaer/{deviceId} (snapshot null):
       // clear UI state immediately so cards do not linger until page refresh.
       if (!data) {
         try {
-          const { discoveredParameters, setDiscoveredParameters } = useStoveStore.getState();
+          const { discoveredParameters, setDiscoveredParameters } = useRigStore.getState();
           if (discoveredParameters.length > 0) {
             setDiscoveredParameters([]);
           }
@@ -525,7 +525,7 @@ export const useFirebaseConnection = () => {
   
   const connect = useCallback(async (newDeviceId: string) => {
     if (!newDeviceId?.trim()) {
-      showError('Please enter a Firebase ID');
+      showError('Please enter a Rig ID');
       return false;
     }
 
@@ -607,7 +607,7 @@ export const useFirebaseConnection = () => {
         }
 
         // Complete cleanup to prevent mixing data from different devices
-        const { clearAllState } = useStoveStore.getState();
+        const { clearAllState } = useRigStore.getState();
         clearAllState();
 
         // Clear browser caches that might contain device-specific data
@@ -674,7 +674,7 @@ export const useFirebaseConnection = () => {
         return false;
       }
 
-      // Removed pre-installation logic for Alle Werte and Nur App-Werte
+      // Removed pre-installation logic for All Values and App Only-Werte
 
       // Multi-user support: Add this client to active clients list
       try {
@@ -704,7 +704,7 @@ export const useFirebaseConnection = () => {
 
   // When auth user resolves later OR connection status changes OR forceSimpleMode changes, refresh name in active_clients
   useEffect(() => {
-    const currentDeviceId = useStoveStore.getState().deviceId;
+    const currentDeviceId = useRigStore.getState().deviceId;
     if (!currentDeviceId) return;
     // Refresh ONLY when fully online to avoid racing with addActiveClient()
     if (connectionStatus === 'online') {
@@ -767,7 +767,7 @@ export const useFirebaseConnection = () => {
   // Handle ONLY real page close/unload (NOT tab switching)
   useEffect(() => {
     const handleBeforeUnload = async () => {
-      const currentDeviceId = useStoveStore.getState().deviceId;
+      const currentDeviceId = useRigStore.getState().deviceId;
       if (!currentDeviceId || !realtimeDB) return;
 
       try {
@@ -819,7 +819,7 @@ export const useFirebaseConnection = () => {
     const handler = async (e: Event) => {
       const evt = e as CustomEvent;
       if (!evt.detail) return;
-      const currentDeviceId = useStoveStore.getState().deviceId;
+      const currentDeviceId = useRigStore.getState().deviceId;
       if (!currentDeviceId || !realtimeDB) return;
       try {
         // Handle simplificationMode -> update active_clients simple_mode
@@ -913,7 +913,7 @@ export const useFirebaseConnection = () => {
 };
 
 export const useParameterUpdates = () => {
-  const deviceId = useStoveStore(state => state.deviceId);
+  const deviceId = useRigStore(state => state.deviceId);
   const { showSuccess, showError, showInfo } = useNotificationHelpers();
 
   const updateParameter = useCallback(async (paramKey: string, value: number | boolean | string) => {
@@ -1038,7 +1038,7 @@ export const useParameterUpdates = () => {
 };
 
 export const useParameterMetadata = () => {
-  const updateParameterMetadata = useStoveStore(state => state.updateParameterMetadata);
+  const updateParameterMetadata = useRigStore(state => state.updateParameterMetadata);
   const { showError } = useNotificationHelpers();
   
   // Keep track of active listeners to avoid duplicates
@@ -1290,8 +1290,8 @@ export const useParameterMetadata = () => {
 };
 
 export const useHistoricalData = () => {
-  const deviceId = useStoveStore(state => state.deviceId);
-  const setHistoricalTimestamps = useStoveStore(state => state.setHistoricalTimestamps);
+  const deviceId = useRigStore(state => state.deviceId);
+  const setHistoricalTimestamps = useRigStore(state => state.setHistoricalTimestamps);
   const { showError, showSuccess } = useNotificationHelpers();
   const historienListenerRef = useRef<() => void>();
   
@@ -1523,10 +1523,10 @@ export const useDeviceList = () => {
 };
 
 export const useParameterVariants = () => {
-  const deviceId = useStoveStore(state => state.deviceId);
-  const currentData = useStoveStore(state => state.currentData);
-  const deviceMetadata = useStoveStore(state => state.deviceMetadata);
-  const discoveredParameters = useStoveStore(state => state.discoveredParameters);
+  const deviceId = useRigStore(state => state.deviceId);
+  const currentData = useRigStore(state => state.currentData);
+  const deviceMetadata = useRigStore(state => state.deviceMetadata);
+  const discoveredParameters = useRigStore(state => state.discoveredParameters);
   const { showError, showSuccess, showInfo } = useNotificationHelpers();
   
   // Variants cache (batched), shared within hook instance
@@ -1644,7 +1644,7 @@ export const useParameterVariants = () => {
       variantData._variant_info = {
         created_at: Date.now(),
         created_by: 'modern_app',
-        device_model: deviceMetadata.ofen || 'Unknown',
+        device_model: deviceMetadata.rig || 'Unknown',
         device_version: deviceMetadata.vers || 'Unknown',
         parameter_count: savedParameterCount, // Only writable parameters
         settings_count: konstantSnapshot.exists() ? Object.keys(konstantSnapshot.val()).length : 0,
@@ -1664,7 +1664,7 @@ export const useParameterVariants = () => {
       await set(variantRef, variantData);
 
       // const totalItems = Object.keys(variantData).length - 1; // -1 for _variant_info
-      showSuccess(`Stove model "${variantName}" saved with ${savedParameterCount} writable parameters and ${variantData._variant_info.settings_count} settings`);
+      showSuccess(`Rig model "${variantName}" saved with ${savedParameterCount} writable parameters and ${variantData._variant_info.settings_count} settings`);
       console.log(`[ParameterVariants] Saved variant with:`, {
         writableParameters: savedParameterCount,
         totalDataKeys: Object.keys(variantData),
@@ -1676,7 +1676,7 @@ export const useParameterVariants = () => {
 
     } catch (error) {
       console.error('[Firebase] Failed to save variant:', error);
-      showError('Failed to save stove model variant');
+      showError('Failed to save rig model variant');
       return false;
     }
   }, [deviceId, currentData, deviceMetadata, discoveredParameters, showSuccess, showError]);
@@ -1696,7 +1696,7 @@ export const useParameterVariants = () => {
       const variantSnapshot = await get(variantRef);
 
       if (!variantSnapshot.exists()) {
-        showError(`Stove model "${variantName}" not found`);
+        showError(`Rig model "${variantName}" not found`);
         return false;
       }
 
@@ -1812,7 +1812,7 @@ export const useParameterVariants = () => {
       const variantInfo = variantData._variant_info;
       const paramCount = parameterEntries.length;
       
-      let message = `Stove model "${variantName}" loaded`;
+      let message = `Rig model "${variantName}" loaded`;
       if (variantInfo) {
         const createdDate = new Date(variantInfo.created_at).toLocaleDateString();
         message += ` (${paramCount} parameters, ${settingsCount} settings, created ${createdDate})`;
@@ -1827,7 +1827,7 @@ export const useParameterVariants = () => {
 
     } catch (error) {
       console.error('[Firebase] Failed to load variant:', error);
-      showError('Failed to load stove model variant');
+      showError('Failed to load rig model variant');
       return false;
     }
   }, [deviceId, showSuccess, showError]);
@@ -1842,14 +1842,14 @@ export const useParameterVariants = () => {
       if (!realtimeDB) throw new Error('Database not initialized');
 
       await set(ref(realtimeDB as any, `entwicklung/parameter/${variantName}`), null);
-      showSuccess(`Stove model "${variantName}" deleted`);
+      showSuccess(`Rig model "${variantName}" deleted`);
       // Invalidate variants cache so next list/info fetch reflects the deletion
       variantsCacheRef.current = null;
       return true;
 
     } catch (error) {
       console.error('[Firebase] Failed to delete variant:', error);
-      showError('Failed to delete stove model variant');
+      showError('Failed to delete rig model variant');
       return false;
     }
   }, [showSuccess, showError]);
@@ -1884,14 +1884,14 @@ export const useParameterVariants = () => {
         };
         
         const jsonString = JSON.stringify(exportData, null, 2);
-        showInfo(`Stove model "${variantName}" exported to clipboard`);
+        showInfo(`Rig model "${variantName}" exported to clipboard`);
         return jsonString;
       }
       return null;
 
     } catch (error) {
       console.error('[Firebase] Failed to export variant:', error);
-      showError('Failed to export stove model variant');
+      showError('Failed to export rig model variant');
       return null;
     }
   }, [showInfo, showError]);
@@ -1907,11 +1907,11 @@ export const useParameterVariants = () => {
   };
 };
 
-// Module-level cache for stove model info shared across components
-const stoveModelModuleCache: Map<string, { name: string; data: any | null }> = new Map();
+// Module-level cache for rig model info shared across components
+const rigModelModuleCache: Map<string, { name: string; data: any | null }> = new Map();
 
-export const useStoveModel = () => {
-  const deviceMetadata = useStoveStore(state => state.deviceMetadata);
+export const useRigModel = () => {
+  const deviceMetadata = useRigStore(state => state.deviceMetadata);
   const { showError } = useNotificationHelpers();
   
   // Cache to prevent repeated queries
@@ -1919,12 +1919,12 @@ export const useStoveModel = () => {
   const [cachedModelData, setCachedModelData] = useState<any | null>(null);
   const [lastArticleNumber, setLastArticleNumber] = useState<string | null>(null);
 
-  const getStoveModelName = useCallback(async (): Promise<string> => {
+  const getRigModelName = useCallback(async (): Promise<string> => {
     const articleNumber = deviceMetadata.a != null ? deviceMetadata.a.toString() : null;
     if (!articleNumber) return 'Unknown Model';
 
     // Module-level cache first
-    const cached = stoveModelModuleCache.get(articleNumber);
+    const cached = rigModelModuleCache.get(articleNumber);
     if (cached) {
       if (cachedModel !== cached.name) setCachedModel(cached.name);
       if (cachedModelData !== cached.data) setCachedModelData(cached.data);
@@ -1936,8 +1936,8 @@ export const useStoveModel = () => {
       if (!firestoreDB) return 'Unknown Model';
 
       const { collection, query, where, getDocs } = await import('firebase/firestore');
-      const stoveModelsRef = collection(firestoreDB, 'stove_models');
-      const q = query(stoveModelsRef, where('article_number', '==', articleNumber));
+      const rigModelsRef = collection(firestoreDB, 'rig_models');
+      const q = query(rigModelsRef, where('article_number', '==', articleNumber));
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
@@ -1946,41 +1946,41 @@ export const useStoveModel = () => {
         const modelName = modelData.name || 'Unknown Model';
 
         // Save to module cache and local state
-        stoveModelModuleCache.set(articleNumber, { name: modelName, data: modelData });
+        rigModelModuleCache.set(articleNumber, { name: modelName, data: modelData });
         setCachedModel(modelName);
         setCachedModelData(modelData);
         setLastArticleNumber(articleNumber);
         return modelName;
       }
 
-      stoveModelModuleCache.set(articleNumber, { name: 'Unknown Model', data: null });
+      rigModelModuleCache.set(articleNumber, { name: 'Unknown Model', data: null });
       setCachedModel('Unknown Model');
       setCachedModelData(null);
       setLastArticleNumber(articleNumber);
       return 'Unknown Model';
     } catch (error) {
-      console.error('[StoveModel] Error fetching stove model:', error);
-      showError('Failed to fetch stove model information');
+      console.error('[RigModel] Error fetching rig model:', error);
+      showError('Failed to fetch rig model information');
       return 'Unknown Model';
     }
   }, [deviceMetadata.a, showError, cachedModel, cachedModelData, lastArticleNumber]);
 
-  const getStoveModelData = useCallback(async (): Promise<any | null> => {
+  const getRigModelData = useCallback(async (): Promise<any | null> => {
     const articleNumber = deviceMetadata.a != null ? deviceMetadata.a.toString() : null;
     if (!articleNumber) return null;
 
-    const cached = stoveModelModuleCache.get(articleNumber);
+    const cached = rigModelModuleCache.get(articleNumber);
     if (cached) return cached.data;
 
     // Ensure name/data are fetched and cached, then return from module cache
-    await getStoveModelName();
-    const after = stoveModelModuleCache.get(articleNumber);
+    await getRigModelName();
+    const after = rigModelModuleCache.get(articleNumber);
     return after ? after.data : null;
-  }, [deviceMetadata.a, getStoveModelName]);
+  }, [deviceMetadata.a, getRigModelName]);
 
   return {
-    getStoveModelName,
-    getStoveModelData,
+    getRigModelName,
+    getRigModelData,
     cachedModelName: cachedModel,
     cachedModelData: cachedModelData,
   };

@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { useFirebaseConnection, useDeviceList } from '../../hooks/useFirebase';
 import { useParameterDiscovery } from '../../hooks/useParameterDiscovery';
-import { useStoveStore } from '../../store/useStoveStore';
+import { useRigStore } from '../../store/useRigStore';
 import UserSettingsModal from '../UserSettingsModal';
 import CategoriesModal from '../CategoriesModal';
 import ChatSystem from '../ChatSystem';
@@ -134,19 +134,19 @@ const Web3ConnectionPanel: React.FC<ConnectionPanelProps> = ({
   const [isClearingTemporaer, setIsClearingTemporaer] = useState(false);
 
   // Use direct store access
-  const deviceId = useStoveStore(state => state.deviceId);
-  const connectionStatus = useStoveStore(state => state.connectionStatus);
-  const discoveredParameters = useStoveStore(state => state.discoveredParameters);
-  const isEditMode = useStoveStore(state => state.isEditMode);
-  const setEditMode = useStoveStore(state => state.setEditMode);
+  const deviceId = useRigStore(state => state.deviceId);
+  const connectionStatus = useRigStore(state => state.connectionStatus);
+  const discoveredParameters = useRigStore(state => state.discoveredParameters);
+  const isEditMode = useRigStore(state => state.isEditMode);
+  const setEditMode = useRigStore(state => state.setEditMode);
   const isMobile = useIsMobile();
-  const currentData = useStoveStore(state => state.currentData);
+  const currentData = useRigStore(state => state.currentData);
   const hasCurrentData = useMemo(() => Object.keys(currentData || {}).length > 0, [currentData]);
 
-  const isSectionReorderMode = useStoveStore(state => state.isSectionReorderMode);
-  const setSectionReorderMode = useStoveStore(state => state.setSectionReorderMode);
-  const setSectionOrder = useStoveStore(state => state.setSectionOrder);
-  const deviceConfig = useStoveStore(state => state.deviceConfig);
+  const isSectionReorderMode = useRigStore(state => state.isSectionReorderMode);
+  const setSectionReorderMode = useRigStore(state => state.setSectionReorderMode);
+  const setSectionOrder = useRigStore(state => state.setSectionOrder);
+  const deviceConfig = useRigStore(state => state.deviceConfig);
 
   const { connect, disconnect, clientId, ensureActiveClientPresent } = useFirebaseConnection();
   const { testFirestoreConnection } = useParameterDiscovery();
@@ -633,7 +633,7 @@ const Web3ConnectionPanel: React.FC<ConnectionPanelProps> = ({
     setIsCleaningUp(true);
     setCleanupProgress(0);
 
-    const { clearAllState } = useStoveStore.getState();
+    const { clearAllState } = useRigStore.getState();
     clearAllState();
     setCleanupProgress(20);
 
@@ -684,7 +684,7 @@ const Web3ConnectionPanel: React.FC<ConnectionPanelProps> = ({
     setShowSearchResults(false);
     setShowFavorites(false);
 
-    const currentState = useStoveStore.getState();
+    const currentState = useRigStore.getState();
     if (currentState.connectionStatus === 'connecting' || isCleaningUp) {
       return;
     }
@@ -718,7 +718,7 @@ const Web3ConnectionPanel: React.FC<ConnectionPanelProps> = ({
     setInputValue(id);
     // Defer to allow state update; reuse cleanup+connect flow
     setTimeout(() => {
-      const currentState = useStoveStore.getState();
+      const currentState = useRigStore.getState();
       if (currentState.connectionStatus === 'connecting' || isCleaningUp) return;
       (async () => {
         try {
@@ -913,7 +913,7 @@ const Web3ConnectionPanel: React.FC<ConnectionPanelProps> = ({
       if (savedOrder.length > 0) {
         setSectionOrder(savedOrder);
       } else {
-        const defaultOrder = ['stove-management', 'secondary-categories', 'main-and-airflow', 'charts'];
+        const defaultOrder = ['rig-management', 'secondary-categories', 'main-and-airflow', 'charts'];
         setSectionOrder(defaultOrder);
         saveSectionOrder(defaultOrder);
       }
@@ -1350,7 +1350,7 @@ const Web3ConnectionPanel: React.FC<ConnectionPanelProps> = ({
               />
               <h1 className="text-3xl font-semibold tracking-tight text-foreground">RigWatch</h1>
               <p className="text-sm text-muted-foreground mt-1.5">
-                Verbinden Sie Ihr Kamin-Gerät
+                Connect Sie Ihr Rig-Gerät
               </p>
             </div>
 
@@ -1478,7 +1478,7 @@ const Web3ConnectionPanel: React.FC<ConnectionPanelProps> = ({
                     <span>{t('status.connecting')}</span>
                   </>
                 ) : (
-                  <>{t('connectionPanel.connect') || 'Verbinden'}</>
+                  <>{t('connectionPanel.connect') || 'Connect'}</>
                 )}
               </Button>
             </div>
@@ -1806,7 +1806,7 @@ const Web3ConnectionPanel: React.FC<ConnectionPanelProps> = ({
               )}
               title={deviceId ? `Löscht /temporaer/${deviceId}` : 'Kein Gerät verbunden'}
             >
-              {isClearingTemporaer ? 'Lösche…' : (t('connectionPanel.clearTemp') as string) || 'Temp löschen'}
+              {isClearingTemporaer ? 'Lösche…' : (t('connectionPanel.clearTemp') as string) || 'Clear Temp'}
             </button>
             <button
               onClick={handleToggleAlleWerte}
@@ -1818,7 +1818,7 @@ const Web3ConnectionPanel: React.FC<ConnectionPanelProps> = ({
                   : 'bg-card hover:bg-accent border-border/60 text-foreground'
               )}
             >
-              Alle Werte: {alleWerteEnabled ? 'Ja' : 'Nein'}
+              All Values: {alleWerteEnabled ? 'Yes' : 'No'}
             </button>
             <button
               onClick={handleToggleNurApp}
@@ -1831,7 +1831,7 @@ const Web3ConnectionPanel: React.FC<ConnectionPanelProps> = ({
               )}
               title="Toggle increments/decrements k by 1"
             >
-              Nur App: {nurAppEnabled ? 'Ja' : 'Nein'}
+              App Only: {nurAppEnabled ? 'Yes' : 'No'}
             </button>
             <div className={cn(
               'text-[10px] font-medium px-2.5 py-1 rounded-full border whitespace-nowrap ml-auto',
@@ -1843,10 +1843,10 @@ const Web3ConnectionPanel: React.FC<ConnectionPanelProps> = ({
                     ? 'text-foreground bg-muted border-border'
                     : 'text-success bg-success/10 border-success/30'
             )}>
-              {!alleWerteEnabled && kFromStore === 0 && 'Keine Werte beobachten'}
-              {alleWerteEnabled && kFromStore === 0 && 'Alle Werte beobachten'}
-              {alleWerteEnabled && kFromStore > 0 && 'Alle Werte beobachten'}
-              {!alleWerteEnabled && kFromStore > 0 && 'Nur App-Werte beobachten'}
+              {!alleWerteEnabled && kFromStore === 0 && 'Watch values disabled'}
+              {alleWerteEnabled && kFromStore === 0 && 'Watch all values'}
+              {alleWerteEnabled && kFromStore > 0 && 'Watch all values'}
+              {!alleWerteEnabled && kFromStore > 0 && 'App Only-Werte beobachten'}
             </div>
           </div>
         </header>

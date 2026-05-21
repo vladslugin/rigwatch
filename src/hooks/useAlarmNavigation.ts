@@ -1,5 +1,5 @@
 import { useCallback, useRef, useEffect, useState } from 'react';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 import { useFirebaseConnection } from './useFirebase';
 import type { ParameterInfo } from '../types';
 
@@ -17,9 +17,9 @@ export const useAlarmNavigation = ({
   onCloseNotificationHistory
 }: UseAlarmNavigationProps = {}): UseAlarmNavigationResult => {
   const highlightTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const currentData = useStoveStore(state => state.currentData);
-  const currentDeviceId = useStoveStore(state => state.deviceId);
-  const connectionStatus = useStoveStore(state => state.connectionStatus);
+  const currentData = useRigStore(state => state.currentData);
+  const currentDeviceId = useRigStore(state => state.deviceId);
+  const connectionStatus = useRigStore(state => state.connectionStatus);
   const { connect, disconnect } = useFirebaseConnection();
   
   // Track test alarms separately to prevent auto-clearing
@@ -81,7 +81,7 @@ export const useAlarmNavigation = ({
   // COMPLETELY REWRITTEN: Only CSS classes, NEVER touch inline opacity, respect test alarms
   const autoHighlightOutOfRange = useCallback(() => {
     try {
-      const params = useStoveStore.getState().discoveredParameters;
+      const params = useRigStore.getState().discoveredParameters;
       params.forEach((param) => {
         const paramName = param.originalName;
         
@@ -144,7 +144,7 @@ export const useAlarmNavigation = ({
         };
         
         // Only handle current device
-        const currentId = useStoveStore.getState().deviceId;
+        const currentId = useRigStore.getState().deviceId;
         if (currentId && deviceId && currentId !== deviceId) return;
 
         const el = document.querySelector(`[data-param-id="${parameterName}"]`) as HTMLElement | null;
@@ -268,7 +268,7 @@ export const useAlarmNavigation = ({
         await new Promise(resolve => setTimeout(resolve, 5000));
         
         // Check if connection was successful
-        const finalStatus = useStoveStore.getState().connectionStatus;
+        const finalStatus = useRigStore.getState().connectionStatus;
         if (finalStatus !== 'online') {
           console.warn(`[AlarmNavigation] Failed to connect to device ${deviceId}, status: ${finalStatus}`);
           return;
@@ -277,7 +277,7 @@ export const useAlarmNavigation = ({
 
       // Step 3: Find the parameter by name (displayName or originalName)
       // Need to get fresh parameters after potential device switch
-      const currentParameters = useStoveStore.getState().discoveredParameters;
+      const currentParameters = useRigStore.getState().discoveredParameters;
       const parameter = currentParameters.find(param => 
         param.originalName === parameterName || 
         param.displayName === parameterName

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import type { ParameterInfo } from '../types/firebase';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 import { useLocalSettings } from '../hooks/useLocalSettings';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
@@ -66,8 +66,8 @@ const CategoriesModal: React.FC<CategoriesModalProps> = ({
   const { hasPermission } = useAuth();
 
   // Primary category management
-  const primaryCategory = useStoveStore((state) => state.primaryCategory);
-  const setPrimaryCategory = useStoveStore((state) => state.setPrimaryCategory);
+  const primaryCategory = useRigStore((state) => state.primaryCategory);
+  const setPrimaryCategory = useRigStore((state) => state.setPrimaryCategory);
   const { savePrimaryCategory } = useLocalSettings();
 
   // Form / list state

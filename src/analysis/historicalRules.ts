@@ -167,8 +167,8 @@ const B_CODE_DESCRIPTIONS = {
     'B7': 'zu spät nachgelegt',
     'B8': 'generell gute Feuerung',
     'B9': 'generell schlechte Feuerung',
-    'B10': 'Kaminzug zu schwach',
-    'B11': 'Kaminzug zu stark',
+    'B10': 'Rigzug zu schwach',
+    'B11': 'Rigzug zu stark',
     'B12': 'Brennstoff ist geeignet',
     'B13': 'richtig nachgelegt'
   },
@@ -330,7 +330,7 @@ export const runHistoricalRules = (data: HistoricalData, locale: 'de' | 'en' = '
   // Rule base implementation following the exact specification
   
   // Rule 1: ((p_ph1_schlecht ∧ z_ph1_schlecht) ∨ (p_ph4_schlecht ∧ z_ph4_schlecht)) ∧ z_ph2_schlecht1
-  // → "Ofen kommt nicht auf Temperatur" → B0, B2, B4, B10
+  // → "Rig kommt nicht auf Temperatur" → B0, B2, B4, B10
   const rule1_condition = fuzzyAnd(
     fuzzyOr(
       fuzzyAnd(p_ph1_schlecht, z_ph1_schlecht),
@@ -340,7 +340,7 @@ export const runHistoricalRules = (data: HistoricalData, locale: 'de' | 'en' = '
   );
 
   if (rule1_condition > 0.1) {
-    const desc = locale === 'de' ? 'Ofen kommt nicht auf Temperatur' : 'Stove not reaching temperature';
+    const desc = locale === 'de' ? 'Rig kommt nicht auf Temperatur' : 'Rig not reaching temperature';
     issues.push({
       issue: desc,
       probability: rule1_condition,
@@ -361,21 +361,21 @@ export const runHistoricalRules = (data: HistoricalData, locale: 'de' | 'en' = '
     );
 
     actions.push({
-      action: locale === 'de' ? 'Holzmenge und -qualität prüfen, Kaminzug überprüfen' : 'Check wood quantity and quality, verify chimney draft',
+      action: locale === 'de' ? 'Holzmenge und -qualität prüfen, Rigzug überprüfen' : 'Check wood quantity and quality, verify chimney draft',
       type: 'self',
       eta_min: 15
     });
   }
 
   // Rule 2: (z_ph1_gut ∨ z_ph4_gut) ∧ z_ph2_schlecht1
-  // → "Ofen brennt nach An- oder Aufheizen zu schnell" → B3, B5
+  // → "Rig brennt nach An- oder Aufheizen zu schnell" → B3, B5
   const rule2_condition = fuzzyAnd(
     fuzzyOr(z_ph1_gut, z_ph4_gut),
     z_ph2_schlecht1
   );
 
   if (rule2_condition > 0.1) {
-    const desc = locale === 'de' ? 'Ofen brennt nach An- oder Aufheizen zu schnell' : 'Stove burns too fast after ignition or reheating';
+    const desc = locale === 'de' ? 'Rig brennt nach An- oder Aufheizen zu schnell' : 'Rig burns too fast after ignition or reheating';
     issues.push({
       issue: desc,
       probability: rule2_condition,
@@ -399,11 +399,11 @@ export const runHistoricalRules = (data: HistoricalData, locale: 'de' | 'en' = '
   }
 
   // Rule 3: z_ph2_schlecht2 ∧ p_ph2_gut
-  // → "Ofen brennt zu lange" → B1
+  // → "Rig brennt zu lange" → B1
   const rule3_condition = fuzzyAnd(z_ph2_schlecht2, p_ph2_gut);
 
   if (rule3_condition > 0.1) {
-    const desc = locale === 'de' ? 'Ofen brennt zu lange' : 'Stove burns too long';
+    const desc = locale === 'de' ? 'Rig brennt zu lange' : 'Rig burns too long';
     issues.push({
       issue: desc,
       probability: rule3_condition,
@@ -427,11 +427,11 @@ export const runHistoricalRules = (data: HistoricalData, locale: 'de' | 'en' = '
   }
 
   // Rule 4: z_ph4_gut ∧ z_ph2_schlecht2 ∧ p_ph2_schlecht
-  // → "Ofen brennt wahrscheinlich zu lange und zu heiß" → B1, B4
+  // → "Rig brennt wahrscheinlich zu lange und zu heiß" → B1, B4
   const rule4_condition = fuzzyAnd(z_ph4_gut, z_ph2_schlecht2, p_ph2_schlecht);
 
   if (rule4_condition > 0.1) {
-    const desc = locale === 'de' ? 'Ofen brennt wahrscheinlich zu lange und zu heiß' : 'Stove probably burns too long and too hot';
+    const desc = locale === 'de' ? 'Rig brennt wahrscheinlich zu lange und zu heiß' : 'Rig probably burns too long and too hot';
     issues.push({
       issue: desc,
       probability: rule4_condition,
@@ -456,11 +456,11 @@ export const runHistoricalRules = (data: HistoricalData, locale: 'de' | 'en' = '
   }
 
   // Rule 5: z_ph4_gut ∧ z_ph2_schlecht1 ∧ p_ph2_schlecht
-  // → "Ofen brennt wahrscheinlich zu kurz und zu heiß" → B11, B3
+  // → "Rig brennt wahrscheinlich zu kurz und zu heiß" → B11, B3
   const rule5_condition = fuzzyAnd(z_ph4_gut, z_ph2_schlecht1, p_ph2_schlecht);
 
   if (rule5_condition > 0.1) {
-    const desc = locale === 'de' ? 'Ofen brennt wahrscheinlich zu kurz und zu heiß' : 'Stove probably burns too short and too hot';
+    const desc = locale === 'de' ? 'Rig brennt wahrscheinlich zu kurz und zu heiß' : 'Rig probably burns too short and too hot';
     issues.push({
       issue: desc,
       probability: rule5_condition,
@@ -478,7 +478,7 @@ export const runHistoricalRules = (data: HistoricalData, locale: 'de' | 'en' = '
     );
 
     actions.push({
-      action: locale === 'de' ? 'Kaminzug reduzieren, feuchteres Holz verwenden' : 'Reduce chimney draft, use less dry wood',
+      action: locale === 'de' ? 'Rigzug reduzieren, feuchteres Holz verwenden' : 'Reduce chimney draft, use less dry wood',
       type: 'self',
       eta_min: 10
     });
@@ -537,7 +537,7 @@ export const runHistoricalRules = (data: HistoricalData, locale: 'de' | 'en' = '
     });
   }
 
-  // Rule 9: p_ph1_gut ∧ p_ph2_gut ∧ p_ph4_gut → "Ofen brennt richtig" → B12
+  // Rule 9: p_ph1_gut ∧ p_ph2_gut ∧ p_ph4_gut → "Rig brennt richtig" → B12
   const rule9_condition = fuzzyAnd(p_ph1_gut, p_ph2_gut, p_ph4_gut);
   if (rule9_condition > 0.1) {
     bCodes.push({

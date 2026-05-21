@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useStoveStore } from '../store/useStoveStore';
+import { useRigStore } from '../store/useRigStore';
 import { useFirebaseConnection, useDeviceList } from '../hooks/useFirebase';
 import { formatDateWithUserTimezone } from '../utils/timezone';
 import { ref, get, set } from 'firebase/database';
@@ -18,10 +18,10 @@ interface FavoriteDevice {
 const ConnectionBlock: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
-  const deviceId = useStoveStore(state => state.deviceId);
-  const connectionStatus = useStoveStore(state => state.connectionStatus);
-  const deviceMetadata = useStoveStore(state => state.deviceMetadata);
-  const deviceConfig = useStoveStore(state => state.deviceConfig);
+  const deviceId = useRigStore(state => state.deviceId);
+  const connectionStatus = useRigStore(state => state.connectionStatus);
+  const deviceMetadata = useRigStore(state => state.deviceMetadata);
+  const deviceConfig = useRigStore(state => state.deviceConfig);
   
   const { connect, disconnect } = useFirebaseConnection();
   const { getAllDeviceIds } = useDeviceList();
@@ -39,8 +39,8 @@ const ConnectionBlock: React.FC = () => {
   const [searchResults, setSearchResults] = useState<string[]>([]);
   const [isLoadingDevices, setIsLoadingDevices] = useState(false);
   
-  // Stove model name
-  const [stoveModelName, setStoveModelName] = useState<string>('—');
+  // Rig model name
+  const [rigModelName, setRigModelName] = useState<string>('—');
   
   // Ping test states
   const [pingStatus, setPingStatus] = useState<'unknown' | 'testing' | 'online' | 'offline'>('unknown');
@@ -72,7 +72,7 @@ const ConnectionBlock: React.FC = () => {
   const isDifferentId = useMemo(() => !!normalizedInputId && !!deviceId && normalizedInputId !== deviceId, [normalizedInputId, deviceId]);
   const showConnectButton = useMemo(() => !isConnected || isDifferentId, [isConnected, isDifferentId]);
 
-  // Ping test function (same as in StoveInfoModal)
+  // Ping test function (same as in RigInfoModal)
   const handlePingTest = useCallback(async () => {
     if (!deviceId || !realtimeDB) return;
 
@@ -187,10 +187,10 @@ const ConnectionBlock: React.FC = () => {
     }
   }, [deviceId, isConnected]); // Remove inputValue from deps to allow editing
 
-  // Load verz (Ofentyp) from /konstant/<id>/verz
+  // Load verz (Rigtyp) from /konstant/<id>/verz
   useEffect(() => {
     if (!isConnected || !deviceId) {
-      setStoveModelName('—');
+      setRigModelName('—');
       return;
     }
 
@@ -198,7 +198,7 @@ const ConnectionBlock: React.FC = () => {
       try {
         if (!realtimeDB) {
           console.warn('[ConnectionBlock] realtimeDB not available');
-          setStoveModelName('—');
+          setRigModelName('—');
           return;
         }
 
@@ -207,14 +207,14 @@ const ConnectionBlock: React.FC = () => {
         
         if (verzSnapshot.exists()) {
           const verzValue = verzSnapshot.val();
-          setStoveModelName(verzValue ? String(verzValue) : '—');
+          setRigModelName(verzValue ? String(verzValue) : '—');
         } else {
           console.warn('[ConnectionBlock] No verz found');
-          setStoveModelName('—');
+          setRigModelName('—');
         }
       } catch (error) {
         console.error('[ConnectionBlock] Error loading verz:', error);
-        setStoveModelName('—');
+        setRigModelName('—');
       }
     };
 
@@ -244,7 +244,7 @@ const ConnectionBlock: React.FC = () => {
     setCleanupProgress(0);
 
     // Step 1: Clear store state (20%)
-    const { clearAllState } = useStoveStore.getState();
+    const { clearAllState } = useRigStore.getState();
     clearAllState();
     setCleanupProgress(20);
 
@@ -305,7 +305,7 @@ const ConnectionBlock: React.FC = () => {
     setShowFavorites(false);
 
     // Check current state from store, not from closure
-    const currentState = useStoveStore.getState();
+    const currentState = useRigStore.getState();
 
     if (currentState.connectionStatus === 'connecting' || isCleaningUp) {
       return;
@@ -502,7 +502,7 @@ const ConnectionBlock: React.FC = () => {
       setIsEditingComment(false);
     } catch (error) {
       console.error('[ConnectionBlock] Error saving comment:', error);
-      alert('Fehler beim Speichern des Kommentars');
+      alert('Fehler beim Save des Kommentars');
     } finally {
       setIsSavingComment(false);
     }
@@ -760,23 +760,23 @@ const ConnectionBlock: React.FC = () => {
           </div>
         </div>
 
-        {/* Stove Info Section - Only when connected */}
+        {/* Rig Info Section - Only when connected */}
         {isConnected && (
           <div className="pt-3 border-t border-border">
-            {/* First Row: ID des Ofens + Ofentyp + Softwarestufe + Firmware-Version */}
+            {/* First Row: ID des Rigs + Rigtyp + Softwarestufe + Firmware-Version */}
             <div className="grid grid-cols-1 md:grid-cols-6 gap-2 mb-2">
-              {/* ID des Ofens - 1/6 width */}
+              {/* ID des Rigs - 1/6 width */}
               <div className="p-2 bg-card rounded md:col-span-1">
-                <div className="text-xs text-muted-foreground mb-0.5">ID des Ofens</div>
+                <div className="text-xs text-muted-foreground mb-0.5">ID des Rigs</div>
                 <div className="text-xs font-mono font-semibold text-foreground truncate" title={deviceId || '—'}>
                   {deviceId || '—'}
                 </div>
               </div>
 
-              {/* Ofentyp - 1/6 width */}
+              {/* Rigtyp - 1/6 width */}
               <div className="p-2 bg-card rounded md:col-span-1">
-                <div className="text-xs text-muted-foreground mb-0.5">Ofentyp</div>
-                <div className="text-xs font-semibold text-foreground truncate" title={stoveModelName}>{stoveModelName}</div>
+                <div className="text-xs text-muted-foreground mb-0.5">Rigtyp</div>
+                <div className="text-xs font-semibold text-foreground truncate" title={rigModelName}>{rigModelName}</div>
               </div>
 
               {/* Softwarestufe - 2/6 width */}
@@ -797,10 +797,10 @@ const ConnectionBlock: React.FC = () => {
               </div>
             </div>
 
-            {/* Second Row: Letzte Anmeldung + Status + Anmerkung */}
+            {/* Second Row: Last Login + Status + Anmerkung */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
               <div className="p-2 bg-card rounded">
-                <div className="text-xs text-muted-foreground mb-0.5">Letzte Anmeldung</div>
+                <div className="text-xs text-muted-foreground mb-0.5">Last Login</div>
                 <div className="text-xs font-semibold text-foreground">{lastLoginStr}</div>
               </div>
               <div className="p-2 bg-card rounded">
@@ -845,7 +845,7 @@ const ConnectionBlock: React.FC = () => {
                       <button
                         onClick={handleStartCommentEdit}
                         className="text-muted-foreground hover:text-primary transition-colors"
-                        title="Bearbeiten"
+                        title="Edit"
                       >
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -875,14 +875,14 @@ const ConnectionBlock: React.FC = () => {
                         disabled={isSavingComment}
                         className="flex-1 px-2 py-1 text-xs font-medium bg-success hover:bg-success/90 disabled:opacity-50 text-success-foreground rounded transition-colors"
                       >
-                        {isSavingComment ? 'Speichere...' : '✓ Speichern'}
+                        {isSavingComment ? 'Speichere...' : '✓ Save'}
                       </button>
                       <button
                         onClick={handleCancelCommentEdit}
                         disabled={isSavingComment}
                         className="flex-1 px-2 py-1 text-xs font-medium bg-muted hover:bg-muted/80 disabled:opacity-50 text-foreground rounded transition-colors"
                       >
-                        ✗ Abbrechen
+                        ✗ Cancel
                       </button>
                     </div>
                   </div>

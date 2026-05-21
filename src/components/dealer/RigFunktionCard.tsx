@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { DecodedStoveError } from '../../utils/decodeStoveErrors';
+import type { DecodedRigError } from '../../utils/decodeRigErrors';
 
-export interface OfenFunktionCardProps {
+export interface RigFunktionCardProps {
   /** Decoded controller errors. Empty list = "alles fehlerfrei". */
-  errors: DecodedStoveError[];
+  errors: DecodedRigError[];
   /** Optional: dealer-friendly hint to update the firmware when errors are present. */
   showFirmwareHint?: boolean;
 }
@@ -22,7 +22,7 @@ const AlertIcon: React.FC<{ className?: string }> = ({ className }) => (
   </svg>
 );
 
-const ErrorEntryRow: React.FC<{ error: DecodedStoveError }> = ({ error }) => {
+const ErrorEntryRow: React.FC<{ error: DecodedRigError }> = ({ error }) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const hasMassnahmen = error.massnahmen.length > 0;
@@ -58,10 +58,10 @@ const ErrorEntryRow: React.FC<{ error: DecodedStoveError }> = ({ error }) => {
   );
 };
 
-export const OfenFunktionCard: React.FC<OfenFunktionCardProps> = React.memo(({ errors, showFirmwareHint }) => {
+export const RigFunktionCard: React.FC<RigFunktionCardProps> = React.memo(({ errors, showFirmwareHint }) => {
   const { t } = useTranslation();
   // Hide errors flagged as not dealer-visible (e.g. "kein Strom" — fires when
-  // the stove is simply switched off and would only confuse the dealer).
+  // the rig is simply switched off and would only confuse the dealer).
   const visibleErrors = errors.filter((e) => e.dealerVisible);
   const hasErrors = visibleErrors.length > 0;
 
@@ -133,4 +133,4 @@ export const OfenFunktionCard: React.FC<OfenFunktionCardProps> = React.memo(({ e
   );
 });
 
-OfenFunktionCard.displayName = 'OfenFunktionCard';
+RigFunktionCard.displayName = 'RigFunktionCard';
