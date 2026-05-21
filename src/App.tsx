@@ -87,8 +87,9 @@ const App: React.FC = () => {
   
   // Simplification mode
   const [simplificationMode, setSimplificationMode] = useState(false);
-  // Beta: new sidebar-shell layout for Standard mode (persistent in localStorage)
-  const [useNewDesign, setUseNewDesign] = useState(false);
+  // RigWatch ships the web3 shell layout as the default — the legacy
+  // ConnectionPanel + dashboard layout is kept as an opt-out for now.
+  const [useNewDesign, setUseNewDesign] = useState(true);
   
   // Auth
   const { user, parameterViewScope, isLoading: isAuthLoading } = useAuth();
@@ -112,7 +113,9 @@ const App: React.FC = () => {
         const prefsStr = localStorage.getItem('rigwatch-user-preferences');
         const prefs = prefsStr ? JSON.parse(prefsStr) : {};
         setSimplificationMode(prefs.simplificationMode || false);
-        setUseNewDesign(prefs.newDesign || false);
+        // `newDesign` defaults to TRUE in RigWatch — the legacy layout
+        // is opt-out via the Settings panel.
+        setUseNewDesign(prefs.newDesign === false ? false : true);
       } catch (error) {
         console.error('[App] Failed to load simplificationMode:', error);
       }

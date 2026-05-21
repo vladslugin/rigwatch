@@ -31,10 +31,10 @@ type NavItem = {
 };
 
 const NAV_ITEMS: NavItem[] = [
-  { section: 'rig-management', label: 'Geräteübersicht', icon: Cpu },
-  { section: 'secondary-categories', label: 'Parameter', icon: Layers },
-  { section: 'main-and-airflow', label: 'Brennraum', icon: Flame },
-  { section: 'charts', label: 'Diagramme', icon: BarChart3 },
+  { section: 'rig-management', label: 'Fleet', icon: Cpu },
+  { section: 'secondary-categories', label: 'Parameters', icon: Layers },
+  { section: 'main-and-airflow', label: 'Cooling', icon: Flame },
+  { section: 'charts', label: 'Charts', icon: BarChart3 },
 ];
 
 function scrollToSection(section: string) {
@@ -100,12 +100,12 @@ export function ShellSidebar({ onOpenDocs, onOpenSettings }: ShellSidebarProps) 
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Werkzeuge</SidebarGroupLabel>
+          <SidebarGroupLabel>Tools</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  tooltip="Dokumentation"
+                  tooltip="Documentation"
                   onClick={() => {
                     onOpenDocs?.();
                     // Fallback: dispatch a window event so Web3ConnectionPanel
@@ -115,7 +115,7 @@ export function ShellSidebar({ onOpenDocs, onOpenSettings }: ShellSidebarProps) 
                   }}
                 >
                   <BookOpen />
-                  <span>Dokumentation</span>
+                  <span>Documentation</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
@@ -142,7 +142,7 @@ export function ShellSidebar({ onOpenDocs, onOpenSettings }: ShellSidebarProps) 
             collapsed && 'hidden',
           )}
         >
-          <span>Standard-Modus</span>
+          <span>Standard Mode</span>
           <span className="tabular-nums">v2</span>
         </div>
       </SidebarFooter>

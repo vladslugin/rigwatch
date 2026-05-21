@@ -45,6 +45,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
 import { extractSeriennr } from '../../utils/seriennrResolver';
+import RigFleetGrid from './RigFleetGrid';
 
 interface FavoriteDevice {
   id: string;
@@ -1337,20 +1338,37 @@ const Web3ConnectionPanel: React.FC<ConnectionPanelProps> = ({
     <TooltipProvider delayDuration={200}>
       {/* STATE A: Pre-connect hero */}
       {!isConnected && (
-        <div className="flex justify-center mt-12 px-4">
-          <div className="w-full max-w-[640px] rounded-2xl border border-border bg-card p-8 shadow-theme-lg">
+        <div className="flex flex-col items-center mt-10 px-4">
+          <div className="w-full max-w-[680px] relative">
+            {/* Halo behind the card — picks up the mesh tint above */}
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -inset-x-10 -top-10 -bottom-4 rounded-[2.5rem] opacity-70"
+              style={{
+                background:
+                  'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(168, 85, 247, 0.22), transparent 65%)',
+                filter: 'blur(8px)',
+                zIndex: 0,
+              }}
+            />
+            <div className="relative glass gradient-border rounded-2xl p-8 z-10">
             {/* Logo + heading */}
             <div className="text-center mb-6">
               <img
                 key={`logo-${domIsDark ? 'dark' : 'light'}`}
                 src="/logo.svg"
                 alt="RigWatch"
-                className="mx-auto h-14 w-auto mb-3 opacity-90"
-                style={{ filter: domIsDark ? 'invert(1)' : 'invert(0)' }}
+                className="mx-auto h-12 w-auto mb-3"
               />
-              <h1 className="text-3xl font-semibold tracking-tight text-foreground">RigWatch</h1>
-              <p className="text-sm text-muted-foreground mt-1.5">
-                Connect Sie Ihr Rig-Gerät
+              <div className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground mb-1">
+                Mining Operations · Live Telemetry
+              </div>
+              <h1 className="text-4xl font-semibold tracking-tight">
+                <span className="text-gradient">RigWatch</span>
+              </h1>
+              <p className="text-sm text-muted-foreground mt-2 max-w-md mx-auto">
+                Paste a rig ID below or pick from the fleet to stream live hashrate,
+                temperature, and on-chain payout data.
               </p>
             </div>
 
@@ -1555,7 +1573,31 @@ const Web3ConnectionPanel: React.FC<ConnectionPanelProps> = ({
                 {t('connectionPanel.docs')}
               </button>
             </div>
+            </div>
           </div>
+
+          {/* Fleet browser — 24 rigs as glass cards. Clicking a card pipes
+              its id into the connect flow above. */}
+          <RigFleetGrid
+            onConnect={(rigId) => {
+              setInputValue(rigId);
+              setTimeout(() => {
+                const currentState = useStoveStore.getState();
+                if (currentState.connectionStatus === 'connecting' || isCleaningUp) return;
+                (async () => {
+                  try {
+                    await performCompleteCleanup(rigId);
+                    const ok = await connect(rigId);
+                    if (ok) updateUrlDeviceParam(rigId);
+                  } catch (error) {
+                    console.error('[Web3ConnectionPanel] Fleet connect failed:', error);
+                    setIsCleaningUp(false);
+                    setCleanupProgress(0);
+                  }
+                })();
+              }, 0);
+            }}
+          />
         </div>
       )}
 

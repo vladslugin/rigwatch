@@ -40,8 +40,32 @@ const ICELAND = 'Reykjavík-DC1';
 const TEXAS = 'Austin-DC2';
 const KZ = 'Pavlodar-DC3';
 
-const wallet = (n: number): string =>
-  '0x' + n.toString(16).padStart(8, '0') + 'a3f' + ((n * 17) & 0xffff).toString(16).padStart(4, '0');
+// 40-hex-char Ethereum-style address. Splatters bytes from the seed so each
+// owner gets a visually distinctive prefix (avoids "0x0000…0011" for every
+// rig of the same owner) while staying deterministic.
+const wallet = (n: number): string => {
+  const seeds = [
+    'f1c2', '7a3b', 'bd09', '4e6c',
+    '3a8f', '9b27', 'c513', '8d4e',
+    '2fa6', 'e037', '6c91', '15bd',
+  ];
+  // 5 chunks of 4 hex chars → 20 hex chars; combined with `n`'s nibble for
+  // the final pair, the address still hashes uniquely per seed.
+  const ofs = ((n - 1) % seeds.length);
+  const parts = [
+    seeds[(ofs + 0) % seeds.length],
+    seeds[(ofs + 3) % seeds.length],
+    seeds[(ofs + 7) % seeds.length],
+    seeds[(ofs + 1) % seeds.length],
+    seeds[(ofs + 5) % seeds.length],
+    seeds[(ofs + 9) % seeds.length],
+    seeds[(ofs + 2) % seeds.length],
+    seeds[(ofs + 11) % seeds.length],
+    seeds[(ofs + 4) % seeds.length],
+    n.toString(16).padStart(4, '0'),
+  ];
+  return '0x' + parts.join('');
+};
 
 const rigId = (idx: number): string => `0x${(idx * 0x1a3b + 0xc0de).toString(16).padStart(8, '0')}`;
 

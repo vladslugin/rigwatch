@@ -27,8 +27,8 @@ export function ShellLayout({
       <SidebarInset className="bg-background">
         <header className="sticky top-0 z-10 flex h-12 items-center gap-2 border-b border-border/60 bg-background/80 px-3 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <SidebarTrigger />
-          <span className="text-xs font-medium text-muted-foreground">
-            Standard-Modus
+          <span className="text-xs font-medium tracking-[0.16em] uppercase text-muted-foreground">
+            Standard Mode
           </span>
         </header>
         <div className="flex-1 min-h-0">{children}</div>
