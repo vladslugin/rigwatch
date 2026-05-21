@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import type { ThemeName } from '../hooks/useTheme';
 import HistoricalDataPanel from './HistoricalDataPanel';
 import ParameterVariantsPanel from './ParameterVariantsPanel';
+import RigEventLog from './web3/RigEventLog';
 import { useRigStore } from '../store/useRigStore';
 import { useRigModel } from '../hooks/useFirebase';
 import { useRigComment } from '../hooks/useRigComment';
@@ -773,11 +774,58 @@ const RigManagementPanel: React.FC<RigManagementPanelProps> = ({
             </div>
           </div>
 
-          {/* Historical Data Section */}
-          <HistoricalDataPanel className="" onLoadHistoricalDataToChart={onLoadHistoricalDataToChart} />
+          {/* Event Log — replaces the legacy historical timestamp picker with
+              a mining-flavoured event timeline (firmware rollouts, pool
+              switches, thermal alerts, share rejection spikes, etc.). */}
+          <div className="rounded-2xl bg-card border border-border p-4 sm:p-5">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="inline-flex h-7 w-7 rounded-md bg-primary/15 items-center justify-center">
+                  <svg className="h-3.5 w-3.5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </span>
+                <div>
+                  <div className="text-sm font-semibold text-foreground">Event Log</div>
+                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                    Last 14 days · controller emit
+                  </div>
+                </div>
+              </div>
+              <span className="pill pill-online">
+                <span className="dot dot-online" />
+                live
+              </span>
+            </div>
+            <RigEventLog />
+          </div>
 
-          {/* Rig Models Section (advanced) - visibility based on permission */}
-          {hasPermission('rigs.models_manage') && <ParameterVariantsPanel className="" />}
+          {/* Legacy timestamp selector — gated to developers in case raw
+              historical bucket loading is still needed for debugging. */}
+          {hasPermission('rigs.models_manage') && (
+            <details className="rounded-xl bg-card/40 border border-border/60 overflow-hidden">
+              <summary className="cursor-pointer px-4 py-2 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                Raw historical buckets (dev)
+              </summary>
+              <div className="px-4 pb-4">
+                <HistoricalDataPanel className="" onLoadHistoricalDataToChart={onLoadHistoricalDataToChart} />
+              </div>
+            </details>
+          )}
+
+          {/* Rig Models Section (advanced) — legacy parameter-snapshot panel,
+              gated to developer mode. The fleet-by-model breakdown lives in
+              FleetInventoryPanel on the pre-connect screen. */}
+          {hasPermission('rigs.models_manage') && (
+            <details className="rounded-xl bg-card/40 border border-border/60 overflow-hidden">
+              <summary className="cursor-pointer px-4 py-2 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                Parameter snapshots (dev)
+              </summary>
+              <div className="px-4 pb-4">
+                <ParameterVariantsPanel className="" />
+              </div>
+            </details>
+          )}
         </div>
       </div>
     </div>

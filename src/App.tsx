@@ -14,6 +14,8 @@ import AlarmIndicator from './components/AlarmIndicator';
 import RigManagementPanel from './components/RigManagementPanel';
 import RigVitalsHero from './components/web3/RigVitalsHero';
 import ProfitabilityCard from './components/web3/ProfitabilityCard';
+import MiningAirflowVisualizer from './components/web3/MiningAirflowVisualizer';
+import MiningHealthPanel from './components/web3/MiningHealthPanel';
 import ParameterSettingsModal from './components/ParameterSettingsModal';
 import ParameterListModal from './components/ParameterListModal';
 import DevDebug from './components/DevDebug';
@@ -1423,10 +1425,12 @@ const App: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <AirFlowDiagram
-                parameters={discoveredParameters}
-              />
-              <ErrorBlock />
+              {useNewDesign ? (
+                <MiningAirflowVisualizer />
+              ) : (
+                <AirFlowDiagram parameters={discoveredParameters} />
+              )}
+              {useNewDesign ? <MiningHealthPanel /> : <ErrorBlock />}
             </div>
           </div>
         </SectionWrapper>

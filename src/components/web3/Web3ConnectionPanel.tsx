@@ -48,6 +48,7 @@ import { extractSeriennr } from '../../utils/seriennrResolver';
 import RigFleetGrid from './RigFleetGrid';
 import WalletButton from './WalletButton';
 import EarningsSheet from './EarningsSheet';
+import FleetInventoryPanel from './FleetInventoryPanel';
 
 interface FavoriteDevice {
   id: string;
@@ -1593,6 +1594,26 @@ const Web3ConnectionPanel: React.FC<ConnectionPanelProps> = ({
 
           {/* Fleet browser — 24 rigs as glass cards. Clicking a card pipes
               its id into the connect flow above. */}
+          <FleetInventoryPanel
+            onSelectRig={(rigId) => {
+              setInputValue(rigId);
+              setTimeout(() => {
+                const currentState = useRigStore.getState();
+                if (currentState.connectionStatus === 'connecting' || isCleaningUp) return;
+                void (async () => {
+                  try {
+                    await performCompleteCleanup(rigId);
+                    const ok = await connect(rigId);
+                    if (ok) updateUrlDeviceParam(rigId);
+                  } catch (e) {
+                    setIsCleaningUp(false);
+                    setCleanupProgress(0);
+                    console.error('[Web3ConnectionPanel] Inventory pick failed:', e);
+                  }
+                })();
+              }, 0);
+            }}
+          />
           <RigFleetGrid
             onConnect={(rigId) => {
               setInputValue(rigId);
