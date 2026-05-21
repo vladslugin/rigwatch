@@ -1,7 +1,11 @@
-import { useMemo } from 'react';
-import { Fan, Thermometer, Wind, Gauge } from 'lucide-react';
+import { useMemo, useState, lazy, Suspense } from 'react';
+import { Fan, Thermometer, Wind, Gauge, Box, Layers } from 'lucide-react';
 import { useRigStore } from '../../store/useRigStore';
 import { RIG_BY_ID, ambientForLocation } from '../../lib/mock/rigData';
+
+// Lazy-load the 3D scene — three.js + @react-three/fiber/drei is ~600 KB
+// gzipped, so we only pull it in when the operator toggles 3D mode.
+const RigASIC3D = lazy(() => import('./RigASIC3D'));
 
 /**
  * Mining-flavoured airflow visualizer. SVG cross-section of an ASIC rig
@@ -114,6 +118,9 @@ export const MiningAirflowVisualizer: React.FC = () => {
     };
   }, [profile, currentData]);
 
+  // View toggle — defaults to schematic (cheaper, no Three.js bundle).
+  const [view, setView] = useState<'2d' | '3d'>('2d');
+
   if (!profile || !data) {
     return (
       <div className="rounded-2xl bg-card border border-border p-8 text-center text-sm text-muted-foreground">
@@ -151,13 +158,53 @@ export const MiningAirflowVisualizer: React.FC = () => {
             Airflow & Hashboard Temps
           </h3>
         </div>
-        <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
-          <Gauge className="h-3 w-3" />
-          <span>ΔP <span className="font-mono text-foreground">{data.deltaPa.toFixed(1)} Pa</span></span>
+        <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
+          <span className="hidden sm:inline">ΔP <span className="font-mono text-foreground">{data.deltaPa.toFixed(1)} Pa</span></span>
+          {/* 2D/3D toggle */}
+          <div className="inline-flex rounded-md border border-border bg-card/60 p-0.5">
+            <button
+              type="button"
+              onClick={() => setView('2d')}
+              className={`inline-flex items-center gap-1 h-7 px-2.5 rounded text-[11px] font-medium transition-colors ${
+                view === '2d' ? 'bg-primary/20 text-primary' : 'text-muted-foreground hover:text-foreground'
+              }`}
+              aria-label="Schematic view"
+            >
+              <Layers className="h-3 w-3" />
+              <span>2D</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setView('3d')}
+              className={`inline-flex items-center gap-1 h-7 px-2.5 rounded text-[11px] font-medium transition-colors ${
+                view === '3d' ? 'bg-primary/20 text-primary' : 'text-muted-foreground hover:text-foreground'
+              }`}
+              aria-label="3D model"
+            >
+              <Box className="h-3 w-3" />
+              <span>3D</span>
+            </button>
+          </div>
         </div>
       </div>
 
+      {/* Scene — either SVG schematic or Three.js 3D model */}
+      {view === '3d' && (
+        <div className="relative z-10">
+          <Suspense
+            fallback={
+              <div className="w-full h-72 sm:h-80 rounded-xl bg-card/40 border border-border flex items-center justify-center text-sm text-muted-foreground">
+                <span className="shimmer rounded-lg px-3 py-1">Loading 3D scene…</span>
+              </div>
+            }
+          >
+            <RigASIC3D />
+          </Suspense>
+        </div>
+      )}
+
       {/* SVG schematic */}
+      {view === '2d' && (
       <div className="relative z-10">
         <svg viewBox="0 0 400 180" className="w-full h-auto" aria-label="Rig cooling diagram">
           <defs>
@@ -285,6 +332,7 @@ export const MiningAirflowVisualizer: React.FC = () => {
           </text>
         </svg>
       </div>
+      )}
 
       {/* Bottom stat grid */}
       <div className="relative z-10 mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 text-[11px]">
