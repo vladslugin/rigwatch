@@ -19,7 +19,7 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('push', (event) => {
   try {
     const data = event.data ? event.data.json() : {};
-    const title = data.title || 'Hasenradar';
+    const title = data.title || 'RigWatch';
     const options: NotificationOptions = {
       body: data.body || '',
       icon: '/vite.svg',

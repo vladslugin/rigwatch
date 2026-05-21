@@ -18,7 +18,7 @@ export interface StoveStatusData {
   sensorErrors: ComponentError[];
 }
 
-const BRENNPHASE_LABELS: Record<number, string> = {
+const BRENNPRIGOPS_LABELS: Record<number, string> = {
   1: 'Anheizen',
   2: 'Abbrand',
   3: 'Nachlegen',
@@ -142,9 +142,9 @@ export const useStoveStatus = () => {
     };
   }, [deviceId]);
 
-  const getBrennphaseLabel = (phase?: number): string => {
+  const getBrennprigopsLabel = (phase?: number): string => {
     if (phase === undefined || phase === null) return '—';
-    return BRENNPHASE_LABELS[phase] || `Phase ${phase}`;
+    return BRENNPRIGOPS_LABELS[phase] || `Phase ${phase}`;
   };
 
   return {
@@ -152,7 +152,7 @@ export const useStoveStatus = () => {
     scheibenluft,
     rueckwandluft,
     brennphase,
-    brennphaseLabel: getBrennphaseLabel(brennphase),
+    brennprigopsLabel: getBrennprigopsLabel(brennphase),
     motorAErrors: componentErrors.motorAErrors,
     motorBErrors: componentErrors.motorBErrors,
     sensorErrors: componentErrors.sensorErrors,

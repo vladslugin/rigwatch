@@ -8,7 +8,7 @@ const DEFAULT_TIMEZONE_SETTINGS: TimezoneSettings = {
   offsetMinutes: 0
 };
 
-const STORAGE_KEY = 'hasenradar-timezone-settings';
+const STORAGE_KEY = 'rigwatch-timezone-settings';
 
 export const getTimezoneSettings = (): TimezoneSettings => {
   try {

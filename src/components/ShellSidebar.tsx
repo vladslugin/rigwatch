@@ -61,8 +61,8 @@ export function ShellSidebar({ onOpenDocs, onOpenSettings }: ShellSidebarProps) 
           )}
         >
           <img
-            src="/hase_logo_light.svg"
-            alt="Hasenradar"
+            src="/logo.svg"
+            alt="RigWatch"
             className="h-7 w-7 shrink-0"
           />
           <span
@@ -71,7 +71,7 @@ export function ShellSidebar({ onOpenDocs, onOpenSettings }: ShellSidebarProps) 
               collapsed && 'hidden',
             )}
           >
-            Hasenradar
+            RigWatch
           </span>
         </div>
       </SidebarHeader>

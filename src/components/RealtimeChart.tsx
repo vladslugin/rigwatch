@@ -122,8 +122,8 @@ const CHART_INTERVAL_TOLERANCE_MS = 500;
 // id_timestamp is integer seconds and can round to 4s deltas; allow slightly smaller interval.
 const ID_TIMESTAMP_MIN_INTERVAL_MS = 3500;
 const FALLBACK_HISTORICAL_COLORS = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#17becf', '#bcbd22'];
-const LOCAL_SETTINGS_STORAGE_KEY = 'hase-iq-local-settings';
-const CHART_INSTANCE_SETTINGS_STORAGE_KEY = 'hase-iq-chart-instance-settings';
+const LOCAL_SETTINGS_STORAGE_KEY = 'rigwatch-local-settings';
+const CHART_INSTANCE_SETTINGS_STORAGE_KEY = 'rigwatch-chart-instance-settings';
 const PARAMETER_SETTINGS_CHANGED_EVENT = 'parameterSettingsChanged';
 
 const RealtimeChart: React.FC<RealtimeChartProps> = ({
@@ -2963,7 +2963,7 @@ const RealtimeChart: React.FC<RealtimeChartProps> = ({
   }, [saveChartScopedOverride, scheduleChartUpdate]);
 
   // Test: draw "HASE" with thousands of points over 1 hour
-  const runHaseTest = useCallback(() => {
+  const runRigopsTest = useCallback(() => {
     setIsChartPaused(true);
     setMarkers(createEmptyMarkers());
 
@@ -3190,7 +3190,7 @@ const RealtimeChart: React.FC<RealtimeChartProps> = ({
           onNavigateRight={handleNavigateRight}
           onFitAll={zoomToShowAllData}
           onClearChart={handleClearChart}
-          onRunTest={runHaseTest}
+          onRunTest={runRigopsTest}
           miniLogsTimestamps={miniLogs}
           miniSelectedTimestamp={miniSelectedTs}
           onMiniSelectTimestamp={handleMiniSelectTs}

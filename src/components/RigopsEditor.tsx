@@ -2,27 +2,27 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Editor, { type OnMount } from '@monaco-editor/react';
 import type * as Monaco from 'monaco-editor';
 import { useTiling } from '../context/TilingContext';
-import { useSharedHaseScripts } from '../hooks/useSharedHaseScripts';
+import { useSharedRigopsScripts } from '../hooks/useSharedRigopsScripts';
 import {
-  buildHaseOutline,
+  buildRigopsOutline,
   explainWarning,
-  registerHaseMonaco,
-  validateHaseScript,
-} from './haseEditorMonaco';
+  registerRigopsMonaco,
+  validateRigopsScript,
+} from './rigopsEditorMonaco';
 
-interface HaseMeta {
+interface RigopsMeta {
   name: string;
   author: string;
   created: string;
   version: string;
 }
 
-interface HaseEditorProps {
+interface RigopsEditorProps {
   isOpen: boolean;
   value: string;
-  meta: HaseMeta;
+  meta: RigopsMeta;
   warnings: string[];
-  defaultMeta: HaseMeta;
+  defaultMeta: RigopsMeta;
   onChange: (value: string) => void;
   onClose: () => void;
   onApply: () => void;
@@ -34,12 +34,12 @@ const MIN_WIDTH = 520;
 const MIN_HEIGHT = 360;
 const INDENT_UNIT = '  ';
 /** Above this size, syntax highlighting is skipped (huge <span> DOM freezes scroll/editing). */
-const HASE_SYNTAX_HIGHLIGHT_MAX_CHARS = 10000;
+const RIGOPS_SYNTAX_HIGHLIGHT_MAX_CHARS = 10000;
 /** Above this size, fallback to plain escaped overlay (no token colors). */
-const HASE_SYNTAX_MEDIUM_MAX_CHARS = 30000;
-const HASE_EDITOR_TEXT_METRICS =
+const RIGOPS_SYNTAX_MEDIUM_MAX_CHARS = 30000;
+const RIGOPS_EDITOR_TEXT_METRICS =
   'text-xs leading-5 font-mono whitespace-pre-wrap break-words [tab-size:2] tracking-normal';
-const HASE_COMMAND_SNIPPETS: Array<{ command: string; snippet: string; description: string }> = [
+const RIGOPS_COMMAND_SNIPPETS: Array<{ command: string; snippet: string; description: string }> = [
   { command: 'connect', snippet: 'connect <device_id>', description: 'Verbinden mit Gerät' },
   { command: 'disconnect', snippet: 'disconnect', description: 'Verbindung trennen' },
   { command: 'set', snippet: 'set <parameter> <value>', description: 'Parameter schreiben' },
@@ -66,16 +66,16 @@ const HASE_COMMAND_SNIPPETS: Array<{ command: string; snippet: string; descripti
   { command: 'wait_param', snippet: 'wait_param <param> [timeout] [interval]', description: 'Warte auf Parameter' },
   { command: 'log', snippet: 'log "message"', description: 'Text ausgeben' },
 ];
-const HASE_DOCS_TEXT = `# Hase Script — Handbuch (Kurzreferenz + Praxisbeispiele)
+const RIGOPS_DOCS_TEXT = `# Rigops Script — Handbuch (Kurzreferenz + Praxisbeispiele)
 
 ## Was ist das?
 - Mehrzeilige Befehle für das Terminal: Gerät (RealtimeDB temporaer/konstant) und — mit Rolle developer/super_admin — direkte RTDB-Pfade.
-- Editor: Befehl "code" oder .hase-Datei laden. "Run" führt das Skript aus; "Apply" übernimmt den Text in die Terminal-Eingabe.
-- .hase-Datei: optionaler Kopf (Metadaten), danach der Skriptkörper.
+- Editor: Befehl "code" oder .rigops-Datei laden. "Run" führt das Skript aus; "Apply" übernimmt den Text in die Terminal-Eingabe.
+- .rigops-Datei: optionaler Kopf (Metadaten), danach der Skriptkörper.
 
-## Kopfzeilen in .hase-Dateien
-Empfohlen (im Hase-Modus mit Warnungen):
-  #hase
+## Kopfzeilen in .rigops-Dateien
+Empfohlen (im Rigops-Modus mit Warnungen):
+  #rigops
   #version 1
   #name mein_migrationsskript
   #author Max Mustermann
@@ -198,7 +198,7 @@ Wichtig: Befehle wie user_*, delete_param sowie das Wort "update" als Terminal-B
 ### 1) FEPA-Liste: Feld "a" für alle konstant_app-Geräte nachziehen
 Seriennummer = erste 7 Zeichen der Firebase-ID; Kopie nur wenn Ziel fehlt.
 
-#hase
+#rigops
 #version 1
 #name fepa_a_nach_konstant_app
 #author Beispiel
@@ -218,7 +218,7 @@ for id in $ids {
 ### 2) Controller-Tausch: komplette FEPAListe-Zweige Alt-Seriennummer → Neu
 Pro Zeile in mappings: [alt, neu]. Quelle muss existieren, Ziel wird bei Kollision übersprungen.
 
-#hase
+#rigops
 #version 1
 #name fepaliste_serienr_alt_nach_neu
 #author Beispiel
@@ -253,7 +253,7 @@ for pair in $mappings {
 ### 3) Historien / historienliste: Keys mit Präfix filtern, Serienteil umbiegen
 Typischer Ablauf: Keys mit shallow + prefix 72 laden (schnell), dann pro Key Präfix (7 Zeichen) mit alt vergleichen, Rest an neue Seriennummer anhängen, mit fb_copy … if_missing confirm kopieren. Innerhalb try/catch pro Gerät, damit ein Fehler nicht das ganze Skript stoppt.
 
-#hase
+#rigops
 #version 1
 #name historien_serienr_mig_kurz
 #author Beispiel
@@ -301,15 +301,15 @@ for pair in $mappings {
 
 ## UI & Bibliothek
 - Sidebar "Local": Skripte in localStorage (nur dieser Browser).
-- Sidebar "Team": gemeinsame Skripte in Firestore (Collection hase_shared_scripts), sichtbar für eingeloggte Nutzer — Firestore-Regeln im Projekt setzen.
+- Sidebar "Team": gemeinsame Skripte in Firestore (Collection rigops_shared_scripts), sichtbar für eingeloggte Nutzer — Firestore-Regeln im Projekt setzen.
 
 ## Kurztipps
 - Strings in "doppelten" oder 'einfachen' Anführungszeichen.
 - Pfade und IDs: nach let mit $variable in fb_* zusammensetzen.
 - Vor großen Migrationen: mit fb_tree / fb_keys (shallow) erst prüfen, ob Pfade stimmen.
-- Skript im Editor kann mit Team-Bibliothek geteilt werden (gleiche .hase-Logik).`;
+- Skript im Editor kann mit Team-Bibliothek geteilt werden (gleiche .rigops-Logik).`;
 
-const HaseEditor: React.FC<HaseEditorProps> = ({
+const RigopsEditor: React.FC<RigopsEditorProps> = ({
   isOpen,
   value,
   meta,
@@ -321,7 +321,7 @@ const HaseEditor: React.FC<HaseEditorProps> = ({
   onRun,
   onFileLoaded,
 }) => {
-  const STORAGE_KEY = 'hase_script_library_v1';
+  const STORAGE_KEY = 'rigops_script_library_v1';
   type LibraryRow = { id: string; name: string; content: string; updatedAt: number; updatedByName?: string };
   const [libraryScripts, setLibraryScripts] = useState<LibraryRow[]>([]);
   const [scriptSource, setScriptSource] = useState<'local' | 'team'>('local');
@@ -384,7 +384,7 @@ const HaseEditor: React.FC<HaseEditorProps> = ({
     canUse: teamScriptsCanUse,
     saveScript: saveTeamScript,
     deleteScript: deleteTeamScript,
-  } = useSharedHaseScripts(isOpen && scriptSource === 'team');
+  } = useSharedRigopsScripts(isOpen && scriptSource === 'team');
 
   const displayedScripts: LibraryRow[] = useMemo(
     () => (scriptSource === 'local' ? libraryScripts : teamScripts),
@@ -776,25 +776,25 @@ const HaseEditor: React.FC<HaseEditorProps> = ({
     applyTextChange(formatted, formattedStart, formattedEnd);
   }, [applyTextChange, formatWithSelection, formatScript, onChange, value]);
 
-  const outlineItems = useMemo(() => buildHaseOutline(value), [value]);
-  const validationIssues = useMemo(() => validateHaseScript(value), [value]);
+  const outlineItems = useMemo(() => buildRigopsOutline(value), [value]);
+  const validationIssues = useMemo(() => validateRigopsScript(value), [value]);
 
   const handleMonacoMount: OnMount = useCallback((editor, monaco) => {
     monacoEditorRef.current = editor;
     monacoApiRef.current = monaco as typeof Monaco;
     try {
-      registerHaseMonaco(monaco as typeof Monaco);
-      monaco.editor.setTheme('hase-terminal');
+      registerRigopsMonaco(monaco as typeof Monaco);
+      monaco.editor.setTheme('rigwatch-terminal');
       setMonacoFailed(false);
     } catch (error) {
-      console.error('[HaseEditor] Monaco init failed:', error);
+      console.error('[RigopsEditor] Monaco init failed:', error);
       setMonacoFailed(true);
       return;
     }
 
     editor.addAction({
-      id: 'hase-format',
-      label: 'Format Hase Script',
+      id: 'rigwatch-format',
+      label: 'Format Rigops Script',
       keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyF],
       run: () => {
         const current = editor.getValue();
@@ -805,14 +805,14 @@ const HaseEditor: React.FC<HaseEditorProps> = ({
     });
 
     editor.addAction({
-      id: 'hase-open-find',
+      id: 'rigwatch-open-find',
       label: 'Find',
       keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyF],
       run: () => editor.getAction('actions.find')?.run(),
     });
 
     editor.addAction({
-      id: 'hase-open-replace',
+      id: 'rigwatch-open-replace',
       label: 'Replace',
       keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyH],
       run: () => editor.getAction('editor.action.startFindReplaceAction')?.run(),
@@ -838,9 +838,9 @@ const HaseEditor: React.FC<HaseEditorProps> = ({
       void handleLibrarySaveRef.current('team');
     });
 
-    monaco.languages.registerCodeActionProvider('hase', {
+    monaco.languages.registerCodeActionProvider('rigops', {
       provideCodeActions: (model: Monaco.editor.ITextModel, range: Monaco.Range) => {
-        const issues = validateHaseScript(model.getValue());
+        const issues = validateRigopsScript(model.getValue());
         const actions = issues
           .filter(issue => issue.fix)
           .filter(issue => issue.line >= range.startLineNumber && issue.line <= range.endLineNumber)
@@ -1012,22 +1012,22 @@ const HaseEditor: React.FC<HaseEditorProps> = ({
       return;
     }
     const lower = trimmed.toLowerCase();
-    const matched = HASE_COMMAND_SNIPPETS
+    const matched = RIGOPS_COMMAND_SNIPPETS
       .filter(item => item.command.startsWith(lower))
       .slice(0, 6);
     setCommandHints(matched);
     setSelectedHintIndex(prev => Math.min(prev, Math.max(0, matched.length - 1)));
   }, [cursorIndex, isOpen, value]);
 
-  const buildHaseFile = useCallback(() => {
+  const buildRigopsFile = useCallback(() => {
     const lines = value.replace(/\r/g, '').split('\n');
     const firstNonEmpty = lines.map(line => line.trim()).find(line => line.length > 0) || '';
-    if (firstNonEmpty.toLowerCase().startsWith('#hase')) {
+    if (firstNonEmpty.toLowerCase().startsWith('#rigops')) {
       return value;
     }
     const today = new Date().toISOString().slice(0, 10);
     const header = [
-      '#hase',
+      '#rigops',
       `#version ${meta.version || '1'}`,
       `#name ${meta.name || 'Untitled'}`,
       `#author ${meta.author || 'unknown'}`,
@@ -1060,7 +1060,7 @@ const HaseEditor: React.FC<HaseEditorProps> = ({
   const createTemplate = useCallback(() => {
     const today = new Date().toISOString().slice(0, 10);
     return [
-      '#hase',
+      '#rigops',
       `#version ${defaultMeta.version || '1'}`,
       `#name ${defaultMeta.name || 'Untitled'}`,
       `#author ${defaultMeta.author || 'unknown'}`,
@@ -1121,7 +1121,7 @@ const HaseEditor: React.FC<HaseEditorProps> = ({
         setSelectedScriptId(id);
         setToast({ type: 'success', text: 'Saved to Team' });
       } catch (e) {
-        console.error('[HaseEditor] Team save failed:', e);
+        console.error('[RigopsEditor] Team save failed:', e);
         window.alert(e instanceof Error ? e.message : 'Team save failed (check Firestore rules / network).');
         setToast({ type: 'error', text: 'Team save failed' });
       } finally {
@@ -1165,7 +1165,7 @@ const HaseEditor: React.FC<HaseEditorProps> = ({
     const model = editor.getModel();
     if (!model) return;
 
-    monaco.editor.setModelMarkers(model, 'hase-validator', validationIssues.map(issue => ({
+    monaco.editor.setModelMarkers(model, 'rigwatch-validator', validationIssues.map(issue => ({
       startLineNumber: issue.line,
       startColumn: issue.column,
       endLineNumber: issue.line,
@@ -1194,7 +1194,7 @@ const HaseEditor: React.FC<HaseEditorProps> = ({
         await deleteTeamScript(selectedScriptId);
         setSelectedScriptId(null);
       } catch (e) {
-        console.error('[HaseEditor] Team delete failed:', e);
+        console.error('[RigopsEditor] Team delete failed:', e);
         window.alert(e instanceof Error ? e.message : 'Delete failed');
       }
       return;
@@ -1229,7 +1229,7 @@ const HaseEditor: React.FC<HaseEditorProps> = ({
         await saveTeamScript(selectedScriptId, nextName, updatedContent);
         onChange(updatedContent);
       } catch (e) {
-        console.error('[HaseEditor] Team rename failed:', e);
+        console.error('[RigopsEditor] Team rename failed:', e);
         window.alert(e instanceof Error ? e.message : 'Rename failed');
       } finally {
         setTeamSavePending(false);
@@ -1253,10 +1253,10 @@ const HaseEditor: React.FC<HaseEditorProps> = ({
   }, [createTemplate, onChange]);
 
   const handleSave = useCallback(() => {
-    const content = buildHaseFile();
-    const rawName = meta.name || 'hase-script';
-    const safeName = rawName.replace(/[^a-zA-Z0-9_-]+/g, '_').replace(/^_+|_+$/g, '') || 'hase-script';
-    const fileName = `${safeName}.hase`;
+    const content = buildRigopsFile();
+    const rawName = meta.name || 'rigwatch-script';
+    const safeName = rawName.replace(/[^a-zA-Z0-9_-]+/g, '_').replace(/^_+|_+$/g, '') || 'rigwatch-script';
+    const fileName = `${safeName}.rigops`;
     const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -1266,7 +1266,7 @@ const HaseEditor: React.FC<HaseEditorProps> = ({
     link.click();
     link.remove();
     URL.revokeObjectURL(url);
-  }, [buildHaseFile, meta.name]);
+  }, [buildRigopsFile, meta.name]);
 
   const onFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -1417,8 +1417,8 @@ const HaseEditor: React.FC<HaseEditorProps> = ({
   }, [isOpen, tiling.getTilePosition, tiling.openWindows, tiling.tilingEnabled]);
 
   const syntaxHighlightMode = useMemo<'full' | 'medium' | 'off'>(() => {
-    if (value.length <= HASE_SYNTAX_HIGHLIGHT_MAX_CHARS) return 'full';
-    if (value.length <= HASE_SYNTAX_MEDIUM_MAX_CHARS) return 'medium';
+    if (value.length <= RIGOPS_SYNTAX_HIGHLIGHT_MAX_CHARS) return 'full';
+    if (value.length <= RIGOPS_SYNTAX_MEDIUM_MAX_CHARS) return 'medium';
     return 'off';
   }, [value.length]);
   const syntaxHighlightEnabled = syntaxHighlightMode !== 'off';
@@ -1555,7 +1555,7 @@ const HaseEditor: React.FC<HaseEditorProps> = ({
           <div className="flex items-center gap-2 font-mono text-[11px] text-terminal-foreground">
             <span className="text-terminal-success">┌─</span>
             <span className="text-terminal-command">[</span>
-            <span className="text-terminal-prompt">hase</span>
+            <span className="text-terminal-prompt">rigops</span>
             <span className="text-muted-foreground">@</span>
             <span className="text-info">editor</span>
             <span className="text-terminal-command">]</span>
@@ -1639,7 +1639,7 @@ const HaseEditor: React.FC<HaseEditorProps> = ({
               )}
               {scriptSource === 'team' && !teamScriptsCanUse && (
                 <div className="px-2 py-1 text-[9px] text-warning/90 font-mono">
-                  Sign in (Firebase) to use Team library. Deploy Firestore rules for &quot;hase_shared_scripts&quot;.
+                  Sign in (Firebase) to use Team library. Deploy Firestore rules for &quot;rigops_shared_scripts&quot;.
                 </div>
               )}
               <div className="flex flex-wrap gap-1 px-2 py-2">
@@ -1773,10 +1773,10 @@ const HaseEditor: React.FC<HaseEditorProps> = ({
                   <div className="flex-1 min-w-0">
                     <Editor
                       height="100%"
-                      defaultLanguage="hase"
-                      language="hase"
+                      defaultLanguage="rigops"
+                      language="rigops"
                       value={value}
-                      theme="hase-terminal"
+                      theme="rigwatch-terminal"
                       loading={<div className="p-2 text-[10px] text-muted-foreground font-mono">Loading editor…</div>}
                       onMount={handleMonacoMount}
                       onChange={(next) => onChange(next ?? '')}
@@ -1866,7 +1866,7 @@ const HaseEditor: React.FC<HaseEditorProps> = ({
                   {syntaxHighlightEnabled ? (
                     <pre
                       ref={editorHighlightRef}
-                      className={`absolute inset-0 p-2 pointer-events-none overflow-hidden ${HASE_EDITOR_TEXT_METRICS}`}
+                      className={`absolute inset-0 p-2 pointer-events-none overflow-hidden ${RIGOPS_EDITOR_TEXT_METRICS}`}
                       style={{ paddingBottom: `calc(0.5rem + ${highlightBottomPadPx}px)` }}
                       dangerouslySetInnerHTML={{ __html: renderedHighlightHtml }}
                     />
@@ -1884,7 +1884,7 @@ const HaseEditor: React.FC<HaseEditorProps> = ({
                     onKeyUp={handleEditorSelection}
                     onClick={handleEditorSelection}
                     onSelect={handleEditorSelection}
-                    className={`absolute inset-0 w-full h-full bg-transparent outline-none resize-none p-2 overflow-auto caret-[#4ade80] ${HASE_EDITOR_TEXT_METRICS} ${
+                    className={`absolute inset-0 w-full h-full bg-transparent outline-none resize-none p-2 overflow-auto caret-[#4ade80] ${RIGOPS_EDITOR_TEXT_METRICS} ${
                       syntaxHighlightEnabled
                         ? 'text-transparent'
                         : 'text-terminal-foreground pt-7'
@@ -1897,7 +1897,7 @@ const HaseEditor: React.FC<HaseEditorProps> = ({
               {showDocs && (
                 <div className="absolute inset-0 bg-terminal/95 backdrop-blur-sm z-10">
                   <div className="flex items-center justify-between px-3 py-2 border-b border-terminal-border/50 text-[11px] font-mono text-muted-foreground">
-                    <span>Hase Docs</span>
+                    <span>Rigops Docs</span>
                     <button
                       type="button"
                       onClick={() => setShowDocs(false)}
@@ -1907,7 +1907,7 @@ const HaseEditor: React.FC<HaseEditorProps> = ({
                     </button>
                   </div>
                   <pre className="p-3 text-[11px] font-mono text-foreground whitespace-pre-wrap overflow-auto h-full">
-                    {HASE_DOCS_TEXT}
+                    {RIGOPS_DOCS_TEXT}
                   </pre>
                 </div>
               )}
@@ -1942,14 +1942,14 @@ const HaseEditor: React.FC<HaseEditorProps> = ({
               onClick={() => fileInputRef.current?.click()}
               className="px-2 py-1 rounded-theme-sm border border-terminal-border/50 text-muted-foreground hover:text-terminal-foreground hover:bg-terminal-border/30"
             >
-              Load .hase
+              Load .rigops
             </button>
             <button
               type="button"
               onClick={handleSave}
               className="px-2 py-1 rounded-theme-sm border border-terminal-border/50 text-muted-foreground hover:text-terminal-foreground hover:bg-terminal-border/30"
             >
-              Save .hase
+              Save .rigops
             </button>
             <button
               type="button"
@@ -2000,7 +2000,7 @@ const HaseEditor: React.FC<HaseEditorProps> = ({
       <input
         ref={fileInputRef}
         type="file"
-        accept=".hase,.txt"
+        accept=".rigops,.txt"
         className="hidden"
         onChange={onFileChange}
       />
@@ -2008,4 +2008,4 @@ const HaseEditor: React.FC<HaseEditorProps> = ({
   );
 };
 
-export default HaseEditor;
+export default RigopsEditor;

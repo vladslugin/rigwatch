@@ -662,14 +662,14 @@ const ConnectionPanel: React.FC<ConnectionPanelProps> = ({
         if (!key) return false;
         // Preserve global/user + visual + theme settings
         const preserved = new Set([
-          'hase-iq-user-preferences',
-          'hase-session-simplification-mode',
-          'hase-iq-local-settings', // keep colors/positions/visibility
-          'hase-theme-config',      // keep selected theme (default / neo-brutalism)
-          'hase-display-configuration-selected', // keep display configuration selection
+          'rigwatch-user-preferences',
+          'rigwatch-session-simplification-mode',
+          'rigwatch-local-settings', // keep colors/positions/visibility
+          'rigwatch-theme-config',      // keep selected theme (default / neo-brutalism)
+          'rigwatch-display-configuration-selected', // keep display configuration selection
         ]);
         if (preserved.has(key)) return false;
-        return key.startsWith('hase-') || key.includes('device') || key.includes('parameter');
+        return key.startsWith('rigwatch-') || key.includes('device') || key.includes('parameter');
       };
 
       for (let i = localStorage.length - 1; i >= 0; i--) {
@@ -1139,8 +1139,8 @@ const ConnectionPanel: React.FC<ConnectionPanelProps> = ({
         <div className="flex flex-col items-center justify-center gap-4">
           <img 
             key={`logo-${domIsDark ? 'dark' : 'light'}`}
-            src="/data/hasenradar-logo.svg" 
-            alt="Hasenradar Logo" 
+            src="/data/rigwatch-logo.svg" 
+            alt="RigWatch Logo" 
             style={{ 
               imageRendering: 'auto', 
               width: '8rem', 
@@ -1399,8 +1399,8 @@ const ConnectionPanel: React.FC<ConnectionPanelProps> = ({
             <div className="flex items-center gap-3 sm:gap-4 min-w-0">
               <img
                 key={`logo-${domIsDark ? 'dark' : 'light'}`}
-                src="/data/hasenradar-logo.svg"
-                alt="Hasenradar Logo"
+                src="/data/rigwatch-logo.svg"
+                alt="RigWatch Logo"
                 className="w-24 sm:w-28 flex-shrink-0"
                 style={{ imageRendering: 'auto', height: '3rem', filter: domIsDark ? 'invert(1)' : 'invert(0)' }}
               />

@@ -147,7 +147,7 @@
     "main": "Haupt"
   },
   "app": {
-    "welcome": "Willkommen bei Hasenradar",
+    "welcome": "Willkommen bei RigWatch",
     "pendingApproval": "Bitte warten Sie auf die Genehmigung durch den Administrator",
     "connectDevice": "Verbinden Sie Ihr Kamin-Gerät, um mit der Überwachung und Steuerung zu beginnen.",
     "underReview": "Ihr Konto wird derzeit überprüft.",
@@ -1039,7 +1039,7 @@
   },
   "dealerRadar": {
     "badge": "Händleransicht",
-    "title": "Hasenradar Händler",
+    "title": "RigWatch Händler",
     "subtitle": "Bitte Seriennummer eingeben",
     "recentIds": "Letzte 10 Seriennummern",
     "connect": "Prüfen",

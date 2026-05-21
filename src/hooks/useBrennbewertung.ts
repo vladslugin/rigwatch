@@ -8,7 +8,7 @@ import {
   type BrennbewertungValues,
 } from '../types/brennbewertung';
 
-const DEV_OVERRIDE_KEY = 'hase-dealer-c-override';
+const DEV_OVERRIDE_KEY = 'rigwatch-dealer-c-override';
 
 const ZERO_VALUES: BrennbewertungValues = {
   C0: 0, C1: 0, C2: 0, C3: 0, C4: 0, C5: 0, C6: 0,

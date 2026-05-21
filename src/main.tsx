@@ -6,7 +6,7 @@ import DocsFullPage from './components/DocsFullPage';
 import './index.css';
 import './utils/registerDumpWas';
 
-console.log('HASENRADAR - Modern React Version starting...');
+console.log('RIGWATCH - Modern React Version starting...');
 
 /**
  * Tiny route gate that decides whether to mount the full app (with auth,

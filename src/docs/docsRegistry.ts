@@ -1,5 +1,5 @@
 // @ts-expect-error — Vite handles ?raw imports at build time; type is declared in vite-env.d.ts
-import rawMarkdown from '../../DOKUMENTATION_DE.md?raw';
+import rawMarkdown from '../../RIGWATCH_DOCS.md?raw';
 
 /**
  * Audience tag for a documentation chapter.
@@ -12,9 +12,9 @@ export type DocAudience = 'user' | 'dev' | 'all';
 export interface DocSection {
   /** Chapter number from the heading, e.g. 1, 2, 17. */
   number: number;
-  /** Anchor-friendly id, e.g. `was-ist-hasenradar`. */
+  /** Anchor-friendly id, e.g. `was-ist-rigwatch`. */
   id: string;
-  /** Human-readable title, e.g. "Was ist Hasenradar?". */
+  /** Human-readable title, e.g. "Was ist RigWatch?". */
   title: string;
   /** Markdown body of the section (without the `## N. Title` header line). */
   content: string;
@@ -27,7 +27,7 @@ export interface DocSection {
  * markdown so the .md file stays clean & GitHub-readable.
  */
 const AUDIENCE_BY_NUMBER: Record<number, DocAudience> = {
-  1: 'all',  // Was ist Hasenradar?
+  1: 'all',  // Was ist RigWatch?
   2: 'all',  // Wie die App aufgebaut ist
   3: 'user', // Anmeldung und Rollen
   4: 'user', // Gerät verbinden
@@ -38,7 +38,7 @@ const AUDIENCE_BY_NUMBER: Record<number, DocAudience> = {
   9: 'all',  // KI-Diagnose
   10: 'user', // Einfacher Modus
   11: 'all', // Admin-Panel
-  12: 'dev', // Terminal und .hase
+  12: 'dev', // Terminal und Skripte
   13: 'user', // Chat, Tickets und Updates
   14: 'user', // Einstellungen
   15: 'user', // Händlermodus

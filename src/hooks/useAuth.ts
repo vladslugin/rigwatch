@@ -447,11 +447,11 @@ export const useAuth = () => {
   useEffect(() => {
     try {
       if (forceSimpleModeEnabled) {
-        sessionStorage.setItem('hase-session-simplification-mode', 'true');
+        sessionStorage.setItem('rigwatch-session-simplification-mode', 'true');
         window.dispatchEvent(new CustomEvent('userPreferencesChanged', { detail: { simplificationMode: true } }));
       } else {
         // Keep the user's local preference intact—only remove the tab-scoped overlay.
-        sessionStorage.removeItem('hase-session-simplification-mode');
+        sessionStorage.removeItem('rigwatch-session-simplification-mode');
       }
     } catch {}
   }, [forceSimpleModeEnabled]);

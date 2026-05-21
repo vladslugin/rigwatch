@@ -125,7 +125,7 @@ export const exportChartToCSV = (
         // Generate filename with timestamp (like legacy)
         const now = new Date();
         const timestamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
-        link.setAttribute("download", `Hase_iQ_Chart_Data_${timestamp}.csv`);
+        link.setAttribute("download", `RigWatch_Chart_Data_${timestamp}.csv`);
         
         link.style.visibility = 'hidden';
         document.body.appendChild(link);
@@ -206,7 +206,7 @@ export const exportChartToPDF = (
     pdf.setFontSize(24);
     pdf.setFont("helvetica", "bold");
     pdf.setTextColor(30, 30, 30);
-    const title = historicalDate ? `Hase iQ - Historical Data Report (${historicalDate})` : 'Hase iQ - Live Monitoring Report';
+    const title = historicalDate ? `RigWatch - Historical Data Report (${historicalDate})` : 'RigWatch - Live Monitoring Report';
     pdf.text(title, margin + 10, 18);
     
     // Header info in top right
@@ -446,7 +446,7 @@ export const exportChartToPDF = (
     pdf.setTextColor(120, 120, 120);
     
     const saveTime = new Date();
-    const footerText = `Generated: ${formatDateWithUserTimezone(saveTime, 'de-DE')} | HASENRADAR | Page 1 of 1`;
+    const footerText = `Generated: ${formatDateWithUserTimezone(saveTime, 'de-DE')} | RIGWATCH | Page 1 of 1`;
     const pageWidth = pdfWidth - 2 * margin;
     const footerTextWidth = pdf.getTextWidth(footerText);
     const footerX = margin + (pageWidth - footerTextWidth) / 2; // Center the footer
@@ -455,7 +455,7 @@ export const exportChartToPDF = (
     
     // Save PDF with corrected timestamp variable
     const timestamp = `${saveTime.getFullYear()}${String(saveTime.getMonth() + 1).padStart(2, '0')}${String(saveTime.getDate()).padStart(2, '0')}_${String(saveTime.getHours()).padStart(2, '0')}${String(saveTime.getMinutes()).padStart(2, '0')}`;
-    pdf.save(`Hase_iQ_Chart_Export_${timestamp}.pdf`);
+    pdf.save(`RigWatch_Chart_Export_${timestamp}.pdf`);
     return true;
 
   } catch (error) {
@@ -764,7 +764,7 @@ export const exportCSVFile = (
       const now = new Date();
       const timestamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
       const rangePrefix = visibleOnly ? 'Visible_' : '';
-      link.setAttribute("download", `Hase_iQ_Chart_${rangePrefix}Data_${timestamp}.csv`);
+      link.setAttribute("download", `RigWatch_Chart_${rangePrefix}Data_${timestamp}.csv`);
       
       link.style.visibility = 'hidden';
       document.body.appendChild(link);

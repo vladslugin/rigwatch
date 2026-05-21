@@ -1,13 +1,13 @@
 import type * as Monaco from 'monaco-editor';
 
-export interface HaseOutlineItem {
+export interface RigopsOutlineItem {
   id: string;
   label: string;
   line: number;
   depth: number;
 }
 
-export interface HaseValidationIssue {
+export interface RigopsValidationIssue {
   message: string;
   line: number;
   column: number;
@@ -20,7 +20,7 @@ export interface HaseValidationIssue {
   };
 }
 
-const HASE_KEYWORDS = [
+const RIGOPS_KEYWORDS = [
   'repeat', 'if', 'else', 'while', 'for', 'in', 'break', 'continue', 'let', 'unset', 'vars',
   'connect', 'disconnect', 'wait', 'sleep', 'get', 'read', 'collect', 'collect_cache', 'from', 'params', 'where', 'as', 'clear',
   'fb_get', 'fb_exists', 'fb_keys', 'fb_tree', 'fb_set', 'fb_update', 'fb_remove', 'fb_copy', 'depth', 'limit', 'confirm', 'if_missing', 'substr',
@@ -28,7 +28,7 @@ const HASE_KEYWORDS = [
   'log', 'assert_connected', 'script_status', 'try', 'catch',
 ];
 
-const HASE_SNIPPETS: Array<{ command: string; snippet: string; description: string }> = [
+const RIGOPS_SNIPPETS: Array<{ command: string; snippet: string; description: string }> = [
   { command: 'connect', snippet: 'connect <device_id>', description: 'Verbinden mit Gerät' },
   { command: 'disconnect', snippet: 'disconnect', description: 'Verbindung trennen' },
   { command: 'set', snippet: 'set <parameter> <value>', description: 'Parameter schreiben' },
@@ -56,7 +56,7 @@ const HASE_SNIPPETS: Array<{ command: string; snippet: string; description: stri
   { command: 'log', snippet: 'log "message"', description: 'Text ausgeben' },
 ];
 
-const HASE_MIGRATION_TEMPLATES: Array<{ label: string; snippet: string; detail: string }> = [
+const RIGOPS_MIGRATION_TEMPLATES: Array<{ label: string; snippet: string; detail: string }> = [
   {
     label: 'migration: fb_copy if_missing',
     detail: 'Migration template for safe key copy',
@@ -89,12 +89,12 @@ const HASE_MIGRATION_TEMPLATES: Array<{ label: string; snippet: string; detail: 
 
 let didRegister = false;
 
-export const registerHaseMonaco = (monaco: typeof Monaco) => {
+export const registerRigopsMonaco = (monaco: typeof Monaco) => {
   if (didRegister) return;
   didRegister = true;
 
-  monaco.languages.register({ id: 'hase' });
-  monaco.languages.setLanguageConfiguration('hase', {
+  monaco.languages.register({ id: 'rigops' });
+  monaco.languages.setLanguageConfiguration('rigops', {
     brackets: [['{', '}'], ['[', ']'], ['(', ')']],
     autoClosingPairs: [
       { open: '{', close: '}' },
@@ -118,8 +118,8 @@ export const registerHaseMonaco = (monaco: typeof Monaco) => {
     },
   });
 
-  monaco.languages.setMonarchTokensProvider('hase', {
-    keywords: HASE_KEYWORDS,
+  monaco.languages.setMonarchTokensProvider('rigops', {
+    keywords: RIGOPS_KEYWORDS,
     tokenizer: {
       root: [
         [/^\s*#.*$/, 'comment'],
@@ -134,7 +134,7 @@ export const registerHaseMonaco = (monaco: typeof Monaco) => {
     },
   });
 
-  monaco.languages.registerCompletionItemProvider('hase', {
+  monaco.languages.registerCompletionItemProvider('rigops', {
     provideCompletionItems: (model, position) => {
       const word = model.getWordUntilPosition(position);
       const lineText = model.getLineContent(position.lineNumber).slice(0, Math.max(0, position.column - 1));
@@ -147,7 +147,7 @@ export const registerHaseMonaco = (monaco: typeof Monaco) => {
         position.lineNumber,
         word.endColumn,
       );
-      const baseSuggestions = HASE_SNIPPETS.map((hint) => ({
+      const baseSuggestions = RIGOPS_SNIPPETS.map((hint) => ({
         label: hint.command,
         kind: monaco.languages.CompletionItemKind.Snippet,
         documentation: hint.description,
@@ -192,7 +192,7 @@ export const registerHaseMonaco = (monaco: typeof Monaco) => {
         });
       }
 
-      const templateSuggestions = HASE_MIGRATION_TEMPLATES.map((tpl) => ({
+      const templateSuggestions = RIGOPS_MIGRATION_TEMPLATES.map((tpl) => ({
         label: tpl.label,
         kind: monaco.languages.CompletionItemKind.Snippet,
         documentation: tpl.detail,
@@ -205,12 +205,12 @@ export const registerHaseMonaco = (monaco: typeof Monaco) => {
     },
   });
 
-  monaco.languages.registerHoverProvider('hase', {
+  monaco.languages.registerHoverProvider('rigops', {
     provideHover: (model, position) => {
       const word = model.getWordAtPosition(position);
       if (!word) return null;
       const token = word.word.toLowerCase();
-      const hint = HASE_SNIPPETS.find((item) => item.command === token);
+      const hint = RIGOPS_SNIPPETS.find((item) => item.command === token);
       if (!hint) return null;
       return {
         range: new monaco.Range(position.lineNumber, word.startColumn, position.lineNumber, word.endColumn),
@@ -223,7 +223,7 @@ export const registerHaseMonaco = (monaco: typeof Monaco) => {
     },
   });
 
-  monaco.editor.defineTheme('hase-terminal', {
+  monaco.editor.defineTheme('rigwatch-terminal', {
     base: 'vs-dark',
     inherit: true,
     rules: [
@@ -262,8 +262,8 @@ export const explainWarning = (warning: string): string => {
   return 'This warning points to a potentially dangerous operation. Verify command scope and add protective conditions.';
 };
 
-export const validateHaseScript = (raw: string): HaseValidationIssue[] => {
-  const issues: HaseValidationIssue[] = [];
+export const validateRigopsScript = (raw: string): RigopsValidationIssue[] => {
+  const issues: RigopsValidationIssue[] = [];
   const lines = raw.replace(/\r/g, '').split('\n');
   const stack: Array<{ line: number; column: number }> = [];
 
@@ -336,9 +336,9 @@ export const validateHaseScript = (raw: string): HaseValidationIssue[] => {
   return issues;
 };
 
-export const buildHaseOutline = (raw: string): HaseOutlineItem[] => {
+export const buildRigopsOutline = (raw: string): RigopsOutlineItem[] => {
   const lines = raw.replace(/\r/g, '').split('\n');
-  const outline: HaseOutlineItem[] = [];
+  const outline: RigopsOutlineItem[] = [];
   let depth = 0;
 
   for (let i = 0; i < lines.length; i += 1) {

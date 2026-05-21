@@ -452,7 +452,7 @@
     "main": "Main"
   },
   "app": {
-    "welcome": "Welcome to Hasenradar",
+    "welcome": "Welcome to RigWatch",
     "pendingApproval": "Please wait for administrator approval",
     "connectDevice": "Connect to your fireplace device to start monitoring and controlling parameters.",
     "underReview": "Your account is currently under review.",
@@ -1040,7 +1040,7 @@
   },
   "dealerRadar": {
     "badge": "Dealer view",
-    "title": "Hasenradar Dealer",
+    "title": "RigWatch Dealer",
     "subtitle": "Please enter the serial number",
     "recentIds": "Last 10 serial numbers",
     "connect": "Check",

@@ -13,9 +13,9 @@ import ParameterCardsModal from './ParameterCardsModal';
 import ChartModal from './ChartModal';
 import AirFlowModal from './AirFlowModal';
 // Lazy-loaded so the Monaco editor (~1.5 MB unminified) stays out of the
-// initial bundle. Vite emits HaseEditor + Monaco as a separate chunk that
-// the browser fetches the first time the user opens the .hase editor.
-const HaseEditor = lazy(() => import('./HaseEditor'));
+// initial bundle. Vite emits RigopsEditor + Monaco as a separate chunk that
+// the browser fetches the first time the user opens the .rigops editor.
+const RigopsEditor = lazy(() => import('./RigopsEditor'));
 import { useTiling } from '../context/TilingContext';
 import type { ThemeName } from '../hooks/useTheme';
 
@@ -155,7 +155,7 @@ const BASE_COMMANDS: CommandSuggestion[] = [
   { command: 'snake', description: 'Play Snake (ASCII)', args: [] },
   { command: 'type_race', description: 'Type 10 words fast (ASCII)', args: [] },
   { command: '2048', description: 'Play 2048 (ASCII)', args: [] },
-  { command: 'hasenfetch', description: 'Show Hasenradar system info', args: [] },
+  { command: 'rigfetch', description: 'Show RigWatch system info', args: [] },
 ];
 
 const PRESET_STORAGE_KEY = 'terminal_presets_v1';
@@ -253,15 +253,15 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [editorValue, setEditorValue] = useState('');
   const [lastEditorScript, setLastEditorScript] = useState('');
-  const [haseMeta, setHaseMeta] = useState<{ name: string; author: string; created: string; version: string }>({
+  const [rigopsMeta, setRigopsMeta] = useState<{ name: string; author: string; created: string; version: string }>({
     name: '',
     author: '',
     created: '',
     version: '',
   });
-  const [haseWarnings, setHaseWarnings] = useState<string[]>([]);
-  const [haseBody, setHaseBody] = useState('');
-  const [haseMode, setHaseMode] = useState(false);
+  const [rigopsWarnings, setRigopsWarnings] = useState<string[]>([]);
+  const [rigopsBody, setRigopsBody] = useState('');
+  const [rigopsMode, setRigopsMode] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -865,7 +865,7 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
     inputRef.current?.focus();
   }, [input]);
 
-  const getDefaultHaseMeta = useCallback(() => {
+  const getDefaultRigopsMeta = useCallback(() => {
     const today = new Date().toISOString().slice(0, 10);
     const author = user?.displayName || user?.email || 'unknown';
     return {
@@ -876,23 +876,23 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
     };
   }, [user?.displayName, user?.email]);
 
-  const buildDefaultHaseTemplate = useCallback(() => {
-    const meta = getDefaultHaseMeta();
+  const buildDefaultRigopsTemplate = useCallback(() => {
+    const meta = getDefaultRigopsMeta();
     return [
-      '#hase',
+      '#rigops',
       `#version ${meta.version}`,
       `#name ${meta.name}`,
       `#author ${meta.author}`,
       `#created ${meta.created}`,
       '',
     ].join('\n');
-  }, [getDefaultHaseMeta]);
+  }, [getDefaultRigopsMeta]);
 
   const openEditor = useCallback((options?: { forceTemplate?: boolean }) => {
     if (options?.forceTemplate) {
-      const template = buildDefaultHaseTemplate();
+      const template = buildDefaultRigopsTemplate();
       setEditorValue(template);
-      setHaseMode(true);
+      setRigopsMode(true);
       setIsEditorOpen(true);
       setActiveWindowId('code');
       return;
@@ -901,12 +901,12 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
     const hasLast = Boolean(lastEditorScript);
     const next = hasInput
       ? input
-      : hasLast ? lastEditorScript : buildDefaultHaseTemplate();
+      : hasLast ? lastEditorScript : buildDefaultRigopsTemplate();
     setEditorValue(next);
-    setHaseMode(!hasInput && !hasLast);
+    setRigopsMode(!hasInput && !hasLast);
     setIsEditorOpen(true);
     setActiveWindowId('code');
-  }, [buildDefaultHaseTemplate, input, lastEditorScript]);
+  }, [buildDefaultRigopsTemplate, input, lastEditorScript]);
 
   const closeEditor = useCallback(() => {
     setIsEditorOpen(false);
@@ -941,7 +941,7 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
       const welcomeLines: TerminalLine[] = [
         {
           type: 'info',
-          content: '=== Hasenradar Terminal v1.0 ===',
+          content: '=== RigWatch Terminal v1.0 ===',
           timestamp: new Date()
         },
         {
@@ -2316,7 +2316,7 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
     return { commands };
   }, [splitScriptCommands]);
 
-  const parseHaseScript = useCallback((raw: string, options?: { requireHeader?: boolean }) => {
+  const parseRigopsScript = useCallback((raw: string, options?: { requireHeader?: boolean }) => {
     const warnings: string[] = [];
     const meta = { name: '', author: '', created: '', version: '' };
     const lines = raw.replace(/\r/g, '').split('\n');
@@ -2338,7 +2338,7 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
         if (match) {
           const key = match[1].toLowerCase();
           const value = match[2].trim();
-          if (key === 'hase') {
+          if (key === 'rigops') {
             meta.version = meta.version || '';
           } else if (key === 'version') {
             meta.version = value;
@@ -2360,8 +2360,8 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
 
     const requiresHeader = options?.requireHeader === true;
     if (requiresHeader) {
-      if (!firstNonEmpty || !firstNonEmpty.toLowerCase().startsWith('#hase')) {
-        warnings.push('Missing required header: #hase');
+      if (!firstNonEmpty || !firstNonEmpty.toLowerCase().startsWith('#rigops')) {
+        warnings.push('Missing required header: #rigops');
       }
       if (!meta.version) warnings.push('Missing required metadata: #version');
       if (!meta.name) warnings.push('Missing required metadata: #name');
@@ -2416,20 +2416,20 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
       .split('\n')
       .map(line => line.trim())
       .find(line => line.length > 0) || '';
-    const hasHeader = firstNonEmpty.toLowerCase().startsWith('#hase');
-    if (hasHeader && !haseMode) {
-      setHaseMode(true);
+    const hasHeader = firstNonEmpty.toLowerCase().startsWith('#rigops');
+    if (hasHeader && !rigopsMode) {
+      setRigopsMode(true);
     }
-    const parsed = parseHaseScript(editorValue, { requireHeader: haseMode || hasHeader });
-    setHaseMeta(parsed.meta);
-    setHaseWarnings(parsed.warnings);
-    setHaseBody(parsed.body);
-  }, [editorValue, isEditorOpen, haseMode, parseHaseScript]);
+    const parsed = parseRigopsScript(editorValue, { requireHeader: rigopsMode || hasHeader });
+    setRigopsMeta(parsed.meta);
+    setRigopsWarnings(parsed.warnings);
+    setRigopsBody(parsed.body);
+  }, [editorValue, isEditorOpen, rigopsMode, parseRigopsScript]);
 
-  const emitHasenfetch = useCallback(() => {
+  const emitRigfetch = useCallback(() => {
     const logoLines = asciiLogo.replace(/\r/g, '').split('\n');
     const infoLines: string[] = [
-      'Hasenradar v2.0.0',
+      'RigWatch v2.0.0',
       'Developer: Vladislav Slugin',
       'Email: vladslugin987@gmail.com',
       '',
@@ -2576,7 +2576,7 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
           addLine('info', '  snake                    - Play Snake (ASCII)');
           addLine('info', '  type_race                - Type 10 words fast');
           addLine('info', '  2048                     - Play 2048 (ASCII)');
-          addLine('info', '  hasenfetch               - Show Hasenradar system info');
+          addLine('info', '  rigfetch               - Show RigWatch system info');
           
           if (canUseAdminCommands) {
             addLine('info', '');
@@ -2667,7 +2667,7 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
           addLine('info', '  snake                    - Start Snake');
           addLine('info', '  type_race                - Start typing game');
           addLine('info', '  2048                     - Start 2048 game');
-          addLine('info', '  hasenfetch               - Show Hasenradar info');
+          addLine('info', '  rigfetch               - Show RigWatch info');
           if (canUseAdminCommands) {
             addLine('info', '  user_role user@example.com admin');
             addLine('info', '  user_active user@example.com false');
@@ -5290,11 +5290,11 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
           addLine('info', 'Starting 2048... Use arrow keys. ESC to exit.');
           break;
 
-        case 'hasenfetch':
+        case 'rigfetch':
           {
             const prevOverride = silentInfoOverrideRef.current;
             silentInfoOverrideRef.current = true;
-            emitHasenfetch();
+            emitRigfetch();
             silentInfoOverrideRef.current = prevOverride;
           }
           break;
@@ -5821,23 +5821,23 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
   }, [addLine, executeSingleCommand, expandScriptCommands, silentScriptEcho]);
 
   const handleEditorRun = useCallback(() => {
-    const script = (haseMode ? haseBody : editorValue).trim();
+    const script = (rigopsMode ? rigopsBody : editorValue).trim();
     if (!script) return;
     setLastEditorScript(editorValue);
-    emitWarnings(haseWarnings, 'Script');
+    emitWarnings(rigopsWarnings, 'Script');
     executeCommand(script);
     setInput('');
     setHistoryIndex(-1);
     setSelectedSuggestionIndex(0);
-  }, [editorValue, executeCommand, haseBody, haseMode, haseWarnings, emitWarnings]);
+  }, [editorValue, executeCommand, rigopsBody, rigopsMode, rigopsWarnings, emitWarnings]);
 
   const handleEditorFileLoaded = useCallback((fileName: string, text: string) => {
     setEditorValue(text);
     setLastEditorScript(text);
     setIsEditorOpen(true);
     setActiveWindowId('code');
-    const isHaseFile = fileName.toLowerCase().endsWith('.hase');
-    setHaseMode(isHaseFile);
+    const isRigopsFile = fileName.toLowerCase().endsWith('.rigops');
+    setRigopsMode(isRigopsFile);
     addLine('info', `Loaded script: ${fileName} (${Math.max(0, text.length)} chars)`);
   }, [addLine]);
 
@@ -6375,7 +6375,7 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
             <span className="text-terminal-command">[</span>
             <span className="text-terminal-prompt">{user?.email?.split('@')[0] || 'user'}</span>
             <span className="text-muted-foreground">@</span>
-            <span className="text-terminal-prompt">hase</span>
+            <span className="text-terminal-prompt">rigops</span>
             <span className="text-terminal-command">]</span>
             {deviceId && (
               <>
@@ -6624,12 +6624,12 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
           while the chunk is in flight (~200-400 ms on a fast connection). */}
       {isEditorOpen && (
         <Suspense fallback={null}>
-          <HaseEditor
+          <RigopsEditor
             isOpen
             value={editorValue}
-            meta={haseMeta}
-            warnings={haseWarnings}
-            defaultMeta={getDefaultHaseMeta()}
+            meta={rigopsMeta}
+            warnings={rigopsWarnings}
+            defaultMeta={getDefaultRigopsMeta()}
             onChange={setEditorValue}
             onClose={closeEditor}
             onApply={applyEditor}

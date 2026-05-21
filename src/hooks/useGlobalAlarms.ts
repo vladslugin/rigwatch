@@ -196,8 +196,8 @@ export const useGlobalAlarms = (): UseGlobalAlarmsResult => {
     // Singleton guard: only first mounted instance will emit toasts
     try {
       const anyWin = window as any;
-      if (!anyWin.__haseGlobalAlarmToasterActive) {
-        anyWin.__haseGlobalAlarmToasterActive = true;
+      if (!anyWin.__rigopsGlobalAlarmToasterActive) {
+        anyWin.__rigopsGlobalAlarmToasterActive = true;
         shouldEmitToastsRef.current = true;
       } else {
         shouldEmitToastsRef.current = false;
@@ -392,8 +392,8 @@ export const useGlobalAlarms = (): UseGlobalAlarmsResult => {
       // Release singleton toaster flag if this instance owned it
       try {
         const anyWin = window as any;
-        if (shouldEmitToastsRef.current && anyWin.__haseGlobalAlarmToasterActive) {
-          anyWin.__haseGlobalAlarmToasterActive = false;
+        if (shouldEmitToastsRef.current && anyWin.__rigopsGlobalAlarmToasterActive) {
+          anyWin.__rigopsGlobalAlarmToasterActive = false;
         }
       } catch {}
       shouldEmitToastsRef.current = false;

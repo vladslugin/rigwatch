@@ -11,7 +11,7 @@ function getDecimalSeparatorSetting(): boolean {
   try {
     // Read the decimal separator mode from localStorage
     // false = dot (3.14), true = comma (3,14)
-    const saved = localStorage.getItem('hase-decimal-separator');
+    const saved = localStorage.getItem('rigwatch-decimal-separator');
     return saved === 'true';
   } catch (error) {
     return false; // Default to dot

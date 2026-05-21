@@ -116,8 +116,8 @@ export const useAlarmNavigation = ({
   // Listen to global tick to auto-highlight
   useEffect(() => {
     const handler = () => autoHighlightOutOfRange();
-    window.addEventListener('hase-auto-highlight-tick', handler as EventListener);
-    return () => window.removeEventListener('hase-auto-highlight-tick', handler as EventListener);
+    window.addEventListener('rigwatch-auto-highlight-tick', handler as EventListener);
+    return () => window.removeEventListener('rigwatch-auto-highlight-tick', handler as EventListener);
   }, [autoHighlightOutOfRange]);
 
   // Listen to parameter settings changes (when alarm settings are updated)

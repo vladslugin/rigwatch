@@ -198,9 +198,9 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
       const stack = found.stack;
       setFontFamily(stack);
       if (isSystemFont(stack)) {
-        localStorage.removeItem('hase-font-family');
+        localStorage.removeItem('rigwatch-font-family');
       } else {
-        localStorage.setItem('hase-font-family', stack);
+        localStorage.setItem('rigwatch-font-family', stack);
       }
       applyFontFamily(stack);
     },
@@ -209,7 +209,7 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
 
   const handleDecimalSeparatorChange = useCallback((useComma: boolean) => {
     setDecimalSeparatorMode(useComma);
-    localStorage.setItem('hase-decimal-separator', useComma.toString());
+    localStorage.setItem('rigwatch-decimal-separator', useComma.toString());
     window.dispatchEvent(new CustomEvent('decimalSeparatorChanged', { detail: { useComma } }));
   }, []);
 
@@ -294,7 +294,7 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `hase-iq-settings-${new Date().toISOString().split('T')[0]}.json`;
+      a.download = `rigwatch-settings-${new Date().toISOString().split('T')[0]}.json`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -334,12 +334,12 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
     const savedCommandDelay = prefs.commandDelay ?? 500;
     setCommandDelay(savedCommandDelay);
     commandQueue.setDefaultDelay(savedCommandDelay);
-    const savedFontFamily = localStorage.getItem('hase-font-family');
+    const savedFontFamily = localStorage.getItem('rigwatch-font-family');
     if (savedFontFamily) {
       setFontFamily(savedFontFamily);
       applyFontFamily(savedFontFamily);
     }
-    const savedDecimalSeparator = localStorage.getItem('hase-decimal-separator');
+    const savedDecimalSeparator = localStorage.getItem('rigwatch-decimal-separator');
     if (savedDecimalSeparator === 'true') setDecimalSeparatorMode(true);
   }, [getUserPreferences, applyFontFamily]);
 

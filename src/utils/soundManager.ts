@@ -117,12 +117,12 @@ class SoundManager {
 
   setEnabled(enabled: boolean) {
     this.isEnabled = enabled;
-    localStorage.setItem('hase-sound-enabled', enabled.toString());
+    localStorage.setItem('rigwatch-sound-enabled', enabled.toString());
   }
 
   isAudioEnabled(): boolean {
     if (typeof window === 'undefined') return false;
-    const stored = localStorage.getItem('hase-sound-enabled');
+    const stored = localStorage.getItem('rigwatch-sound-enabled');
     return stored !== 'false'; // Default to enabled
   }
 }

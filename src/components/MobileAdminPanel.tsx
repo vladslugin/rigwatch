@@ -71,7 +71,7 @@ const CreateUserModal: React.FC<{
               type="email"
               value={userData.email}
               onChange={(e) => setUserData({ ...userData, email: e.target.value })}
-              placeholder="user@hase.de"
+              placeholder="operator@rigwatch.app"
               className="w-full px-3 py-2 border border-border rounded-md bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               autoFocus
               required

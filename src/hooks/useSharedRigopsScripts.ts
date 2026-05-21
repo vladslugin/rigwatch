@@ -14,9 +14,9 @@ import { firestoreDB } from '../lib/firebase';
 import { useAuth } from './useAuth';
 
 /** Firestore collection for scripts visible to all authenticated users (see security rules). */
-export const HASE_SHARED_SCRIPTS_COLLECTION = 'hase_shared_scripts';
+export const RIGOPS_SHARED_SCRIPTS_COLLECTION = 'rigops_shared_scripts';
 
-export type SharedHaseScriptRow = {
+export type SharedRigopsScriptRow = {
   id: string;
   name: string;
   content: string;
@@ -28,19 +28,19 @@ export type SharedHaseScriptRow = {
 const MAX_CONTENT_CHARS = 900_000;
 
 /**
- * Real-time shared Hase script library.
+ * Real-time shared Rigops script library.
  *
  * Deploy Firestore rules, e.g.:
  * ```
- * match /hase_shared_scripts/{id} {
+ * match /rigops_shared_scripts/{id} {
  *   allow read, create, update, delete: if request.auth != null;
  * }
  * ```
  * Tighten further (e.g. custom claims / roles) as needed.
  */
-export function useSharedHaseScripts(enabled: boolean) {
+export function useSharedRigopsScripts(enabled: boolean) {
   const { user, isAuthenticated } = useAuth();
-  const [scripts, setScripts] = useState<SharedHaseScriptRow[]>([]);
+  const [scripts, setScripts] = useState<SharedRigopsScriptRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -56,13 +56,13 @@ export function useSharedHaseScripts(enabled: boolean) {
 
     setLoading(true);
     setError(null);
-    const colRef = collection(firestoreDB, HASE_SHARED_SCRIPTS_COLLECTION);
+    const colRef = collection(firestoreDB, RIGOPS_SHARED_SCRIPTS_COLLECTION);
     const q = query(colRef, orderBy('updatedAt', 'desc'), limit(200));
 
     const unsub = onSnapshot(
       q,
       (snap) => {
-        const list: SharedHaseScriptRow[] = [];
+        const list: SharedRigopsScriptRow[] = [];
         snap.forEach((d) => {
           const data = d.data() as Record<string, unknown>;
           const updatedAtRaw = data.updatedAt;
@@ -89,7 +89,7 @@ export function useSharedHaseScripts(enabled: boolean) {
         setLoading(false);
       },
       (err) => {
-        console.error('[useSharedHaseScripts]', err);
+        console.error('[useSharedRigopsScripts]', err);
         setError(err.message || 'Firestore error');
         setLoading(false);
       },
@@ -115,10 +115,10 @@ export function useSharedHaseScripts(enabled: boolean) {
         updatedByEmail: (user.email ?? '').toString().slice(0, 200),
       };
       if (existingId) {
-        await updateDoc(doc(firestoreDB, HASE_SHARED_SCRIPTS_COLLECTION, existingId), payload);
+        await updateDoc(doc(firestoreDB, RIGOPS_SHARED_SCRIPTS_COLLECTION, existingId), payload);
         return existingId;
       }
-      const ref = await addDoc(collection(firestoreDB, HASE_SHARED_SCRIPTS_COLLECTION), {
+      const ref = await addDoc(collection(firestoreDB, RIGOPS_SHARED_SCRIPTS_COLLECTION), {
         ...payload,
         createdAt: Date.now(),
         createdByUid: user.uid,
@@ -132,7 +132,7 @@ export function useSharedHaseScripts(enabled: boolean) {
 
   const deleteScript = useCallback(async (scriptId: string) => {
     if (!firestoreDB) throw new Error('Firestore not initialized');
-    await deleteDoc(doc(firestoreDB, HASE_SHARED_SCRIPTS_COLLECTION, scriptId));
+    await deleteDoc(doc(firestoreDB, RIGOPS_SHARED_SCRIPTS_COLLECTION, scriptId));
   }, []);
 
   return {

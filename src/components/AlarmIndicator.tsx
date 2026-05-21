@@ -262,7 +262,7 @@ const AlarmIndicator: React.FC<AlarmIndicatorProps> = ({ onExpandCategory }) => 
       } else {
         // Fire a global event as a fallback (parent may listen to it)
         try {
-          const evt = new CustomEvent('hase-expand-category', { detail: { categoryName: alarm.categoryName } });
+          const evt = new CustomEvent('rigwatch-expand-category', { detail: { categoryName: alarm.categoryName } });
           window.dispatchEvent(evt);
         } catch {}
       }

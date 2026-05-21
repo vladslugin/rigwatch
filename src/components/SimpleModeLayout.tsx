@@ -36,8 +36,8 @@ const SimpleModeLayout: React.FC = () => {
           <div className="flex-1" />
           <div className="flex items-center justify-center gap-2">
             <img
-              src={isDark ? '/hase_logo_light.svg' : '/hase_logo_dark.svg'}
-              alt="HASE"
+              src={isDark ? '/logo.svg' : '/logo.svg'}
+              alt="RigWatch"
               className="h-10"
             />
             <span className="text-xl font-bold text-muted-foreground">easy</span>

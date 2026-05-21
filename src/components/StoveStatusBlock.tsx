@@ -8,7 +8,7 @@ const StoveStatusBlock: React.FC = () => {
     temperature,
     scheibenluft,
     rueckwandluft,
-    brennphaseLabel,
+    brennprigopsLabel,
     motorAErrors,
     motorBErrors,
     sensorErrors
@@ -102,7 +102,7 @@ const StoveStatusBlock: React.FC = () => {
                 {t('stoveStatusBlock.brennphase')}
               </div>
               <div className="text-sm font-semibold text-foreground">
-                {brennphaseLabel}
+                {brennprigopsLabel}
               </div>
             </div>
           </div>

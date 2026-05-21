@@ -33,7 +33,7 @@ export const AVAILABLE_THEMES: { id: ThemeName; name: string; description: strin
   { id: 'web3-modern', name: 'Web3 Modern', description: 'Tiefes Dunkelblau mit elektrischen Akzenten', previewColor: '#3B82F6' },
 ];
 
-const STORAGE_KEY = 'hase-theme-config';
+const STORAGE_KEY = 'rigwatch-theme-config';
 
 /**
  * Hook for managing app themes

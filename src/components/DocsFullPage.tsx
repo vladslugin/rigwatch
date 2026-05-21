@@ -15,7 +15,7 @@ import {
   DemoFirmwareStatus,
   DemoInfoToggle,
 } from '../docs/demos/utilityDemos';
-import { DemoTerminal, DemoHasenfetch } from '../docs/demos/terminalDemos';
+import { DemoTerminal, DemoRigfetch } from '../docs/demos/terminalDemos';
 
 /**
  * Visual demos that get rendered below the markdown body of specific chapters.
@@ -41,8 +41,8 @@ const DEMOS_BY_CHAPTER: Record<number, React.FC[]> = {
   ],
   // Ch.25 Aktionen-Block — the three firmware states.
   25: [DemoFirmwareStatus],
-  // Ch.32 Easter Eggs — the hasenfetch ASCII output.
-  32: [DemoHasenfetch],
+  // Ch.32 Easter Eggs — the rigfetch ASCII output.
+  32: [DemoRigfetch],
 };
 
 /**
@@ -54,7 +54,7 @@ const DEMOS_BY_CHAPTER: Record<number, React.FC[]> = {
  *    no app chrome, no buttons, no nav. Hit Cmd/Ctrl-P → ready to print or
  *    save as PDF.
  *
- * The page bypasses the normal Hasenradar shell completely (App.tsx renders
+ * The page bypasses the normal RigWatch shell completely (App.tsx renders
  * this component instead of the dealer/simple/full layout when the path is
  * `/docs`), so there is no header, no auth gate, no Firebase wiring — just
  * the raw markdown content. This makes the print output deterministic.
@@ -72,7 +72,7 @@ const DocsFullPage: React.FC = () => {
     if (wasDark) root.classList.remove('dark');
     // Set the page title so the print header / saved PDF gets a good name.
     const prevTitle = document.title;
-    document.title = 'Hasenradar — Dokumentation';
+    document.title = 'RigWatch — Dokumentation';
     return () => {
       if (wasDark) root.classList.add('dark');
       document.title = prevTitle;
@@ -96,7 +96,7 @@ const DocsFullPage: React.FC = () => {
       <style>{PRINT_CSS}</style>
 
       <header className="docs-page__cover">
-        <h1 className="docs-page__cover-title">Hasenradar</h1>
+        <h1 className="docs-page__cover-title">RigWatch</h1>
         <p className="docs-page__cover-subtitle">{t('docs.title')}</p>
         <p className="docs-page__cover-meta">
           {t('docs.printGeneratedOn', { defaultValue: 'Stand:' })}{' '}
@@ -151,7 +151,7 @@ const DocsFullPage: React.FC = () => {
       </main>
 
       <footer className="docs-page__footer">
-        <p>Hasenradar — © HASE, Trier</p>
+        <p>RigWatch — © HASE, Trier</p>
         <p>
           Dokumentation verfasst von Vladislav Slugin ·{' '}
           <a href="mailto:vladslugin987@gmail.com">vladslugin987@gmail.com</a>

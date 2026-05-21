@@ -23,8 +23,8 @@ interface LocalSettingsStorage {
   [deviceId: string]: DeviceSettings;
 }
 
-const STORAGE_KEY = 'hase-iq-local-settings';
-const USER_PREFERENCES_KEY = 'hase-iq-user-preferences';
+const STORAGE_KEY = 'rigwatch-local-settings';
+const USER_PREFERENCES_KEY = 'rigwatch-user-preferences';
 
 // User preferences (global settings)
 interface UserPreferences {
@@ -67,7 +67,7 @@ export const useLocalSettings = () => {
       const base = data ? JSON.parse(data) : { unfavoriteOpacity: 0.3, commandDelay: 500 }; // default 500ms delay
       // Overlay per-tab simplificationMode from sessionStorage (do NOT share across tabs)
       try {
-        const sessionSimple = sessionStorage.getItem('hase-session-simplification-mode');
+        const sessionSimple = sessionStorage.getItem('rigwatch-session-simplification-mode');
         if (sessionSimple !== null) {
           const s = sessionSimple.trim().toLowerCase();
           const v = (s === 'true' || s === '1' || s === 'yes' || s === 'ja');
@@ -90,7 +90,7 @@ export const useLocalSettings = () => {
       // Persist per-tab simplificationMode to sessionStorage only
       if (typeof simplificationMode !== 'undefined') {
         try {
-          sessionStorage.setItem('hase-session-simplification-mode', String(Boolean(simplificationMode)));
+          sessionStorage.setItem('rigwatch-session-simplification-mode', String(Boolean(simplificationMode)));
         } catch {}
       }
       // Notify listeners for preference changes
@@ -439,7 +439,7 @@ export const useLocalSettings = () => {
   const savePrimaryCategory = useCallback((category: string) => {
     if (!deviceId) return;
     try {
-      localStorage.setItem(`hase-primary-category-${deviceId}`, category);
+      localStorage.setItem(`rigwatch-primary-category-${deviceId}`, category);
       console.log(`[LocalSettings] Saved primary category: ${category} for device ${deviceId}`);
     } catch (error) {
       console.error('[LocalSettings] Failed to save primary category:', error);
@@ -450,7 +450,7 @@ export const useLocalSettings = () => {
   const getSectionOrder = useCallback((): string[] => {
     if (!deviceId) return [];
     try {
-      const saved = localStorage.getItem(`hase-section-order-${deviceId}`);
+      const saved = localStorage.getItem(`rigwatch-section-order-${deviceId}`);
       if (saved) {
         const order = JSON.parse(saved);
         console.log(`[LocalSettings] Loaded section order for ${deviceId}:`, order);
@@ -466,7 +466,7 @@ export const useLocalSettings = () => {
   const saveSectionOrder = useCallback((order: string[]) => {
     if (!deviceId) return;
     try {
-      localStorage.setItem(`hase-section-order-${deviceId}`, JSON.stringify(order));
+      localStorage.setItem(`rigwatch-section-order-${deviceId}`, JSON.stringify(order));
       console.log(`[LocalSettings] Saved section order for device ${deviceId}:`, order);
     } catch (error) {
       console.error('[LocalSettings] Failed to save section order:', error);

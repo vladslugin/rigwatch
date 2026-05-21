@@ -23,7 +23,7 @@ interface ChartStorageData {
   savedAt: number;
 }
 
-const STORAGE_KEY_PREFIX = 'hasenradar-chart-';
+const STORAGE_KEY_PREFIX = 'rigwatch-chart-';
 const MAX_POINTS_TO_STORE = 3000; // Limit stored points to prevent localStorage overflow
 
 /**

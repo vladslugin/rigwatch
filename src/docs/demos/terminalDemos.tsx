@@ -2,7 +2,7 @@ import React from 'react';
 
 /**
  * Demos that illustrate the in-app Terminal: a generic session showing the
- * typical look of commands and output, plus the `hasenfetch` easter egg
+ * typical look of commands and output, plus the `rigfetch` easter egg
  * rendered with the real ASCII logo.
  *
  * All styles inline so the demos survive forced-light mode + print without
@@ -101,7 +101,7 @@ export const DemoTerminal: React.FC = () => (
         <span style={dot('#f59e0b')} />
         <span style={dot('#22c55e')} />
         <span style={{ marginLeft: 8, color: '#94a3b8', fontSize: 11 }}>
-          terminal — Hasenradar
+          terminal — RigWatch
         </span>
       </div>
       <div style={terminalBody}>
@@ -163,12 +163,12 @@ const ASCII_LOGO = `            ...............
         ........................
            .................`;
 
-const HASENFETCH_INFO: ReadonlyArray<string> = [
-  'Hasenradar v2.0.0',
+const RIGFETCH_INFO: ReadonlyArray<string> = [
+  'RigWatch v2.0.0',
   'Developer: Vladislav Slugin',
   'Email: vladslugin987@gmail.com',
   '',
-  'User: max@hase.de',
+  'User: operator@rigwatch.app',
   'Role: developer',
   'Connection: online',
   'Device ID: 1000028300033490000033',
@@ -177,29 +177,29 @@ const HASENFETCH_INFO: ReadonlyArray<string> = [
 ];
 
 /**
- * `hasenfetch` easter-egg renderer — laying out the ASCII logo next to a
- * info block, just like `emitHasenfetch` in Terminal.tsx.
+ * `rigfetch` easter-egg renderer — laying out the ASCII logo next to a
+ * info block, just like `emitRigfetch` in Terminal.tsx.
  *
  * The real implementation pads the info column with non-breaking spaces and
  * trims trailing whitespace. We achieve the same visual via a CSS grid with
  * two `min-content`-fitted columns.
  */
-export const DemoHasenfetch: React.FC = () => (
+export const DemoRigfetch: React.FC = () => (
   <div>
-    <SectionLabel>Beispielansicht — hasenfetch</SectionLabel>
+    <SectionLabel>Beispielansicht — rigfetch</SectionLabel>
     <div style={terminalRoot}>
       <div style={terminalChrome}>
         <span style={dot('#ef4444')} />
         <span style={dot('#f59e0b')} />
         <span style={dot('#22c55e')} />
         <span style={{ marginLeft: 8, color: '#94a3b8', fontSize: 11 }}>
-          terminal — hasenfetch
+          terminal — rigfetch
         </span>
       </div>
       <div style={{ ...terminalBody, padding: '1rem 1.25rem' }}>
         <div style={{ color: C.prompt, marginBottom: '0.5rem' }}>
           <span style={{ color: C.prompt, marginRight: 6 }}>$</span>
-          <span style={{ color: C.command }}>hasenfetch</span>
+          <span style={{ color: C.command }}>rigfetch</span>
         </div>
         <div
           style={{
@@ -229,7 +229,7 @@ export const DemoHasenfetch: React.FC = () => (
               fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
             }}
           >
-            {HASENFETCH_INFO.map((line, i) => {
+            {RIGFETCH_INFO.map((line, i) => {
               if (i === 0) {
                 return (
                   <div key={i} style={{ color: C.success, fontWeight: 600 }}>

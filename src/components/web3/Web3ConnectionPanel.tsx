@@ -641,14 +641,14 @@ const Web3ConnectionPanel: React.FC<ConnectionPanelProps> = ({
       const isDeviceSpecificKey = (key: string | null): boolean => {
         if (!key) return false;
         const preserved = new Set([
-          'hase-iq-user-preferences',
-          'hase-session-simplification-mode',
-          'hase-iq-local-settings',
-          'hase-theme-config',
-          'hase-display-configuration-selected',
+          'rigwatch-user-preferences',
+          'rigwatch-session-simplification-mode',
+          'rigwatch-local-settings',
+          'rigwatch-theme-config',
+          'rigwatch-display-configuration-selected',
         ]);
         if (preserved.has(key)) return false;
-        return key.startsWith('hase-') || key.includes('device') || key.includes('parameter');
+        return key.startsWith('rigwatch-') || key.includes('device') || key.includes('parameter');
       };
 
       for (let i = localStorage.length - 1; i >= 0; i--) {
@@ -1089,8 +1089,8 @@ const Web3ConnectionPanel: React.FC<ConnectionPanelProps> = ({
           <div className="flex flex-col items-center justify-center gap-4">
             <img
               key={`logo-${domIsDark ? 'dark' : 'light'}`}
-              src="/hase_logo_light.svg"
-              alt="Hasenradar Logo"
+              src="/logo.svg"
+              alt="RigWatch Logo"
               className="h-14 w-auto opacity-90"
               style={{ filter: domIsDark ? 'invert(1)' : 'invert(0)' }}
             />
@@ -1343,12 +1343,12 @@ const Web3ConnectionPanel: React.FC<ConnectionPanelProps> = ({
             <div className="text-center mb-6">
               <img
                 key={`logo-${domIsDark ? 'dark' : 'light'}`}
-                src="/hase_logo_light.svg"
-                alt="Hasenradar"
+                src="/logo.svg"
+                alt="RigWatch"
                 className="mx-auto h-14 w-auto mb-3 opacity-90"
                 style={{ filter: domIsDark ? 'invert(1)' : 'invert(0)' }}
               />
-              <h1 className="text-3xl font-semibold tracking-tight text-foreground">Hasenradar</h1>
+              <h1 className="text-3xl font-semibold tracking-tight text-foreground">RigWatch</h1>
               <p className="text-sm text-muted-foreground mt-1.5">
                 Verbinden Sie Ihr Kamin-Gerät
               </p>

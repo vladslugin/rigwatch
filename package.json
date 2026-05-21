@@ -1,7 +1,7 @@
 {
-  "name": "hase-iq-control-react",
-  "version": "2.0.0",
-  "description": "Modern React + TypeScript version of HASENRADAR System",
+  "name": "rigwatch",
+  "version": "0.1.0",
+  "description": "Real-time monitoring dashboard for cryptocurrency mining rigs",
   "private": true,
   "type": "module",
   "scripts": {

@@ -53,7 +53,7 @@ import { firestoreDB } from './lib/firebase';
 import { addDoc, collection, deleteDoc, doc, onSnapshot, query, serverTimestamp, updateDoc } from 'firebase/firestore';
 
 const App: React.FC = () => {
-  const displayConfigStorageKey = 'hase-display-configuration-selected';
+  const displayConfigStorageKey = 'rigwatch-display-configuration-selected';
   const deviceId = useStoveStore(state => state.deviceId);
   const connectionStatus = useStoveStore(state => state.connectionStatus);
   const deviceExistence = useStoveStore(state => state.deviceExistence);
@@ -110,7 +110,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const loadSimplificationMode = () => {
       try {
-        const prefsStr = localStorage.getItem('hase-iq-user-preferences');
+        const prefsStr = localStorage.getItem('rigwatch-user-preferences');
         const prefs = prefsStr ? JSON.parse(prefsStr) : {};
         setSimplificationMode(prefs.simplificationMode || false);
         setUseNewDesign(prefs.newDesign || false);
@@ -164,7 +164,7 @@ const App: React.FC = () => {
 
   // Apply saved font family on app load
   useEffect(() => {
-    const savedFontFamily = localStorage.getItem('hase-font-family');
+    const savedFontFamily = localStorage.getItem('rigwatch-font-family');
     if (savedFontFamily && savedFontFamily !== 'system-ui') {
       document.documentElement.style.setProperty('--custom-font-family', savedFontFamily);
       document.body.style.fontFamily = savedFontFamily;
@@ -173,7 +173,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     try {
-      const prefsStr = localStorage.getItem('hase-iq-user-preferences');
+      const prefsStr = localStorage.getItem('rigwatch-user-preferences');
       const prefs = prefsStr ? JSON.parse(prefsStr) : {};
       const delay = prefs.commandDelay ?? 500;
       commandQueue.setDefaultDelay(delay);
@@ -456,7 +456,7 @@ const App: React.FC = () => {
   useEffect(() => {
     try {
       // Trigger via custom event so hook can respond, or call a function if exposed
-      const event = new CustomEvent('hase-auto-highlight-tick');
+      const event = new CustomEvent('rigwatch-auto-highlight-tick');
       window.dispatchEvent(event);
     } catch {}
   }, [currentData]);
@@ -1548,8 +1548,8 @@ const App: React.FC = () => {
             <div className="bg-card rounded-theme border-2 border-border p-6 text-center">
               <div className="w-16 h-16 bg-muted rounded-theme mx-auto mb-4 flex items-center justify-center">
                 <img 
-                  src={`${isDark ? '/hase_logo_light_16x16.svg' : '/hase_logo_light_64x64.svg'}`}
-                  alt="Hase Logo" 
+                  src={`${isDark ? '/logo.svg' : '/logo.svg'}`}
+                  alt="RigWatch Logo" 
                   className="w-8 h-8"
                 />
               </div>

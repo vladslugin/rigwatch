@@ -452,7 +452,7 @@ const DealerModeLayout: React.FC = () => {
   ]);
 
   // ─── Escalation (KundenTicket) ─────────────────────────────────────────
-  const handleEscalateToHase = useCallback(async () => {
+  const handleEscalateToRigops = useCallback(async () => {
     if (!deviceId) return;
     setIsEscalating(true);
     setEscalationFeedback(null);
@@ -554,7 +554,7 @@ const DealerModeLayout: React.FC = () => {
         {/* Header strip with brand + theme/back controls */}
         <header className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src="/hase_logo_light.svg" alt="HASE" className="h-10" />
+            <img src="/logo.svg" alt="RigWatch" className="h-10" />
             <div>
               <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">{t('dealerRadar.badge')}</p>
               <h1 className="text-xl font-semibold">{t('dealerRadar.title')}</h1>
@@ -730,7 +730,7 @@ const DealerModeLayout: React.FC = () => {
             <section className="rounded-theme bg-card p-5 shadow-theme-md">
               <button
                 type="button"
-                onClick={handleEscalateToHase}
+                onClick={handleEscalateToRigops}
                 disabled={!isConnected || isEscalating || isSendingTicket || escalationFeedback === 'success'}
                 className="w-full rounded-theme border border-primary bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
               >

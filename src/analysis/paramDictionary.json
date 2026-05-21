@@ -19,7 +19,7 @@
   "n": { "label": "Nachlegedringlichkeit", "type": "number", "desc": "Refuel urgency (0..7)", "weight": 0.6 },
   "N": { "label": "Nachlegedringlichkeit", "type": "number", "desc": "Refuel urgency (0..7)", "weight": 0.6 },
   "ofen": { "label": "Stove Software ID", "type": "number", "desc": "Stove software identifier", "weight": 0.3 },
-  "shareData": { "label": "Data Sharing Permission", "type": "boolean", "desc": "True if Hase is allowed to access database", "weight": 0.1 },
+  "shareData": { "label": "Data Sharing Permission", "type": "boolean", "desc": "True if RigWatch is allowed to access database", "weight": 0.1 },
   "tsfc": { "label": "Timestamp First Contact", "type": "number", "desc": "Epoch time when stove last went online", "weight": 0.6 },
   "v": { "label": "Firmware Update Available", "type": "boolean", "desc": "True if firmware update is available", "weight": 0.4 },
   "b": { "label": "Battery", "type": "number", "unit": "%", "desc": "Battery level", "weight": 0.5 },

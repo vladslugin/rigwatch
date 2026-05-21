@@ -35,7 +35,7 @@ const NotificationHistory: React.FC<NotificationHistoryProps> = ({ isOpen, onClo
 
   // Load history from localStorage on mount
   useEffect(() => {
-    const stored = localStorage.getItem('hase-notification-history');
+    const stored = localStorage.getItem('rigwatch-notification-history');
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
@@ -51,7 +51,7 @@ const NotificationHistory: React.FC<NotificationHistoryProps> = ({ isOpen, onClo
     if (history.length > 0) {
       // Keep only last 100 notifications to prevent localStorage bloat
       const trimmed = history.slice(-100);
-      localStorage.setItem('hase-notification-history', JSON.stringify(trimmed));
+      localStorage.setItem('rigwatch-notification-history', JSON.stringify(trimmed));
     }
   }, [history]);
 
@@ -140,7 +140,7 @@ const NotificationHistory: React.FC<NotificationHistoryProps> = ({ isOpen, onClo
 
   const clearHistory = () => {
     setHistory([]);
-    localStorage.removeItem('hase-notification-history');
+    localStorage.removeItem('rigwatch-notification-history');
   };
 
   const clearTodayHistory = () => {

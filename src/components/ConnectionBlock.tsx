@@ -254,7 +254,7 @@ const ConnectionBlock: React.FC = () => {
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         // Don't remove user preferences - they are global, not device-specific
-        if (key && (key.startsWith('hase-') || key.includes('device') || key.includes('parameter')) && key !== 'hase-iq-user-preferences') {
+        if (key && (key.startsWith('rigwatch-') || key.includes('device') || key.includes('parameter')) && key !== 'rigwatch-user-preferences') {
           keysToRemove.push(key);
         }
       }
@@ -266,9 +266,9 @@ const ConnectionBlock: React.FC = () => {
         // Don't remove user preferences - they are global, not device-specific
         if (
           key &&
-          (key.startsWith('hase-') || key.includes('device') || key.includes('parameter')) &&
-          key !== 'hase-iq-user-preferences' &&
-          key !== 'hase-session-simplification-mode'
+          (key.startsWith('rigwatch-') || key.includes('device') || key.includes('parameter')) &&
+          key !== 'rigwatch-user-preferences' &&
+          key !== 'rigwatch-session-simplification-mode'
         ) {
           sessionKeysToRemove.push(key);
         }

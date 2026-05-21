@@ -108,7 +108,7 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         // Split heavy vendor libraries into their own chunks so:
-        //   - Monaco (loaded only via React.lazy in HaseEditor) doesn't bloat
+        //   - Monaco (loaded only via React.lazy in RigopsEditor) doesn't bloat
         //     the initial download — it stays in a separate chunk that the
         //     browser fetches the first time the dealer opens the editor.
         //   - Firebase / Chart.js / TensorFlow ship as separate cacheable
@@ -116,7 +116,7 @@ export default defineConfig(({ mode }) => ({
         //     small app chunk; vendors stay in the browser cache.
         manualChunks: (id) => {
           if (!id.includes('node_modules')) return undefined;
-          // Monaco stays lazy: it's still pulled via React.lazy in HaseEditor
+          // Monaco stays lazy: it's still pulled via React.lazy in RigopsEditor
           // and we want the editor chunk to fetch on first open, not on
           // initial paint.
           if (id.includes('@monaco-editor') || id.includes('monaco-editor')) return 'monaco';

@@ -18,24 +18,24 @@ import type {
 const clearDeviceCaches = () => {
   try {
     const preserveKeys = new Set([
-      'hase-iq-user-preferences', // global user prefs
-      'hase-iq-local-settings',   // visual settings (colors, positions, legend)
-      'hase-font-family',         // UI font
-      'hase-decimal-separator',   // UI decimal separator
-      'hase-theme-config',        // theme (mode + neo-brutalism)
-      'hase_script_library_v1',   // .hase editor library
+      'rigwatch-user-preferences', // global user prefs
+      'rigwatch-local-settings',   // visual settings (colors, positions, legend)
+      'rigwatch-font-family',         // UI font
+      'rigwatch-decimal-separator',   // UI decimal separator
+      'rigwatch-theme-config',        // theme (mode + neo-brutalism)
+      'rigops_script_library_v1',   // .rigops editor library
     ]);
 
     const keysToRemove: string[] = [];
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (!key) continue;
-      const isHaseKey = key.startsWith('hase-');
+      const isRigopsKey = key.startsWith('rigwatch-');
       const isDeviceParamKey = key.includes('device') || key.includes('parameter');
       const isPreserved = preserveKeys.has(key);
 
       // Remove only device/parameter caches, keep visual/user prefs
-      if ((isHaseKey || isDeviceParamKey) && !isPreserved) {
+      if ((isRigopsKey || isDeviceParamKey) && !isPreserved) {
         keysToRemove.push(key);
       }
     }
@@ -45,13 +45,13 @@ const clearDeviceCaches = () => {
     for (let i = 0; i < sessionStorage.length; i++) {
       const key = sessionStorage.key(i);
       if (!key) continue;
-      const isHaseKey = key.startsWith('hase-');
+      const isRigopsKey = key.startsWith('rigwatch-');
       const isDeviceParamKey = key.includes('device') || key.includes('parameter');
       const isPreserved =
-        key === 'hase-iq-user-preferences' ||
-        key === 'hase-session-simplification-mode';
+        key === 'rigwatch-user-preferences' ||
+        key === 'rigwatch-session-simplification-mode';
 
-      if ((isHaseKey || isDeviceParamKey) && !isPreserved) {
+      if ((isRigopsKey || isDeviceParamKey) && !isPreserved) {
         sessionKeysToRemove.push(key);
       }
     }
@@ -82,10 +82,10 @@ export const useFirebaseConnection = () => {
   // Generate stable client ID per browser tab (session)
   const getOrCreateSessionClientId = () => {
     try {
-      const existing = sessionStorage.getItem('hase_client_id');
+      const existing = sessionStorage.getItem('rigops_client_id');
       if (existing && existing.trim()) return existing;
       const id = `client_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      sessionStorage.setItem('hase_client_id', id);
+      sessionStorage.setItem('rigops_client_id', id);
       return id;
     } catch {
       // Fallback when sessionStorage is not available
@@ -469,8 +469,8 @@ export const useFirebaseConnection = () => {
     });
     listenersRef.current.activeClients = activeClientsUnsubscribe;
 
-    const heartbeatKey = `__hase_heartbeat_${deviceId}`;
-    const trigValueKey = `__hase_trig_value_${deviceId}`;
+    const heartbeatKey = `__rigops_heartbeat_${deviceId}`;
+    const trigValueKey = `__rigops_trig_value_${deviceId}`;
     const existingHeartbeat = (window as any)[heartbeatKey];
     
     if (!existingHeartbeat) {
@@ -535,12 +535,12 @@ export const useFirebaseConnection = () => {
       // Check if Simple Mode is enabled (per-tab session override first)
       let isSimpleMode = (() => {
         try {
-          const sessionVal = sessionStorage.getItem('hase-session-simplification-mode');
+          const sessionVal = sessionStorage.getItem('rigwatch-session-simplification-mode');
           if (sessionVal !== null) {
             const s = sessionVal.trim().toLowerCase();
             return (s === 'true' || s === '1' || s === 'yes' || s === 'ja');
           }
-          const prefs = localStorage.getItem('hase-iq-user-preferences');
+          const prefs = localStorage.getItem('rigwatch-user-preferences');
           if (prefs) {
             const parsed = JSON.parse(prefs);
             return parsed.simplificationMode === true;
@@ -596,8 +596,8 @@ export const useFirebaseConnection = () => {
         listenersRef.current = {};
 
         // Clear TRIG1 heartbeat for old device
-        const oldHeartbeatKey = `__hase_heartbeat_${deviceId}`;
-        const oldTrigValueKey = `__hase_trig_value_${deviceId}`;
+        const oldHeartbeatKey = `__rigops_heartbeat_${deviceId}`;
+        const oldTrigValueKey = `__rigops_trig_value_${deviceId}`;
         const oldHeartbeat = (window as any)[oldHeartbeatKey];
         if (oldHeartbeat) {
           window.clearInterval(oldHeartbeat);
@@ -732,8 +732,8 @@ export const useFirebaseConnection = () => {
 
         // Clear TRIG1 heartbeat ONLY if this was the last client
         if (isLastClient) {
-          const heartbeatKey = `__hase_heartbeat_${currentDeviceId}`;
-          const trigValueKey = `__hase_trig_value_${currentDeviceId}`;
+          const heartbeatKey = `__rigops_heartbeat_${currentDeviceId}`;
+          const trigValueKey = `__rigops_trig_value_${currentDeviceId}`;
           const heartbeatHandle = (window as any)[heartbeatKey];
           if (heartbeatHandle) {
             window.clearInterval(heartbeatHandle);
@@ -774,7 +774,7 @@ export const useFirebaseConnection = () => {
         // Check if Simple Mode was enabled
         const wasSimpleMode = (() => {
           try {
-            const prefs = localStorage.getItem('hase-iq-user-preferences');
+            const prefs = localStorage.getItem('rigwatch-user-preferences');
             if (prefs) {
               const parsed = JSON.parse(prefs);
               return parsed.simplificationMode === true;
