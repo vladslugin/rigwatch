@@ -13,6 +13,7 @@ import ErrorBlock from './components/ErrorBlock';
 import AlarmIndicator from './components/AlarmIndicator';
 import RigManagementPanel from './components/RigManagementPanel';
 import RigVitalsHero from './components/web3/RigVitalsHero';
+import ProfitabilityCard from './components/web3/ProfitabilityCard';
 import ParameterSettingsModal from './components/ParameterSettingsModal';
 import ParameterListModal from './components/ParameterListModal';
 import DevDebug from './components/DevDebug';
@@ -1520,6 +1521,7 @@ const App: React.FC = () => {
           {deviceId && connectionStatus === 'online' && deviceExistence !== 'not_found' && (
             <div className="space-y-2 sm:space-y-3">
               {useNewDesign && <RigVitalsHero />}
+              {useNewDesign && <ProfitabilityCard />}
               {renderSectionInOrder()}
 
               {/* Connection Status Info - Mobile responsive */}
